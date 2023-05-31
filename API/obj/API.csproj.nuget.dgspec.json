@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "d:\\Learning\\HumanResource_API\\API\\API.csproj": {}
+    "D:\\Learning\\HumanResource_API\\API\\API.csproj": {}
   },
   "projects": {
-    "d:\\Learning\\HumanResource_API\\API\\API.csproj": {
+    "D:\\Learning\\HumanResource_API\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "d:\\Learning\\HumanResource_API\\API\\API.csproj",
+        "projectUniqueName": "D:\\Learning\\HumanResource_API\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "d:\\Learning\\HumanResource_API\\API\\API.csproj",
+        "projectPath": "D:\\Learning\\HumanResource_API\\API\\API.csproj",
         "packagesPath": "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\",
-        "outputPath": "d:\\Learning\\HumanResource_API\\API\\obj\\",
+        "outputPath": "D:\\Learning\\HumanResource_API\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hoangvmdeptrai\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -21,6 +21,7 @@
           "net7.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QwZ1vME9A1fuaHtDddn40MNHy3h42VKJyEFvRWlz1lvE45S+Ta1B+K9/nfFCxjRsmIc2c30QUMsXWgDdon8CQw==",
+  "dgSpecHash": "o9ZSPq1f2/neQllUYBfgs0JI+fX9m1POMMNcAXX4htpODyXYExYNn4E4QhOgOp3khvM9nndtiH5kOejqrGRKwA==",
   "success": true,
-  "projectFilePath": "d:\\Learning\\HumanResource_API\\API\\API.csproj",
+  "projectFilePath": "D:\\Learning\\HumanResource_API\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
