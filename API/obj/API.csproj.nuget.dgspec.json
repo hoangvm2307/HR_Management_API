@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Learning\\HumanResource_API\\API\\API.csproj": {}
+    "d:\\Learning\\HumanResource_API\\API\\API.csproj": {}
   },
   "projects": {
-    "D:\\Learning\\HumanResource_API\\API\\API.csproj": {
+    "d:\\Learning\\HumanResource_API\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Learning\\HumanResource_API\\API\\API.csproj",
+        "projectUniqueName": "d:\\Learning\\HumanResource_API\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "D:\\Learning\\HumanResource_API\\API\\API.csproj",
+        "projectPath": "d:\\Learning\\HumanResource_API\\API\\API.csproj",
         "packagesPath": "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\",
-        "outputPath": "D:\\Learning\\HumanResource_API\\API\\obj\\",
+        "outputPath": "d:\\Learning\\HumanResource_API\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hoangvmdeptrai\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -21,7 +21,6 @@
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -40,7 +39,19 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[7.0.5, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.5, )"
+            },
             "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[7.0.5, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
               "target": "Package",
               "version": "[7.0.5, )"
             },
