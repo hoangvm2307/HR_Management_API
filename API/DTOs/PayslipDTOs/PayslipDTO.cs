@@ -5,13 +5,11 @@ using System.Threading.Tasks;
 
 namespace API.DTOs.PayslipDTOs
 {
-   public class PayslipDTO
+    public class PayslipDTO
     {
         public int PayslipId { get; set; }
-        // StaffId lấy trong UserInfo
-        // public int StaffId { get; set; }
-        //ContractId lấy trong Persional Contract
-        // public int ContractId { get; set; }
+        public int StaffId { get; set; }
+        public int ContractId { get; set; }
         public float StandardWorkDays { get; set; }
         public float ActualWorkDays { get; set; }
         public float OtHours { get; set; }
@@ -50,7 +48,7 @@ namespace API.DTOs.PayslipDTOs
         public int BHYTComp { get; set; }
         public int BHTNComp { get; set; }
         //tự thêm ngọc chưa thêm
-        public int TotalCompanyPay { get; set; }
+        public int TotalCompanyPaid { get; set; }
         //----------------------------------------------
 
         public bool Status { get; set; }

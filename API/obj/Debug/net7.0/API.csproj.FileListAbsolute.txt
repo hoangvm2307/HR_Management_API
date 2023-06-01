@@ -247,3 +247,5 @@ C:\Users\Nguyen Huy Linh\Desktop\New folder (4)\HR_Management_API\API\obj\Debug\
 C:\Users\Nguyen Huy Linh\Desktop\New folder (4)\HR_Management_API\API\obj\Debug\net7.0\API.csproj.CopyComplete
 C:\Users\Nguyen Huy Linh\Desktop\New folder (4)\HR_Management_API\API\obj\Debug\net7.0\API.genruntimeconfig.cache
 C:\Users\Nguyen Huy Linh\Desktop\New folder (4)\HR_Management_API\API\obj\Debug\net7.0\ref\API.dll
+C:\Users\Nguyen Huy Linh\Desktop\New folder (4)\HR_Management_API\API\bin\Debug\net7.0\AutoMapper.dll
+C:\Users\Nguyen Huy Linh\Desktop\New folder (4)\HR_Management_API\API\bin\Debug\net7.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
