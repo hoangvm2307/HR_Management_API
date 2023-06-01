@@ -7,14 +7,14 @@ namespace API.Extensions
 {
     public static class DepartmentExtensions
     {
-        public static IQueryable<DepartmentDTO> ProjectDepartmentToDepartmentDTO(this IQueryable<Department> query)
+        public static IQueryable<DepartmentDto> ProjectDepartmentToDepartmentDto(this IQueryable<Department> query)
         {
             return query
-                    .Select(department => new DepartmentDTO
+                    .Select(department => new DepartmentDto
                     {
                         DepartmentID = department.DepartmentId,
                         DepartmentName = department.DepartmentName,
-                        UserInfors = department.UserInfors.Select(userInfo => new UserInforDTO
+                        UserInfors = department.UserInfors.Select(userInfo => new DepartmentUserInforDto
                         {
                             StaffId = userInfo.StaffId,
                             UserId = userInfo.UserId,
