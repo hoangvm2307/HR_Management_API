@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Entities;
 
@@ -9,8 +10,10 @@ public partial class UserInfor
 
     public int UserId { get; set; }
 
+    [Required]
     public string LastName { get; set; } = null!;
 
+    [Required]
     public string FirstName { get; set; } = null!;
 
     public DateTime? Dob { get; set; }
@@ -23,6 +26,7 @@ public partial class UserInfor
 
     public string? Country { get; set; }
 
+    [Required]
     public string CitizenId { get; set; } = null!;
 
     public int? DepartmentId { get; set; }
@@ -31,10 +35,13 @@ public partial class UserInfor
 
     public DateTime HireDate { get; set; }
 
+    [Required]
     public string BankAccount { get; set; } = null!;
 
+    [Required]
     public string BankAccountName { get; set; } = null!;
 
+    [Required]
     public string Bank { get; set; } = null!;
 
     public int? LeaveDayLeft { get; set; }

@@ -64,5 +64,30 @@ namespace API.Controllers
 
             return BadRequest(new ProblemDetails {Title = "Problem adding item"});
         }
+
+        [HttpPatch]
+        public async Task<ActionResult<Department>> UpdateDepartment(int id, [FromBody] Department updatedDepartment)
+        {
+            if(updatedDepartment == null || updatedDepartment.DepartmentId != id)
+            {
+                return BadRequest("Invalid Department Data");
+            }
+
+            if(!ModelState.IsValid) return BadRequest(ModelState);
+
+            var existingDepartment = await _context.Departments.FindAsync(id);
+
+            if(existingDepartment == null) return NotFound("Department Not Found");
+
+            existingDepartment.DepartmentName = updatedDepartment.DepartmentName;
+
+            _context.Departments.Update(existingDepartment);
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if(result) return Ok(existingDepartment);
+
+            return BadRequest(new ProblemDetails {Title = "Problem Update Department"});
+        }
     }
 }
