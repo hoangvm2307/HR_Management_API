@@ -1,9 +1,12 @@
-namespace API.DTOs.UserInforDTO
-{
-    public class LogOtDto
-    {
-        public int OtLogId { get; set; }
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
+namespace API.DTOs.LogOtDTOs
+{
+    public class CreateLogOtDTO
+    {
         public int StaffId { get; set; }
 
         public string LogTitile { get; set; } = null!;
