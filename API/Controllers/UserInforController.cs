@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using API.DTOs.UserInforDTO;
 using API.Entities;
 using API.Extensions;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,8 +14,10 @@ namespace API.Controllers
     public class UserInforController : BaseApiController
     {
         private readonly SwpProjectContext _context;
-        public UserInforController(SwpProjectContext context)
+        private readonly IMapper _mapper;
+        public UserInforController(SwpProjectContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
         [HttpGet]
@@ -58,17 +61,19 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateUserInfor([FromBody] UserInfor userInfor)
+        public async Task<ActionResult> CreateUserInfor([FromBody] UserInforDto userInforDto)
         {
-            if(userInfor == null) return BadRequest("User data is missing");
+            if(userInforDto == null) return BadRequest("User data is missing");
 
             if(!ModelState.IsValid) return BadRequest(ModelState);
 
-            _context.UserInfors.Add(userInfor);
+            var finalReturnUserInfor = _mapper.Map<UserInfor>(userInforDto);
+
+            _context.UserInfors.Add(finalReturnUserInfor);
 
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return CreatedAtAction(nameof(GetUserInforById), new {id = userInfor.StaffId}, userInfor);
+            if(result) return CreatedAtAction(nameof(GetUserInforById), new {id = userInforDto.StaffId}, userInforDto);
 
             return BadRequest(new ProblemDetails {Title = "Problem adding user"});
         }

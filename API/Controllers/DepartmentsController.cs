@@ -1,6 +1,7 @@
 using API.DTOs.DepartmentDTO;
 using API.Entities;
 using API.Extensions;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,8 +10,10 @@ namespace API.Controllers
     public class DepartmentsController : BaseApiController
     {
         private readonly SwpProjectContext _context;
-        public DepartmentsController(SwpProjectContext context)
+        private readonly IMapper _mapper;
+        public DepartmentsController(SwpProjectContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 
@@ -20,6 +23,7 @@ namespace API.Controllers
             var departments = await _context.Departments
             .ProjectDepartmentToDepartmentDto()
             .ToListAsync();
+
             return departments;
         }
 
