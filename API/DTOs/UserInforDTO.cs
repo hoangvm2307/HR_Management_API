@@ -1,3 +1,7 @@
+
+
+using API.Entities;
+
 namespace API.DTOs
 {
     public class UserInforDTO
@@ -39,6 +43,8 @@ namespace API.DTOs
         public int? WorkTimeByYear { get; set; }
 
         public bool? AccountStatus { get; set; }
+        public List<LogOt> LogOts {get;set;}
+        
 
     }
 }

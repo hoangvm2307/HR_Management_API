@@ -1,4 +1,5 @@
-using API.Models;
+
+using API.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers

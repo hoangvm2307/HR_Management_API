@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class PersonnelContract
 {
@@ -15,9 +15,7 @@ public partial class PersonnelContract
 
     public int Salary { get; set; }
 
-    public int? Allownaces { get; set; }
-
-    public int WorkDatePerMonth { get; set; }
+    public int? WorkDatePerWeek { get; set; }
 
     public string? Note { get; set; }
 

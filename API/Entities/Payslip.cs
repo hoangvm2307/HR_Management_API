@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class Payslip
 {
@@ -15,9 +15,9 @@ public partial class Payslip
 
     public double ActualWorkDays { get; set; }
 
-    public double OtHours { get; set; }
+    public double? OtHours { get; set; }
 
-    public double LeaveDays { get; set; }
+    public double? LeaveDays { get; set; }
 
     public int GrossSalary { get; set; }
 

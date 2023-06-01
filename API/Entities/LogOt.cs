@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class LogOt
 {
@@ -9,7 +9,7 @@ public partial class LogOt
 
     public int StaffId { get; set; }
 
-    public string LogType { get; set; } = null!;
+    public string LogTitile { get; set; } = null!;
 
     public DateTime LogStart { get; set; }
 
@@ -19,7 +19,7 @@ public partial class LogOt
 
     public string? Description { get; set; }
 
-    public bool? Status { get; set; }
+    public string? Status { get; set; }
 
     public DateTime? CreateDate { get; set; }
 

@@ -1,6 +1,6 @@
 using API.DTOs;
 using API.DTOs.DepartmentDTO;
-using API.Models;
+using API.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions

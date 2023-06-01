@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class UserAccount
 {
@@ -15,5 +15,5 @@ public partial class UserAccount
 
     public virtual Role Role { get; set; } = null!;
 
-    public virtual UserInfor? UserInfor { get; set; }
+    public virtual ICollection<UserInfor> UserInfors { get; set; } = new List<UserInfor>();
 }

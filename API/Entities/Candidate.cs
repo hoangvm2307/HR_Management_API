@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class Candidate
 {
@@ -27,7 +27,7 @@ public partial class Candidate
 
     public int? ProposedSalary { get; set; }
 
-    public string ResumeFile { get; set; } = null!;
+    public string? ResumeFile { get; set; }
 
     public DateTime ApplyDate { get; set; }
 

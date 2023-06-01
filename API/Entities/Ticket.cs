@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class Ticket
 {
@@ -15,7 +15,7 @@ public partial class Ticket
 
     public string? TicketFile { get; set; }
 
-    public bool TicketStatus { get; set; }
+    public string TicketStatus { get; set; } = null!;
 
     public string? ProcessNote { get; set; }
 

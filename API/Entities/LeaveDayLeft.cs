@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class LeaveDayLeft
 {
@@ -9,13 +9,11 @@ public partial class LeaveDayLeft
 
     public int? StaffId { get; set; }
 
-    public int? MaternityLeaveDayLeft { get; set; }
+    public int? LeaveTypeId { get; set; }
 
-    public int? SickLeaveDayLeft { get; set; }
+    public int? LeaveDayLeft1 { get; set; }
 
-    public int? FuneralLeaveDayLeft { get; set; }
-
-    public int? MarriageLeaveDayLeft { get; set; }
+    public virtual LeaveType? LeaveType { get; set; }
 
     public virtual UserInfor? Staff { get; set; }
 }

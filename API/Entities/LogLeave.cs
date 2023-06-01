@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class LogLeave
 {
@@ -9,17 +9,21 @@ public partial class LogLeave
 
     public int StaffId { get; set; }
 
+    public int? LeaveTypeId { get; set; }
+
     public DateTime LeaveStart { get; set; }
 
     public DateTime LeaveEnd { get; set; }
 
     public double LeaveDays { get; set; }
 
-    public string? Reason { get; set; }
+    public string? Description { get; set; }
 
-    public bool? Status { get; set; }
+    public string? Status { get; set; }
 
     public DateTime? CreateDate { get; set; }
+
+    public virtual LeaveType? LeaveType { get; set; }
 
     public virtual UserInfor Staff { get; set; } = null!;
 }

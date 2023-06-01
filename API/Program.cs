@@ -1,4 +1,4 @@
-using API.Models;
+using API.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 

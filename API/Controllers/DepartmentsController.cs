@@ -1,6 +1,6 @@
 using API.DTOs.DepartmentDTO;
+using API.Entities;
 using API.Extensions;
-using API.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

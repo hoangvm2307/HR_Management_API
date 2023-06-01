@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Models;
+namespace API.Entities;
 
 public partial class SwpProjectContext : DbContext
 {
@@ -32,6 +32,8 @@ public partial class SwpProjectContext : DbContext
     public virtual DbSet<HolidayDimension> HolidayDimensions { get; set; }
 
     public virtual DbSet<LeaveDayLeft> LeaveDayLefts { get; set; }
+
+    public virtual DbSet<LeaveType> LeaveTypes { get; set; }
 
     public virtual DbSet<LogLeave> LogLeaves { get; set; }
 
@@ -92,11 +94,11 @@ public partial class SwpProjectContext : DbContext
             entity.ToTable("AllowanceType");
 
             entity.Property(e => e.AllowanceTypeId).HasColumnName("allowanceTypeId");
-            entity.Property(e => e.AllowanceDtailSalary)
+            entity.Property(e => e.AllowanceDetailSalary)
                 .HasMaxLength(50)
-                .HasColumnName("allowanceDtailSalary");
+                .HasColumnName("allowanceDetailSalary");
             entity.Property(e => e.AllowanceName)
-                .HasMaxLength(30)
+                .HasMaxLength(50)
                 .HasColumnName("allowanceName");
         });
 
@@ -145,7 +147,6 @@ public partial class SwpProjectContext : DbContext
             entity.Property(e => e.ProposedSalary).HasColumnName("proposedSalary");
             entity.Property(e => e.Result)
                 .HasMaxLength(20)
-                .IsFixedLength()
                 .HasColumnName("result");
             entity.Property(e => e.ResumeFile)
                 .HasMaxLength(100)
@@ -162,9 +163,7 @@ public partial class SwpProjectContext : DbContext
             entity.Property(e => e.UniqueId).HasColumnName("uniqueId");
             entity.Property(e => e.CandidateId).HasColumnName("candidateId");
             entity.Property(e => e.Level)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .IsFixedLength()
+                .HasMaxLength(30)
                 .HasColumnName("level");
             entity.Property(e => e.SkillId).HasColumnName("skillId");
 
@@ -197,7 +196,7 @@ public partial class SwpProjectContext : DbContext
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF36F0FCA5C")
+                .HasName("PK__DateDime__AA552EF3A11801FE")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");
@@ -257,15 +256,33 @@ public partial class SwpProjectContext : DbContext
             entity.ToTable("LeaveDayLeft");
 
             entity.Property(e => e.LeaveDayLeftId).HasColumnName("leaveDayLeftId");
-            entity.Property(e => e.FuneralLeaveDayLeft).HasColumnName("funeralLeaveDayLeft");
-            entity.Property(e => e.MarriageLeaveDayLeft).HasColumnName("marriageLeaveDayLeft");
-            entity.Property(e => e.MaternityLeaveDayLeft).HasColumnName("maternityLeaveDayLeft");
-            entity.Property(e => e.SickLeaveDayLeft).HasColumnName("sickLeaveDayLeft");
+            entity.Property(e => e.LeaveDayLeft1).HasColumnName("leaveDayLeft");
+            entity.Property(e => e.LeaveTypeId).HasColumnName("leaveTypeId");
             entity.Property(e => e.StaffId).HasColumnName("staffId");
+
+            entity.HasOne(d => d.LeaveType).WithMany(p => p.LeaveDayLefts)
+                .HasForeignKey(d => d.LeaveTypeId)
+                .HasConstraintName("FK_LeaveDayLeft_leaveTypeId_leaveTypeId");
 
             entity.HasOne(d => d.Staff).WithMany(p => p.LeaveDayLefts)
                 .HasForeignKey(d => d.StaffId)
                 .HasConstraintName("FK_LeaveDayLeft_staffId_staffId");
+        });
+
+        modelBuilder.Entity<LeaveType>(entity =>
+        {
+            entity.HasKey(e => e.LeaveTypeId).HasName("PK_LeaveType_leaveTypeId");
+
+            entity.ToTable("LeaveType");
+
+            entity.Property(e => e.LeaveTypeId).HasColumnName("leaveTypeId");
+            entity.Property(e => e.LaveTypeMaxDay).HasColumnName("laveTypeMaxDay");
+            entity.Property(e => e.LeaveTypeDetail)
+                .HasMaxLength(130)
+                .HasColumnName("leaveTypeDetail");
+            entity.Property(e => e.LeaveTypeName)
+                .HasMaxLength(30)
+                .HasColumnName("leaveTypeName");
         });
 
         modelBuilder.Entity<LogLeave>(entity =>
@@ -278,6 +295,9 @@ public partial class SwpProjectContext : DbContext
             entity.Property(e => e.CreateDate)
                 .HasColumnType("date")
                 .HasColumnName("createDate");
+            entity.Property(e => e.Description)
+                .HasMaxLength(70)
+                .HasColumnName("description");
             entity.Property(e => e.LeaveDays).HasColumnName("leaveDays");
             entity.Property(e => e.LeaveEnd)
                 .HasColumnType("date")
@@ -285,11 +305,15 @@ public partial class SwpProjectContext : DbContext
             entity.Property(e => e.LeaveStart)
                 .HasColumnType("date")
                 .HasColumnName("leaveStart");
-            entity.Property(e => e.Reason)
-                .HasMaxLength(70)
-                .HasColumnName("reason");
+            entity.Property(e => e.LeaveTypeId).HasColumnName("leaveTypeId");
             entity.Property(e => e.StaffId).HasColumnName("staffId");
-            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasColumnName("status");
+
+            entity.HasOne(d => d.LeaveType).WithMany(p => p.LogLeaves)
+                .HasForeignKey(d => d.LeaveTypeId)
+                .HasConstraintName("FK_LogLeave_leaveTypeId_leaveTypeId");
 
             entity.HasOne(d => d.Staff).WithMany(p => p.LogLeaves)
                 .HasForeignKey(d => d.StaffId)
@@ -305,25 +329,25 @@ public partial class SwpProjectContext : DbContext
 
             entity.Property(e => e.OtLogId).HasColumnName("otLogId");
             entity.Property(e => e.CreateDate)
-                .HasColumnType("date")
+                .HasColumnType("datetime")
                 .HasColumnName("createDate");
             entity.Property(e => e.Description)
                 .HasMaxLength(25)
                 .HasColumnName("description");
             entity.Property(e => e.LogEnd)
-                .HasColumnType("date")
+                .HasColumnType("datetime")
                 .HasColumnName("logEnd");
             entity.Property(e => e.LogHours).HasColumnName("logHours");
             entity.Property(e => e.LogStart)
-                .HasColumnType("date")
+                .HasColumnType("datetime")
                 .HasColumnName("logStart");
-            entity.Property(e => e.LogType)
+            entity.Property(e => e.LogTitile)
                 .HasMaxLength(20)
-                .IsUnicode(false)
-                .IsFixedLength()
-                .HasColumnName("logType");
+                .HasColumnName("logTitile");
             entity.Property(e => e.StaffId).HasColumnName("staffId");
-            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.Status)
+                .HasMaxLength(20)
+                .HasColumnName("status");
 
             entity.HasOne(d => d.Staff).WithMany(p => p.LogOts)
                 .HasForeignKey(d => d.StaffId)
@@ -392,7 +416,6 @@ public partial class SwpProjectContext : DbContext
             entity.ToTable("PersonnelContract");
 
             entity.Property(e => e.ContractId).HasColumnName("contractId");
-            entity.Property(e => e.Allownaces).HasColumnName("allownaces");
             entity.Property(e => e.ContractStatus).HasColumnName("contractStatus");
             entity.Property(e => e.ContractTypeId).HasColumnName("contractTypeId");
             entity.Property(e => e.EndDate)
@@ -411,7 +434,7 @@ public partial class SwpProjectContext : DbContext
             entity.Property(e => e.StartDate)
                 .HasColumnType("date")
                 .HasColumnName("startDate");
-            entity.Property(e => e.WorkDatePerMonth).HasColumnName("workDatePerMonth");
+            entity.Property(e => e.WorkDatePerWeek).HasColumnName("workDatePerWeek");
 
             entity.HasOne(d => d.ContractType).WithMany(p => p.PersonnelContracts)
                 .HasForeignKey(d => d.ContractTypeId)
@@ -463,9 +486,6 @@ public partial class SwpProjectContext : DbContext
             entity.ToTable("Skill");
 
             entity.Property(e => e.SkillId).HasColumnName("skillId");
-            entity.Property(e => e.SkillDescription)
-                .HasMaxLength(50)
-                .HasColumnName("skillDescription");
             entity.Property(e => e.SkillName)
                 .HasMaxLength(20)
                 .HasColumnName("skillName");
@@ -479,9 +499,7 @@ public partial class SwpProjectContext : DbContext
 
             entity.Property(e => e.UniqueId).HasColumnName("uniqueId");
             entity.Property(e => e.Level)
-                .HasMaxLength(10)
-                .IsUnicode(false)
-                .IsFixedLength()
+                .HasMaxLength(45)
                 .HasColumnName("level");
             entity.Property(e => e.SkillId).HasColumnName("skillId");
             entity.Property(e => e.StaffId).HasColumnName("staffId");
@@ -527,7 +545,7 @@ public partial class SwpProjectContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("changeStatusTime");
             entity.Property(e => e.CreateDate)
-                .HasColumnType("date")
+                .HasColumnType("datetime")
                 .HasColumnName("createDate");
             entity.Property(e => e.ProcessNote)
                 .HasMaxLength(1)
@@ -538,7 +556,9 @@ public partial class SwpProjectContext : DbContext
                 .HasMaxLength(150)
                 .IsUnicode(false)
                 .HasColumnName("ticketFile");
-            entity.Property(e => e.TicketStatus).HasColumnName("ticketStatus");
+            entity.Property(e => e.TicketStatus)
+                .HasMaxLength(20)
+                .HasColumnName("ticketStatus");
             entity.Property(e => e.TicketTitle)
                 .HasMaxLength(40)
                 .HasColumnName("ticketTitle");
@@ -603,12 +623,10 @@ public partial class SwpProjectContext : DbContext
 
             entity.HasIndex(e => e.CitizenId, "UQ_UserInfor_citizenId").IsUnique();
 
-            entity.HasIndex(e => e.UserId, "UQ_UserInfor_userId").IsUnique();
-
             entity.Property(e => e.StaffId).HasColumnName("staffId");
             entity.Property(e => e.AccountStatus).HasColumnName("accountStatus");
             entity.Property(e => e.Address)
-                .HasMaxLength(60)
+                .HasMaxLength(80)
                 .HasColumnName("address");
             entity.Property(e => e.Bank)
                 .HasMaxLength(15)
@@ -664,8 +682,8 @@ public partial class SwpProjectContext : DbContext
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_UserInfor_departmentId_departmentId");
 
-            entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
-                .HasForeignKey<UserInfor>(d => d.UserId)
+            entity.HasOne(d => d.User).WithMany(p => p.UserInfors)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserInfor_userId_userId");
         });
