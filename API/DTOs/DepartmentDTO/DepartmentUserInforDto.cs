@@ -1,10 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-
-using API.Entities;
-
-namespace API.DTOs
+namespace API.DTOs.DepartmentDTO
 {
-    public class UserInforDTO
+    public class DepartmentUserInforDto
     {
         public int StaffId { get; set; }
 
@@ -43,8 +44,6 @@ namespace API.DTOs
         public int? WorkTimeByYear { get; set; }
 
         public bool? AccountStatus { get; set; }
-        public List<LogOt> LogOts {get;set;}
-        
 
     }
 }

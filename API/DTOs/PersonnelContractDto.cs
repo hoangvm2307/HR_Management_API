@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace API.DTOs.PersonnelContractDTO
+namespace API.DTOs
 {
-    public class PersonnelContractDTO
+    public class PersonnelContractDto
     {
         public int ContractID { get; set; }
         public int StaffID { get; set; }
