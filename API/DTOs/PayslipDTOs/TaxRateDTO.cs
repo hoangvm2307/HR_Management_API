@@ -16,7 +16,7 @@ namespace API.DTOs.PayslipDTOs
         public int TaxRateOver82M { get; set; }
         public int Total()
         {
-            return TaxRate5M + TaxRate5MTo10M + TaxRate18MTo23M + TaxRate23MTo52M + TaxRate52MTo82M + TaxRateOver82M;
+            return TaxRate5M + TaxRate5MTo10M + TaxRate10MTo18M + TaxRate18MTo23M + TaxRate23MTo52M + TaxRate52MTo82M + TaxRateOver82M;
         }
     }
 }

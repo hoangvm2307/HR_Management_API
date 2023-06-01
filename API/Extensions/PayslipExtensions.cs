@@ -70,8 +70,8 @@ namespace API.Extensions
                 ActualWorkDays = 0,
                 OtHours = 0,
                 LeaveDays = 0,
+                BHXHEmp = (int)Insurance.SocialInsurance,
                 BHYTEmp = (int)Insurance.HealthInsurance,
-                BHXHEmp = (int)Insurance.HealthInsurance,
                 BHTNEmp = (int)Insurance.UnemploymentInsurance,
                 //can chinh sua self Allowances
                 SelfAllowances = PersonalTaxDeduction,
@@ -79,6 +79,7 @@ namespace API.Extensions
                 FamilyAllowances = FamilyAllowances,
                 SalaryBeforeTax = ThuNhapTruocThue,
                 TaxRate5M = result.TaxRate5M,
+                TaxRate5MTo10M = result.TaxRate5MTo10M,
                 TaxRate10MTo18M = result.TaxRate10MTo18M,
                 TaxRate18MTo23M = result.TaxRate18MTo23M,
                 TaxRate23MTo52M = result.TaxRate23MTo52M,
@@ -93,7 +94,8 @@ namespace API.Extensions
                 BHYTComp = (int)companyInsuranceDto.HealthInsurance,
                 BHTNComp = (int)companyInsuranceDto.UnemploymentInsurance,
                 TotalCompanyPaid = (int)companyInsuranceDto.Total,
-                Status = true
+                CreateAt = CreatedDate,
+                PayslipStatus = true
             };
 
             return payslipDto;

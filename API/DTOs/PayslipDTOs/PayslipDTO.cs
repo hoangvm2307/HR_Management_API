@@ -50,7 +50,7 @@ namespace API.DTOs.PayslipDTOs
         //tự thêm ngọc chưa thêm
         public int TotalCompanyPaid { get; set; }
         //----------------------------------------------
-
-        public bool Status { get; set; }
+        public DateTime CreateAt { get; set; }
+        public bool PayslipStatus { get; set; }
     }
 }
