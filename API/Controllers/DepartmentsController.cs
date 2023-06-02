@@ -17,15 +17,38 @@ namespace API.Controllers
             _context = context;
         }
 
+        // [HttpGet]
+        // public async Task<ActionResult<List<DepartmentDto>>> GetDepartments()
+        // {
+        //     var departments = await _context.Departments
+        //     .ProjectDepartmentToDepartmentDto()
+        //     .ToListAsync();
+
+        //     return departments;
+        // }
+
         [HttpGet]
         public async Task<ActionResult<List<DepartmentDto>>> GetDepartmentss()
         {
             var departments = await _context.Departments
-            .ProjectDepartmentToDepartmentDto()
+            .Include(i => i.UserInfors)
             .ToListAsync();
 
-            return departments;
+            var returnDepartments = _mapper.Map<List<DepartmentDto>>(departments);
+            return returnDepartments;
         }
+        
+        // [HttpGet]
+        // public async Task<ActionResult<List<DepartmentUserInforDto>>> GetDepartmentss()
+        // {
+        //     var departments = await _context.UserInfors
+        //     .Include(i => i.Department)
+        //     .ToListAsync();
+
+        //     var returnDepartments = _mapper.Map<List<DepartmentUserInforDto>>(departments);
+
+        //     return returnDepartments;
+        // }
 
         [HttpGet("{id}", Name="GetDepartment")]
         public async Task<ActionResult<DepartmentDto>> GetDepartment(int id)
