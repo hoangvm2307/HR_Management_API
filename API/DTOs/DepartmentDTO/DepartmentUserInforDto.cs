@@ -44,6 +44,7 @@ namespace API.DTOs.DepartmentDTO
         public int? WorkTimeByYear { get; set; }
 
         public bool? AccountStatus { get; set; }
+        //public  DepartmentDto2 Department { get; set; }
 
     }
 }

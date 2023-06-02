@@ -1,3 +1,4 @@
+using API.DTOs.DepartmentDTO;
 using API.DTOs.LogOtDTOs;
 using API.DTOs.PayslipDTOs;
 using API.DTOs.PersonnelContractDTO;
@@ -30,6 +31,14 @@ namespace API.Profiles
 
             CreateMap<Ticket, TicketDto>();
             CreateMap<TicketDto, Ticket>();
+
+            // CreateMap<Department, DepartmentDto>();
+            // CreateMap<DepartmentDto, Department>();
+
+            //CreateMap<UserInfor, DepartmentUserInforDto>();
+            CreateMap<UserInfor, DepartmentUserInforDto>();
+            CreateMap<Department, DepartmentDto>();
+            
         }
     }
 }
