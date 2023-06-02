@@ -17,18 +17,8 @@ namespace API.Controllers
             _context = context;
         }
 
-        // [HttpGet]
-        // public async Task<ActionResult<List<DepartmentDto>>> GetDepartments()
-        // {
-        //     var departments = await _context.Departments
-        //     .ProjectDepartmentToDepartmentDto()
-        //     .ToListAsync();
-
-        //     return departments;
-        // }
-
         [HttpGet]
-        public async Task<ActionResult<List<DepartmentDto>>> GetDepartmentss()
+        public async Task<ActionResult<List<DepartmentDto>>> GetDepartments()
         {
             var departments = await _context.Departments
             .Include(i => i.UserInfors)

@@ -13,7 +13,7 @@ public partial class StaffSkill
 
     public string? Level { get; set; }
 
-    public virtual Skill Skill { get; set; } = null!;
+    public virtual Skill? Skill { get; set; } = null!;
 
     public virtual UserInfor Staff { get; set; } = null!;
 }

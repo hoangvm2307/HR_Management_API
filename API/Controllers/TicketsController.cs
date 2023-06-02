@@ -17,14 +17,16 @@ namespace API.Controllers
             _context = context;
         }
 
+
         [HttpGet]
         public async Task<ActionResult<List<TicketDto>>> GetTickets()
         {
             var tickets = await _context.Tickets
-                .ProjectTicketToTicketDto()
                 .ToListAsync();
 
-            return tickets;
+            var returnTickets = _mapper.Map<List<TicketDto>>(tickets);
+
+            return returnTickets;
         }
 
         [HttpGet("{id}", Name="GetTicket")]
@@ -74,7 +76,7 @@ namespace API.Controllers
         {
             if(updatedTicket == null || updatedTicket.TicketId != id)
             {
-                return BadRequest("Invalid Ticket    Data");
+                return BadRequest("Invalid Ticket Data");
             }
 
             if(!ModelState.IsValid) return BadRequest(ModelState);
