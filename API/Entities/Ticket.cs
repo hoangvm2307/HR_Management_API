@@ -25,7 +25,7 @@ public partial class Ticket
 
     public DateTime? ChangeStatusTime { get; set; }
 
-    public virtual UserInfor Staff { get; set; } = null!;
+    public virtual UserInfor? Staff { get; set; } = null!;
 
     public virtual TicketType? TicketType { get; set; }
 }
