@@ -418,6 +418,10 @@ autom4te.cache/
 tarballs/
 test-results/
 
+
+API/bin/
+
+
 # Mac bundle stuff
 *.dmg
 *.app
