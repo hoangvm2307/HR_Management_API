@@ -23,7 +23,7 @@ namespace API.Extensions
                         TicketStatus = ticket.TicketStatus,
                         ProcessNote = ticket.ProcessNote,
                         RespondencesId = ticket.RespondencesId,
-                        CreateDate = ticket.CreateDate,
+                        CreateDate = ticket.CreateAt,
                         ChangeStatusTime = ticket.ChangeStatusTime
                     }).AsNoTracking();
         }

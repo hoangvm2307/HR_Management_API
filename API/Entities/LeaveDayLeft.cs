@@ -9,11 +9,23 @@ public partial class LeaveDayLeft
 
     public int? StaffId { get; set; }
 
-    public int? LeaveTypeId { get; set; }
+    public int? FuneralLeaveDayLeftParents { get; set; }
 
-    public int? LeaveDayLeft1 { get; set; }
+    public int? FuneralLeaveDayLeftOthers { get; set; }
 
-    public virtual LeaveType? LeaveType { get; set; }
+    public int? MarriageLeaveDayLeftSelf { get; set; }
+
+    public int? MarriageLeaveDayLeftChild { get; set; }
+
+    public int? MarriageLeaveDayLeftOthers { get; set; }
+
+    public int? MaternityLeaveDayLeft { get; set; }
+
+    public int? SickLeaveDayLeft { get; set; }
+
+    public int? OtherLeaveDayLeft { get; set; }
+
+    public int? YearLeaveDayLeft { get; set; }
 
     public virtual UserInfor? Staff { get; set; }
 }

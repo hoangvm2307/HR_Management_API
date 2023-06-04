@@ -21,11 +21,11 @@ public partial class Ticket
 
     public int? RespondencesId { get; set; }
 
-    public DateTime CreateDate { get; set; }
+    public DateTime CreateAt { get; set; }
 
     public DateTime? ChangeStatusTime { get; set; }
 
-    public virtual UserInfor? Staff { get; set; } = null!;
+    public virtual UserInfor Staff { get; set; } = null!;
 
     public virtual TicketType? TicketType { get; set; }
 }

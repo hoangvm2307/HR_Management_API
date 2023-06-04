@@ -32,7 +32,6 @@ namespace API.Extensions
                             BankAccount = userInfo.BankAccount,
                             BankAccountName = userInfo.BankAccountName,
                             Bank = userInfo.Bank,
-                            LeaveDayLeft = userInfo.LeaveDayLeft,
                             WorkTimeByYear = userInfo.WorkTimeByYear,
                             AccountStatus = userInfo.AccountStatus
                         })

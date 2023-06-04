@@ -104,7 +104,6 @@ namespace API.Controllers
             existingUserInfor.BankAccount = updatedUserInfor.BankAccount;
             existingUserInfor.BankAccountName = updatedUserInfor.BankAccountName;
             existingUserInfor.Bank = updatedUserInfor.Bank;
-            existingUserInfor.LeaveDayLeft = updatedUserInfor.LeaveDayLeft;
             existingUserInfor.WorkTimeByYear = updatedUserInfor.WorkTimeByYear;
             existingUserInfor.AccountStatus = updatedUserInfor.AccountStatus;
 

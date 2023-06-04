@@ -21,7 +21,7 @@ public partial class LogOt
 
     public string? Status { get; set; }
 
-    public DateTime? CreateDate { get; set; }
+    public DateTime? CreateAt { get; set; }
 
     public virtual UserInfor Staff { get; set; } = null!;
 }
