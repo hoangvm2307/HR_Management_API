@@ -13,6 +13,8 @@ public partial class PersonnelContract
 
     public DateTime? EndDate { get; set; }
 
+    public int? TaxableSalary { get; set; }
+
     public int Salary { get; set; }
 
     public int? WorkDatePerWeek { get; set; }
@@ -21,19 +23,17 @@ public partial class PersonnelContract
 
     public int? ContractTypeId { get; set; }
 
-    public int? SalaryTypeId { get; set; }
+    public string? SalaryType { get; set; }
 
     public string? PaiDateNote { get; set; }
+
+    public string? ContractFile { get; set; }
 
     public bool ContractStatus { get; set; }
 
     public virtual ICollection<Allowance> Allowances { get; set; } = new List<Allowance>();
 
     public virtual ContractType? ContractType { get; set; }
-
-    public virtual ICollection<Payslip> Payslips { get; set; } = new List<Payslip>();
-
-    public virtual SalaryType? SalaryType { get; set; }
 
     public virtual UserInfor Staff { get; set; } = null!;
 }

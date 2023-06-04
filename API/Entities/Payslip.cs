@@ -9,17 +9,15 @@ public partial class Payslip
 
     public int StaffId { get; set; }
 
-    public int ContractId { get; set; }
+    public double? StandardWorkDays { get; set; }
 
-    public double StandardWorkDays { get; set; }
-
-    public double ActualWorkDays { get; set; }
+    public double? ActualWorkDays { get; set; }
 
     public double? OtHours { get; set; }
 
     public double? LeaveDays { get; set; }
 
-    public int GrossSalary { get; set; }
+    public int? GrossSalary { get; set; }
 
     public int? Bhxhemp { get; set; }
 
@@ -27,13 +25,15 @@ public partial class Payslip
 
     public int? Bhtnemp { get; set; }
 
+    public int? SalaryBeforeTax { get; set; }
+
     public int? NoOfDependences { get; set; }
 
     public int? SelfAllowances { get; set; }
 
-    public int FamilyAllowances { get; set; }
+    public int? FamilyAllowances { get; set; }
 
-    public int? SalaryBeforeTax { get; set; }
+    public int? TaxbleIncome { get; set; }
 
     public int? TaxRate5M { get; set; }
 
@@ -49,15 +49,13 @@ public partial class Payslip
 
     public int? TaxRateOver82M { get; set; }
 
-    public int? Bonus { get; set; }
+    public int? PersonalIncomeTax { get; set; }
 
-    public int? Deduction { get; set; }
+    public int? Bonus { get; set; }
 
     public int NetSalary { get; set; }
 
     public int PaiByDate { get; set; }
-
-    public DateTime? PaidDate { get; set; }
 
     public int? Bhxhcomp { get; set; }
 
@@ -65,11 +63,11 @@ public partial class Payslip
 
     public int? Bhtncomp { get; set; }
 
+    public int? TotalInsured { get; set; }
+
     public DateTime? CreateAt { get; set; }
 
     public bool? PayslipStatus { get; set; }
-
-    public virtual PersonnelContract Contract { get; set; } = null!;
 
     public virtual UserInfor Staff { get; set; } = null!;
 }
