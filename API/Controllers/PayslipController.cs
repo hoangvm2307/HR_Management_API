@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/manage-payslip")]
+    [Route("api/payslip")]
     public class PayslipController : ControllerBase
     {
         private readonly SwpProjectContext _context;

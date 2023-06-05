@@ -1,17 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using API.Entities;
-
 namespace API.DTOs.PersonnelContractDTO
 {
-    public class PersonnelContractDTO
+    public class PersonnelContractUpdateDTO
     {
-        public int ContractId { get; set; }
-
-        public int StaffId { get; set; }
-
         public DateTime StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
@@ -33,10 +23,5 @@ namespace API.DTOs.PersonnelContractDTO
         public string? ContractFile { get; set; }
 
         public bool ContractStatus { get; set; }
-
-        public virtual ICollection<AllowancesDTO> Allowances { get; set; } = new List<AllowancesDTO>();
-
-        public virtual ContractTypeDTO? ContractType { get; set; }
-
     }
 }

@@ -15,8 +15,8 @@ namespace API.Profiles
         {
             CreateMap<Payslip, PayslipDTO>().ReverseMap();
             CreateMap<Ticket, TicketDto>().ReverseMap();
+            
             CreateMap<PersonnelContract, PersonnelContractDTO>().ReverseMap();
-
             CreateMap<ContractType, ContractTypeDTO>();
             CreateMap<Allowance, AllowancesDTO>();
             CreateMap<AllowanceType, AllowanceTypeDTO>();
