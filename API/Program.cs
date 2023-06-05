@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Text;
 using API.Data;
 using API.Entities;
@@ -46,6 +45,13 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddDbContext<SwpProjectContext>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
+builder.Services.AddControllers(option =>
+{
+    option.ReturnHttpNotAcceptable = true;
+}).AddNewtonsoftJson()
+    .AddXmlDataContractSerializerFormatters();
 
 builder.Services.AddCors();
 

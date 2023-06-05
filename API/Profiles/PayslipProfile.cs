@@ -23,7 +23,9 @@ namespace API.Profiles
             CreateMap<SalaryType, SalaryTypeDTO>();
 
             CreateMap<LogOt, LogOtDTO>();
-            CreateMap<CreateLogOtDTO, LogOt>();
+            CreateMap<LogOtCreationDTO, LogOt>();
+            CreateMap<LogOtUpdateDTO, LogOt>();
+            CreateMap<LogOt, LogOtUpdateDTO>();
             
             CreateMap<Payslip, PayslipDTO>();
             CreateMap<PayslipDTO, Payslip>();

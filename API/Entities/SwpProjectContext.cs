@@ -75,8 +75,10 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 new IdentityRole{Name = "HRStaff", NormalizedName = "HRSTAFF"},
                 new IdentityRole{Name = "HRManager", NormalizedName = "HRMANAGER"}
             );
+
         modelBuilder.Entity<Allowance>(entity =>
         {
+
             entity.HasKey(e => e.AllowanceId).HasName("PK_Allowance_allowanceId");
 
             entity.ToTable("Allowance");

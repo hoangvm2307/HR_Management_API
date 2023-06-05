@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using API.DTOs.UserInforDTO;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
@@ -93,44 +90,30 @@ namespace API.Controllers
         //     return BadRequest(new ProblemDetails {Title = "Problem adding user"});
         // }
 
-//         [HttpPatch]
-//         public async Task<ActionResult<UserInforDto>> PartiallyUpdateUserInfor(
-// int StaffId,
-//             JsonPatchDocument<LogOtUpdateDTO> patchDocument
-//         )
-//         {
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchUserInfor(int id, [FromBody] JsonPatchDocument<UserInforDto> patchDocument)
+        {
+            var userInfor = await _context.UserInfors.FindAsync(id);
 
-//             var staffInfo = await _context.UserInfors.Where(c => c.StaffId == StaffId).FirstOrDefaultAsync();
+            if (userInfor == null)
+            {
+                return NotFound();
+            }
 
-//             if (staffInfo == null)
-//             {
-//                 return NotFound();
-//             }
-//             var LogOtFromStore = await _context.LogOts.Where(c => c.StaffId == StaffId && c.OtLogId == LogOtId).FirstOrDefaultAsync();
+            var userInforDto = _mapper.Map<UserInforDto>(userInfor);
 
-//             if (LogOtFromStore == null)
-//             {
-//                 return NotFound();
-//             }
+            patchDocument.ApplyTo(userInforDto, ModelState);
 
-//             var logOtpath = _mapper.Map<LogOtUpdateDTO>(LogOtFromStore);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-//             patchDocument.ApplyTo(logOtpath,ModelState);
+            _mapper.Map(userInforDto, userInfor);
 
-//             if (!ModelState.IsValid)
-//             {
-//                 return BadRequest(ModelState);
-//             }
+            await _context.SaveChangesAsync();
 
-//             if (!TryValidateModel(logOtpath))
-//             {
-//                 return BadRequest(ModelState);
-//             }
-
-//             _mapper.Map(logOtpath, LogOtFromStore);
-//             await _context.SaveChangesAsync();
-
-//             return NoContent();   
-//         }
+            return NoContent();
+        }
     }
 }
