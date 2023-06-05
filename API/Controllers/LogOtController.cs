@@ -85,7 +85,9 @@ namespace API.Controllers
             }
 
 
-            var logOt = await _context.LogOts.Where(c => c.StaffId == StaffId && c.OtLogId == LogOtId).FirstOrDefaultAsync();
+            var logOt = await _context.LogOts
+                                        .Where(c => c.StaffId == StaffId && c.OtLogId == LogOtId)
+                                        .FirstOrDefaultAsync();
 
             if (logOt == null)
             {
