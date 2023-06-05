@@ -75,8 +75,10 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 new IdentityRole{Name = "HRStaff", NormalizedName = "HRSTAFF"},
                 new IdentityRole{Name = "HRManager", NormalizedName = "HRMANAGER"}
             );
+
         modelBuilder.Entity<Allowance>(entity =>
         {
+
             entity.HasKey(e => e.AllowanceId).HasName("PK_Allowance_allowanceId");
 
             entity.ToTable("Allowance");
@@ -204,7 +206,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF38988D8E3")
+                .HasName("PK__DateDime__AA552EF3192640D9")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");

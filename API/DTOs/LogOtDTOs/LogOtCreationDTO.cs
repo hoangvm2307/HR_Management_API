@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace API.DTOs.LogOtDTOs
 {
-    public class CreateLogOtDTO
+    public class LogOtCreationDTO
     {
-        public int StaffId { get; set; }
 
         public string LogTitile { get; set; } = null!;
 
