@@ -14,8 +14,8 @@ namespace API.Extensions
         {
             return query.Select(userInfor => new UserInforDto
             {
-                StaffId = userInfor.StaffId,
-                UserId = userInfor.UserId,
+                //StaffId = userInfor.StaffId,
+                //UserId = userInfor.Id,
                 LastName = userInfor.LastName,
                 FirstName = userInfor.FirstName,
                 Dob = userInfor.Dob,

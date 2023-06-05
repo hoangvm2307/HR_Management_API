@@ -3,6 +3,7 @@ using API.DTOs.RegisterDTO;
 using API.DTOs.UserDTO;
 using API.Entities;
 using API.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +14,12 @@ namespace API.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly TokenService _tokenService;
-        public AccountController(UserManager<User> userManager, TokenService tokenService)
+        private readonly IMapper _mapper;
+        private readonly SwpProjectContext _context;
+        public AccountController(UserManager<User> userManager, TokenService tokenService, IMapper mapper, SwpProjectContext context)
         {
+            _context = context;
+            _mapper = mapper;
             _tokenService = tokenService;
             _userManager = userManager;
         }
@@ -39,7 +44,7 @@ namespace API.Controllers
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
             var user = new User {UserName = registerDto.Username, Email = registerDto.Email};
-
+            
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
             if(!result.Succeeded)
@@ -54,7 +59,34 @@ namespace API.Controllers
 
             await _userManager.AddToRoleAsync(user, "Staff");
 
-            return StatusCode(201);
+            var userInfor = new UserInfor
+            {
+                Id = user.Id,
+                LastName = registerDto.UserInforDto.LastName,
+                FirstName = registerDto.UserInforDto.FirstName,
+                Dob = registerDto.UserInforDto.Dob,
+                Gender = registerDto.UserInforDto.Gender,
+                Address = registerDto.UserInforDto.Address,
+                Country = registerDto.UserInforDto.Country,
+                CitizenId = registerDto.UserInforDto.CitizenId,
+                DepartmentId = registerDto.UserInforDto.DepartmentId,
+                Position = registerDto.UserInforDto.Position,
+                HireDate = registerDto.UserInforDto.HireDate,
+                BankAccount = registerDto.UserInforDto.BankAccount,
+                BankAccountName = registerDto.UserInforDto.BankAccountName,
+                Bank = registerDto.UserInforDto.Bank,
+                WorkTimeByYear = registerDto.UserInforDto.WorkTimeByYear,
+                AccountStatus = registerDto.UserInforDto.AccountStatus
+            };
+            _context.UserInfors.Add(userInfor);
+            if(await _context.SaveChangesAsync() > 0)
+            {
+                return StatusCode(201);
+            }
+
+            return BadRequest();
+
+             
         }
 
         [Authorize]

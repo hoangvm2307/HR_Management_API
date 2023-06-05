@@ -17,7 +17,7 @@ namespace API.Extensions
                         UserInfors = department.UserInfors.Select(userInfo => new DepartmentUserInforDto
                         {
                             StaffId = userInfo.StaffId,
-                            UserId = userInfo.UserId,
+                            //UserId = userInfo.Id,
                             LastName = userInfo.LastName,
                             FirstName = userInfo.FirstName,
                             Dob = userInfo.Dob,

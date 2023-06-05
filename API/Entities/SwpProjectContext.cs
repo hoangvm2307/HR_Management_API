@@ -206,7 +206,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF3192640D9")
+                .HasName("PK__DateDime__AA552EF3D9933091")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");
@@ -674,15 +674,15 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 .HasMaxLength(30)
                 .IsFixedLength()
                 .HasColumnName("position");
-            entity.Property(e => e.UserId).HasColumnName("userId");
+            entity.Property(e => e.Id).HasColumnName("userId");
             entity.Property(e => e.WorkTimeByYear).HasColumnName("workTimeByYear");
 
             entity.HasOne(d => d.Department).WithMany(p => p.UserInfors)
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_UserInfor_departmentId_departmentId");
 
-            entity.HasOne(d => d.User).WithMany(p => p.UserInfors)
-                .HasForeignKey(d => d.UserId)
+            entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
+                .HasForeignKey<UserInfor>(d => d.Id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserInfor_userId_userId");
         });
