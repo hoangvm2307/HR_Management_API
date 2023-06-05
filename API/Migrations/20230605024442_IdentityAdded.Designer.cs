@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    [Migration("20230604143251_IdentityAdded")]
+    [Migration("20230605024442_IdentityAdded")]
     partial class IdentityAdded
     {
         /// <inheritdoc />
@@ -284,7 +284,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF38988D8E3");
+                        .HasName("PK__DateDime__AA552EF3D9933091");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -1217,19 +1217,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1f07189f-d67a-4dd7-b363-65baaf5587ea",
+                            Id = "7cd25b4d-cdb3-49d2-9ba6-9aeec5a6f7db",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "4bf19788-5feb-4d3b-9179-f824c764c7f2",
+                            Id = "53ddb440-038a-4a5d-b9bd-36071d31755b",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "2b853e7f-4cd9-4ee6-a766-77c0c78dfa70",
+                            Id = "912237ef-e9be-445d-a775-cb5aee8e07f4",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

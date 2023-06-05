@@ -29,17 +29,17 @@ namespace API.Controllers
             return staffs;
         }
 
-        [HttpGet("{id}", Name ="GetUserInforById")]
-        public async Task<ActionResult<UserInforDto>> GetUserInforById(int id)
-        {
-            var staff = await _context.UserInfors
-                .ProjectUserInforToUserInforDto()
-                .FirstOrDefaultAsync(u => u.StaffId == id);
+        // [HttpGet("{id}", Name ="GetUserInforById")]
+        // public async Task<ActionResult<UserInforDto>> GetUserInforById(int id)
+        // {
+        //     var staff = await _context.UserInfors
+        //         .ProjectUserInforToUserInforDto()
+        //         .FirstOrDefaultAsync(u => u.StaffId == id);
             
-            if(staff == null) return NotFound();
+        //     if(staff == null) return NotFound();
 
-            return staff;
-        }
+        //     return staff;
+        // }
 
         [HttpDelete]
         public async Task<ActionResult> RemoveUserInfor(int id)
@@ -60,60 +60,77 @@ namespace API.Controllers
             return BadRequest(new ProblemDetails {Title = "Problem Removing User"});
         }
 
-        [HttpPost]
-        public async Task<ActionResult> CreateUserInfor([FromBody] UserInforDto userInforDto)
-        {
-            if(userInforDto == null) return BadRequest("User data is missing");
+        // [HttpPost]
+        // public async Task<ActionResult> CreateUserInfor([FromBody] UserInforDto userInforDto)
+        // {
+        //     var userInfor = new UserInfor
+        //     {
+        //         Id = user.Id,
+        //         LastName = userInforDto.LastName,
+        //         FirstName = userInforDto.FirstName,
+        //         Dob = userInforDto.Dob,
+        //         Gender = userInforDto.Gender,
+        //         Address = userInforDto.Address,
+        //         Country = userInforDto.Country,
+        //         CitizenId = userInforDto.CitizenId,
+        //         DepartmentId = userInforDto.DepartmentId,
+        //         Position = userInforDto.Position,
+        //         HireDate = userInforDto.HireDate,
+        //         BankAccount = userInforDto.BankAccount,
+        //         BankAccountName = userInforDto.BankAccountName,
+        //         Bank = userInforDto.Bank,
+        //         WorkTimeByYear = userInforDto.WorkTimeByYear,
+        //         AccountStatus = userInforDto.AccountStatus
+        //     };
+        //     _context.UserInfors.Add(userInfor);
+        //     if(await _context.SaveChangesAsync() > 0)
+        //     {
+        //         return StatusCode(201);
+        //     }
 
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+        //     if(result) return CreatedAtAction(nameof(GetUserInforById), new {id = userInforDto.StaffId}, userInforDto);
 
-            var finalReturnUserInfor = _mapper.Map<UserInfor>(userInforDto);
+        //     return BadRequest(new ProblemDetails {Title = "Problem adding user"});
+        // }
 
-            _context.UserInfors.Add(finalReturnUserInfor);
+//         [HttpPatch]
+//         public async Task<ActionResult<UserInforDto>> PartiallyUpdateUserInfor(
+// int StaffId,
+//             JsonPatchDocument<LogOtUpdateDTO> patchDocument
+//         )
+//         {
 
-            var result = await _context.SaveChangesAsync() > 0;
+//             var staffInfo = await _context.UserInfors.Where(c => c.StaffId == StaffId).FirstOrDefaultAsync();
 
-            if(result) return CreatedAtAction(nameof(GetUserInforById), new {id = userInforDto.StaffId}, userInforDto);
+//             if (staffInfo == null)
+//             {
+//                 return NotFound();
+//             }
+//             var LogOtFromStore = await _context.LogOts.Where(c => c.StaffId == StaffId && c.OtLogId == LogOtId).FirstOrDefaultAsync();
 
-            return BadRequest(new ProblemDetails {Title = "Problem adding user"});
-        }
+//             if (LogOtFromStore == null)
+//             {
+//                 return NotFound();
+//             }
 
-        [HttpPatch]
-        public async Task<ActionResult<UserInfor>> UpdateDepartment(int id, [FromBody] UserInfor updatedUserInfor)
-        {
-            if(updatedUserInfor == null || updatedUserInfor.StaffId != id)
-            {
-                return BadRequest("Invalid Department Data");
-            }
+//             var logOtpath = _mapper.Map<LogOtUpdateDTO>(LogOtFromStore);
 
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+//             patchDocument.ApplyTo(logOtpath,ModelState);
 
-            var existingUserInfor = await _context.UserInfors.FindAsync(id);
+//             if (!ModelState.IsValid)
+//             {
+//                 return BadRequest(ModelState);
+//             }
 
-            if(existingUserInfor == null) return NotFound("Department Not Found");
+//             if (!TryValidateModel(logOtpath))
+//             {
+//                 return BadRequest(ModelState);
+//             }
 
-            existingUserInfor.LastName = updatedUserInfor.LastName;
-            existingUserInfor.FirstName = updatedUserInfor.FirstName;
-            existingUserInfor.Dob = updatedUserInfor.Dob;
-            existingUserInfor.Phone = updatedUserInfor.Phone;
-            existingUserInfor.Gender = updatedUserInfor.Gender;
-            existingUserInfor.Address = updatedUserInfor.Address;
-            existingUserInfor.Country = updatedUserInfor.Country;
-            existingUserInfor.DepartmentId = updatedUserInfor.DepartmentId;
-            existingUserInfor.Position = updatedUserInfor.Position;
-            existingUserInfor.BankAccount = updatedUserInfor.BankAccount;
-            existingUserInfor.BankAccountName = updatedUserInfor.BankAccountName;
-            existingUserInfor.Bank = updatedUserInfor.Bank;
-            existingUserInfor.WorkTimeByYear = updatedUserInfor.WorkTimeByYear;
-            existingUserInfor.AccountStatus = updatedUserInfor.AccountStatus;
+//             _mapper.Map(logOtpath, LogOtFromStore);
+//             await _context.SaveChangesAsync();
 
-            _context.UserInfors.Update(existingUserInfor);
-
-            var result = await _context.SaveChangesAsync() > 0;
-
-            if(result) return Ok(existingUserInfor);
-
-            return BadRequest(new ProblemDetails {Title = "Problem Update User"});
-        }
+//             return NoContent();   
+//         }
     }
 }

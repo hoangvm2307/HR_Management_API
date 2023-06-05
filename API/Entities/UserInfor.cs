@@ -7,7 +7,7 @@ public partial class UserInfor
 {
     public int StaffId { get; set; }
 
-    public int UserId { get; set; }
+    public string Id { get; set; }
 
     public string LastName { get; set; } = null!;
 
@@ -57,5 +57,5 @@ public partial class UserInfor
 
     public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 
-    public virtual UserAccount User { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }
