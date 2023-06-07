@@ -13,7 +13,12 @@ namespace API.Profiles
         public SkillProfile()
         {
             CreateMap<Skill,SkillDto>().ReverseMap();
+            CreateMap<Skill,SkillCreateDto>().ReverseMap();
+            CreateMap<Skill,SkillUpdateDto>().ReverseMap();
+
             CreateMap<StaffSkill, StaffSkillDto>().ReverseMap();
+            CreateMap<StaffSkill,StaffSkillCreateDto>().ReverseMap();
+            CreateMap<StaffSkill,StaffSkillUpdateDto>().ReverseMap();
         }
     }
 }

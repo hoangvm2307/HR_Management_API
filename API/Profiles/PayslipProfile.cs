@@ -38,7 +38,7 @@ namespace API.Profiles
             // CreateMap<DepartmentDto, Department>();
 
             //CreateMap<UserInfor, DepartmentUserInforDto>();
-            CreateMap<UserInfor, DepartmentUserInforDto>();
+            CreateMap<UserInfor, DepartmentUserInforDto>().ReverseMap();
             CreateMap<Department, DepartmentDto>();
             
         }

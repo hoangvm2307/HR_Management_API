@@ -1,6 +1,8 @@
 using API.DTOs.SkillDTO;
 using API.Entities;
 using AutoMapper;
+using Azure;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -58,47 +60,120 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateStaffSkill([FromBody] StaffSkillDto staffSkill)
+        public async Task<ActionResult> CreateStaffSkills([FromBody] SkillCreateDto skillCreateDto)
         {
-            if(staffSkill == null) return BadRequest("Staff Skill data is missing");
-            
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (skillCreateDto == null) return BadRequest("Skill data is missing");
 
-            var returnStaffSkill = _mapper.Map<StaffSkill>(staffSkill);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            _context.StaffSkills.Add(returnStaffSkill);
-            
-            var result = await _context.SaveChangesAsync() > 0;
-
-            if(result) return CreatedAtAction(nameof(GetStaffSkill), new {id = staffSkill.SkillId}, staffSkill);
-
-            return BadRequest(new ProblemDetails {Title = "Problem adding staff skill"});
-        }
-
-        [HttpPatch]
-        public async Task<ActionResult<StaffSkill>> UpdateSkill(int id, [FromBody] StaffSkillDto updatedStaffSkill)
-        {
-            if(updatedStaffSkill == null || updatedStaffSkill.UniqueId != id)
+            // Create StaffSkills
+            if (skillCreateDto.StaffSkillCreateDtos != null)
             {
-                return BadRequest();
+                foreach (var staffSkillDto in skillCreateDto.StaffSkillCreateDtos)
+                {
+                    // Check if the skill already exists
+                    var existingSkill = await _context.Skills.FirstOrDefaultAsync(s => s.SkillName == skillCreateDto.SkillName);
+
+                    // If the skill does not exist, create a new one
+                    if (existingSkill == null)
+                    {
+                        existingSkill = new Skill
+                        {
+                            SkillName = skillCreateDto.SkillName
+                        };
+
+                        _context.Skills.Add(existingSkill);
+                    }
+
+                    // Create the StaffSkill entry
+                    var staffSkill = new StaffSkill
+                    {
+                        StaffId = staffSkillDto.StaffId,
+                        Level = staffSkillDto.Level,
+                        SkillId = existingSkill.SkillId
+                    };
+
+                    // Save the StaffSkill in the database
+                    _context.StaffSkills.Add(staffSkill);
+                }
+
+                await _context.SaveChangesAsync();
             }
 
-            if(!ModelState.IsValid) return BadRequest(ModelState);
-
-            var existingStaffSkill = await _context.StaffSkills.FindAsync(id);
-
-            if(existingStaffSkill == null) return NotFound("Department Not Found");
-
-            existingStaffSkill.SkillId = updatedStaffSkill.SkillId;
-            existingStaffSkill.Level = updatedStaffSkill.Level;
-
-            _context.StaffSkills.Update(existingStaffSkill);
-
-            var result = await _context.SaveChangesAsync() > 0;
-
-            if(result) return Ok(existingStaffSkill);
-
-            return BadRequest(new ProblemDetails {Title = "Problem Update Skill"});
+            // Return a response indicating success
+            return Ok("StaffSkills created successfully");
         }
+
+        
+        // [HttpPatch("{id}")]
+        // public async Task<ActionResult> UpdateStaffSkill(int id, [FromBody]JsonPatchDocument<StaffSkillUpdateDto> patchDocument)
+        // {
+        //     if(patchDocument == null) return BadRequest("Patch Document is missing");
+
+        //     var staffSkill = await _context.StaffSkills.FindAsync(id);
+
+        //     if(staffSkill == null) return NotFound();
+
+        //     var staffSkillDto = _mapper.Map<StaffSkillUpdateDto>(staffSkill);
+
+        //     patchDocument.ApplyTo(staffSkillDto, ModelState);
+
+        //     if(!ModelState.IsValid) return BadRequest(ModelState); 
+
+        //     _mapper.Map(staffSkillDto, staffSkill);
+
+        //     var result = await _context.SaveChangesAsync() > 0;
+
+        //     if(result) return Ok(staffSkill);
+
+        //     return BadRequest(new ProblemDetails {Title = "Problem Update Staff Skill"});
+        // }
+        [HttpPost("Update")]
+        public async Task<IActionResult> UpdateStaffSkillAndSkill(StaffSkillUpdateDto staffSkillUpdateDto)
+        {
+            // Retrieve the staff skill record to update based on the provided data
+            var staffSkill = await _context.StaffSkills.FirstOrDefaultAsync(s => s.UniqueId == staffSkillUpdateDto.UniqueId);
+
+            if (staffSkill != null)
+            {
+                // Update the Level property
+                staffSkill.Level = staffSkillUpdateDto.Level;
+
+                // Retrieve the skill record to update based on the provided data
+                var existingSkill = await _context.Skills
+                    .FirstOrDefaultAsync(s => s.SkillName.ToLower().Equals(staffSkillUpdateDto.SkillDto.SkillName));
+
+                if (existingSkill != null)
+                {
+                    // Update the SkillName property
+                    staffSkill.SkillId = existingSkill.SkillId;
+                }
+                else
+                {
+                    // Create a new skill
+                    var newSkill = new Skill { SkillName = staffSkillUpdateDto.SkillDto?.SkillName };
+
+                    _context.Skills.Add(newSkill);
+
+                     await _context.SaveChangesAsync();
+                     
+                    // Update the SkillId property of the staff skill
+                    staffSkill.SkillId = newSkill.SkillId;
+                }
+
+                var result = await _context.SaveChangesAsync() > 0;
+                
+                // Return successful save changes
+                if(result) return Ok();
+
+                return BadRequest("Problem updating");
+            }
+            else
+            {
+                // Return an error response if the staff skill record is not found
+                return NotFound("Staff skill not found");
+            }
+        }
+
     }
 }
