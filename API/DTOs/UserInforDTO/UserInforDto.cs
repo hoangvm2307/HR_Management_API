@@ -8,6 +8,7 @@ namespace API.DTOs.UserInforDTO
 {
     public class UserInforDto
     {
+        public int StaffId { get; set; }
         public string LastName { get; set; } = null!;
 
         public string FirstName { get; set; } = null!;

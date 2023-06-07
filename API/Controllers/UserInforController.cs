@@ -26,17 +26,18 @@ namespace API.Controllers
             return staffs;
         }
 
-        // [HttpGet("{id}", Name ="GetUserInforById")]
-        // public async Task<ActionResult<UserInforDto>> GetUserInforById(int id)
-        // {
-        //     var staff = await _context.UserInfors
-        //         .ProjectUserInforToUserInforDto()
-        //         .FirstOrDefaultAsync(u => u.StaffId == id);
+        [HttpGet("{id}", Name ="GetUserInforById")]
+        public async Task<ActionResult<UserInforDto>> GetUserInforById(int id)
+        {
+            var staff = await _context.UserInfors
+                .FirstOrDefaultAsync(u => u.StaffId == id);
             
-        //     if(staff == null) return NotFound();
+            if(staff == null) return NotFound();
 
-        //     return staff;
-        // }
+            var returnStaff = _mapper.Map<UserInforDto>(staff);
+
+            return returnStaff;
+        }
 
         [HttpDelete]
         public async Task<ActionResult> RemoveUserInfor(int id)

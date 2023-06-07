@@ -1,6 +1,7 @@
 using API.DTOs.SkillDTO;
 using API.Entities;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,9 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<SkillDto>>> GetSkills()
         {
-            var skills = await _context.Skills.ToListAsync();
+            var skills = await _context.Skills
+                .Include(i => i.StaffSkills)
+                .ToListAsync();
 
             var returnSkills = _mapper.Map<List<SkillDto>>(skills);
 
@@ -55,25 +58,44 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateSkill([FromBody] Skill skill)
+        public async Task<ActionResult> CreateSkill([FromBody] SkillCreateDto skillDto)
         {
-            if(skill == null) return BadRequest("Skill data is missing");
+            if(skillDto == null) return BadRequest("Skill data is missing");
             
             if(!ModelState.IsValid) return BadRequest(ModelState);
 
-            _context.Skills.Add(skill);
+            var returnSkill = _mapper.Map<Skill>(skillDto);
+
+            _context.Skills.Add(returnSkill);
+
+            await _context.SaveChangesAsync(); // Save newly created skill to get skillId
+
+            if (skillDto.StaffSkillCreateDtos != null)
+            {
+                foreach (var staffSkillDto in skillDto.StaffSkillCreateDtos)
+                {
+                    var staffSkill = new StaffSkill
+                    {
+                        StaffId = staffSkillDto.StaffId,
+                        Level = staffSkillDto.Level,
+                        SkillId = returnSkill.SkillId // Use the Skill ID from the newly created Skill
+                    };
+
+                    _context.StaffSkills.Add(staffSkill);
+                }
+            }
             
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return CreatedAtAction(nameof(GetSkill), new {id = skill.SkillId}, skill);
+            if(result) return CreatedAtAction(nameof(GetSkill), new {id = returnSkill.SkillId}, returnSkill);
 
             return BadRequest(new ProblemDetails {Title = "Problem adding skill"});
         }
 
-        [HttpPatch]
-        public async Task<ActionResult<Skill>> UpdateSkill(int id, [FromBody] Skill updatedSkill)
+        [HttpPut]
+        public async Task<ActionResult<Skill>> UpdateSkill(int id, [FromBody] SkillUpdateDto updatedSkill)
         {
-            if(updatedSkill == null || updatedSkill.SkillId != id)
+            if(updatedSkill == null)
             {
                 return BadRequest("Invalid Skill Data");
             }
@@ -93,6 +115,33 @@ namespace API.Controllers
             if(result) return Ok(existingSkill);
 
             return BadRequest(new ProblemDetails {Title = "Problem Update Skill"});
+        }
+
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchSkill(int id, [FromBody] JsonPatchDocument<SkillUpdateDto> patchDocument)
+        {
+            var skill = await _context.Skills.FindAsync(id);
+
+            if (skill == null)
+            {
+                return NotFound();
+            }
+
+            var skillDto = _mapper.Map<SkillUpdateDto>(skill);
+
+            patchDocument.ApplyTo(skillDto, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(skillDto, skill);
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

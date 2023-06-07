@@ -5,12 +5,9 @@ using System.Threading.Tasks;
 
 namespace API.DTOs.SkillDTO
 {
-    public class SkillDto
+    public class SkillCreateDto
     {
-        public int SkillId { get; set; }
-
         public string? SkillName { get; set; }
-
-        public List<StaffSkillDto>? StaffSkills {get; set;}
+        public List<StaffSkillCreateDto> StaffSkillCreateDtos { get; set; }
     }
 }

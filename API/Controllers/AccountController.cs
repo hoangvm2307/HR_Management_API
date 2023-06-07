@@ -1,6 +1,7 @@
 using API.DTOs.LoginDTO;
 using API.DTOs.RegisterDTO;
 using API.DTOs.UserDTO;
+using API.DTOs.UserInforDTO;
 using API.Entities;
 using API.Services;
 using AutoMapper;
@@ -27,16 +28,23 @@ namespace API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.Username);
+            var user = await _userManager
+                .FindByNameAsync(loginDto.Username);
+
             if(user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
             {
                 return Unauthorized();
             }
 
+            var userInfor = _context.UserInfors.FirstOrDefault(c => c.Id == user.Id);
+
+            var userInforDto = _mapper.Map<UserInforDto>(userInfor);
+
             return new UserDto
             {
                 Email = user.Email,
-                Token = await _tokenService.GenerateToken(user)
+                Token = await _tokenService.GenerateToken(user),
+                UserInfor = userInforDto
             };
         }
 
@@ -95,10 +103,15 @@ namespace API.Controllers
         {
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
+            var userInfor = _context.UserInfors.FirstOrDefault(c => c.Id == user.Id);
+
+            var userInforDto = _mapper.Map<UserInforDto>(userInfor);
+
             return new UserDto
             {
                 Email = user.Email,
-                Token = await _tokenService.GenerateToken(user)
+                Token = await _tokenService.GenerateToken(user),
+                UserInfor = userInforDto
             };
         }
     }

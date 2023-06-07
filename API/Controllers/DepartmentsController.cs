@@ -2,6 +2,7 @@ using API.DTOs.DepartmentDTO;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -66,23 +67,45 @@ namespace API.Controllers
             return BadRequest(new ProblemDetails {Title = "Problem removing"});
         }
 
+        // [HttpPost]
+        // public async Task<ActionResult> CreateDepartment([FromBody] DepartmentCreateDto departmentDto)
+        // {
+        //     if(departmentDto == null) return BadRequest("Department data is missing");
+            
+        //     if(!ModelState.IsValid) return BadRequest(ModelState);
+
+        //     var returnDepartment = _mapper.Map<Department>(departmentDto);
+        //     _context.Departments.Add(returnDepartment);
+            
+        //     var result = await _context.SaveChangesAsync() > 0;
+
+        //     if(result) return CreatedAtAction(nameof(GetDepartment), new {id = returnDepartment.DepartmentId}, returnDepartment);
+
+        //     return BadRequest(new ProblemDetails {Title = "Problem adding item"});
+        // }
         [HttpPost]
-        public async Task<ActionResult> CreateDepartment([FromBody] Department department)
+        public async Task<ActionResult> CreateDepartment([FromBody] DepartmentCreateDto departmentDto)
         {
-            if(department == null) return BadRequest("Department data is missing");
+            if(departmentDto == null) return BadRequest("Department data is missing");
             
             if(!ModelState.IsValid) return BadRequest(ModelState);
 
+            var department = new Department
+            {
+                DepartmentName = User.Identity?.Name
+            };
+
+            var returnDepartment = _mapper.Map<Department>(departmentDto);
             _context.Departments.Add(department);
             
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return CreatedAtAction(nameof(GetDepartment), new {id = department.DepartmentId}, department);
+            if(result) return CreatedAtAction(nameof(GetDepartment), new {id = returnDepartment.DepartmentId}, returnDepartment);
 
             return BadRequest(new ProblemDetails {Title = "Problem adding item"});
         }
 
-        [HttpPatch]
+        [HttpPut]
         public async Task<ActionResult<Department>> UpdateDepartment(int id, [FromBody] Department updatedDepartment)
         {
             if(updatedDepartment == null || updatedDepartment.DepartmentId != id)
@@ -105,6 +128,34 @@ namespace API.Controllers
             if(result) return Ok(existingDepartment);
 
             return BadRequest(new ProblemDetails {Title = "Problem Update Department"});
+        }
+        
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> PatchDepartment(int id, [FromBody] JsonPatchDocument<DepartmentUpdateDto> patchDocument)
+        {
+            var department = await _context.Departments.FindAsync(id);
+
+            if (department == null)
+            {
+                return NotFound();
+            }
+
+            var departmentDto = _mapper.Map<DepartmentUpdateDto>(department);
+
+            patchDocument.ApplyTo(departmentDto, ModelState);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(departmentDto, department);
+
+            var result = await _context.SaveChangesAsync() > 0;
+
+            if(result) return NoContent();
+
+            return BadRequest("Problem Updateing Department");
         }
     }
 }

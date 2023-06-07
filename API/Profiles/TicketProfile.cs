@@ -13,6 +13,9 @@ namespace API.Profiles
         public TicketProfile()
         {
             CreateMap<Ticket, TicketDto>().ReverseMap();
+            CreateMap<TicketType, TicketTypeCreateDto>().ReverseMap();
+            CreateMap<Ticket,TicketCreateDto>().ReverseMap();
+            CreateMap<Ticket,TicketUpdateDto>().ReverseMap();
         }
     }
 }
