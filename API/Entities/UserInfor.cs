@@ -43,6 +43,8 @@ public partial class UserInfor
 
     public virtual Department? Department { get; set; }
 
+    public virtual ICollection<Department> Departments { get; set; } = new List<Department>();
+
     public virtual ICollection<LeaveDayLeft> LeaveDayLefts { get; set; } = new List<LeaveDayLeft>();
 
     public virtual ICollection<LogLeave> LogLeaves { get; set; } = new List<LogLeave>();
