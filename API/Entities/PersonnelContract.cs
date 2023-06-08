@@ -21,6 +21,8 @@ public partial class PersonnelContract
 
     public string? Note { get; set; }
 
+    public int? NoOfDependences { get; set; }
+
     public int? ContractTypeId { get; set; }
 
     public string? SalaryType { get; set; }

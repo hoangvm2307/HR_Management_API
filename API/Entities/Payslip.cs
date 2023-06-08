@@ -15,6 +15,10 @@ public partial class Payslip
 
     public double? OtHours { get; set; }
 
+    public double? OtDay { get; set; }
+
+    public double? LeaveHours { get; set; }
+
     public double? LeaveDays { get; set; }
 
     public int? GrossSalary { get; set; }
@@ -26,8 +30,6 @@ public partial class Payslip
     public int? Bhtnemp { get; set; }
 
     public int? SalaryBeforeTax { get; set; }
-
-    public int? NoOfDependences { get; set; }
 
     public int? SelfAllowances { get; set; }
 

@@ -17,6 +17,8 @@ public partial class LogLeave
 
     public double LeaveDays { get; set; }
 
+    public int? LeaveHours { get; set; }
+
     public string? Description { get; set; }
 
     public string? Status { get; set; }

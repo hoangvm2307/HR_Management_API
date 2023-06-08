@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    [Migration("20230605024442_IdentityAdded")]
-    partial class IdentityAdded
+    [Migration("20230608154419_NewDB")]
+    partial class NewDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -97,13 +97,13 @@ namespace API.Migrations
                         .IsFixedLength();
 
                     b.Property<string>("AppliedDepartment")
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("appliedDepartment");
 
                     b.Property<string>("AppliedJob")
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("appliedJob");
 
                     b.Property<DateTime>("ApplyDate")
@@ -111,8 +111,8 @@ namespace API.Migrations
                         .HasColumnName("applyDate");
 
                     b.Property<string>("Company")
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("company");
 
                     b.Property<string>("Department")
@@ -284,7 +284,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF3D9933091");
+                        .HasName("PK__DateDime__AA552EF32EA7A265");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -310,8 +310,14 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(25)")
                         .HasColumnName("departmentName");
 
+                    b.Property<int?>("ManagerId")
+                        .HasColumnType("int")
+                        .HasColumnName("managerId");
+
                     b.HasKey("DepartmentId")
                         .HasName("PK_Department_departmentId");
+
+                    b.HasIndex("ManagerId");
 
                     b.ToTable("Department", (string)null);
                 });
@@ -445,6 +451,10 @@ namespace API.Migrations
                         .HasColumnType("date")
                         .HasColumnName("leaveEnd");
 
+                    b.Property<int?>("LeaveHours")
+                        .HasColumnType("int")
+                        .HasColumnName("leaveHours");
+
                     b.Property<DateTime>("LeaveStart")
                         .HasColumnType("date")
                         .HasColumnName("leaveStart");
@@ -454,8 +464,8 @@ namespace API.Migrations
                         .HasColumnName("leaveTypeId");
 
                     b.Property<string>("ProcessNote")
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
                         .HasColumnName("processNote");
 
                     b.Property<int>("StaffId")
@@ -587,13 +597,17 @@ namespace API.Migrations
                         .HasColumnType("float")
                         .HasColumnName("leaveDays");
 
+                    b.Property<double?>("LeaveHours")
+                        .HasColumnType("float")
+                        .HasColumnName("leaveHours");
+
                     b.Property<int>("NetSalary")
                         .HasColumnType("int")
                         .HasColumnName("netSalary");
 
-                    b.Property<int?>("NoOfDependences")
-                        .HasColumnType("int")
-                        .HasColumnName("noOfDependences");
+                    b.Property<double?>("OtDay")
+                        .HasColumnType("float")
+                        .HasColumnName("otDay");
 
                     b.Property<double?>("OtHours")
                         .HasColumnType("float")
@@ -698,9 +712,13 @@ namespace API.Migrations
                         .HasColumnType("date")
                         .HasColumnName("endDate");
 
+                    b.Property<int?>("NoOfDependences")
+                        .HasColumnType("int")
+                        .HasColumnName("noOfDependences");
+
                     b.Property<string>("Note")
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
                         .HasColumnName("note");
 
                     b.Property<string>("PaiDateNote")
@@ -714,8 +732,8 @@ namespace API.Migrations
                         .HasColumnName("salary");
 
                     b.Property<string>("SalaryType")
-                        .HasMaxLength(5)
-                        .HasColumnType("nvarchar(5)")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
                         .HasColumnName("salaryType");
 
                     b.Property<int>("StaffId")
@@ -900,8 +918,8 @@ namespace API.Migrations
                         .HasColumnName("createAt");
 
                     b.Property<string>("ProcessNote")
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)")
                         .HasColumnName("processNote");
 
                     b.Property<int?>("RespondencesId")
@@ -954,8 +972,8 @@ namespace API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketTypeId"));
 
                     b.Property<string>("TicketName")
-                        .HasMaxLength(35)
-                        .HasColumnType("nvarchar(35)")
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
                         .HasColumnName("ticketName");
 
                     b.HasKey("TicketTypeId")
@@ -1148,6 +1166,10 @@ namespace API.Migrations
                         .HasColumnType("date")
                         .HasColumnName("hireDate");
 
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("Id");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(15)
@@ -1162,14 +1184,12 @@ namespace API.Migrations
                         .IsFixedLength();
 
                     b.Property<string>("Position")
-                        .HasMaxLength(30)
-                        .HasColumnType("nchar(30)")
-                        .HasColumnName("position")
-                        .IsFixedLength();
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("position");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("userId");
+                    b.Property<int?>("UserAccountUserId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("WorkTimeByYear")
                         .HasColumnType("int")
@@ -1180,7 +1200,11 @@ namespace API.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasFilter("[Id] IS NOT NULL");
+
+                    b.HasIndex("UserAccountUserId");
 
                     b.HasIndex(new[] { "CitizenId" }, "UQ_UserInfor_citizenId")
                         .IsUnique();
@@ -1217,19 +1241,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "7cd25b4d-cdb3-49d2-9ba6-9aeec5a6f7db",
+                            Id = "3ed978d5-31f8-4b34-ac8d-88a7bfc05bcd",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "53ddb440-038a-4a5d-b9bd-36071d31755b",
+                            Id = "1bb70e18-45d0-42d3-ae2d-796b059b8267",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "912237ef-e9be-445d-a775-cb5aee8e07f4",
+                            Id = "0ae45efd-a311-43d1-bd67-3bf3dece88db",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
@@ -1377,6 +1401,16 @@ namespace API.Migrations
                     b.Navigation("Skill");
                 });
 
+            modelBuilder.Entity("API.Entities.Department", b =>
+                {
+                    b.HasOne("API.Entities.UserInfor", "Manager")
+                        .WithMany("Departments")
+                        .HasForeignKey("ManagerId")
+                        .HasConstraintName("FK_Department_managerId_staffId");
+
+                    b.Navigation("Manager");
+                });
+
             modelBuilder.Entity("API.Entities.HolidayDimension", b =>
                 {
                     b.HasOne("API.Entities.DateDimension", "TheDateNavigation")
@@ -1512,11 +1546,14 @@ namespace API.Migrations
                         .HasForeignKey("DepartmentId")
                         .HasConstraintName("FK_UserInfor_departmentId_departmentId");
 
-                    b.HasOne("API.Entities.UserAccount", "User")
-                        .WithMany("UserInfors")
-                        .HasForeignKey("UserId")
-                        .IsRequired()
+                    b.HasOne("API.Entities.User", "User")
+                        .WithOne("UserInfor")
+                        .HasForeignKey("API.Entities.UserInfor", "Id")
                         .HasConstraintName("FK_UserInfor_userId_userId");
+
+                    b.HasOne("API.Entities.UserAccount", null)
+                        .WithMany("UserInfors")
+                        .HasForeignKey("UserAccountUserId");
 
                     b.Navigation("Department");
 
@@ -1621,6 +1658,12 @@ namespace API.Migrations
                     b.Navigation("Tickets");
                 });
 
+            modelBuilder.Entity("API.Entities.User", b =>
+                {
+                    b.Navigation("UserInfor")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("API.Entities.UserAccount", b =>
                 {
                     b.Navigation("UserInfors");
@@ -1628,6 +1671,8 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.UserInfor", b =>
                 {
+                    b.Navigation("Departments");
+
                     b.Navigation("LeaveDayLefts");
 
                     b.Navigation("LogLeaves");
