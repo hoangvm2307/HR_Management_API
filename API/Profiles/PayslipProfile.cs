@@ -1,4 +1,5 @@
 using API.DTOs.DepartmentDTO;
+using API.DTOs.LeaveTypeDTO;
 using API.DTOs.LogOtDTOs;
 using API.DTOs.PayslipDTOs;
 using API.DTOs.PersonnelContractDTO;
@@ -18,8 +19,9 @@ namespace API.Profiles
             
             CreateMap<PersonnelContract, PersonnelContractDTO>().ReverseMap();
             CreateMap<ContractType, ContractTypeDTO>();
-            CreateMap<Allowance, AllowancesDTO>();
-            CreateMap<AllowanceType, AllowanceTypeDTO>();
+            CreateMap<Allowance, AllowanceDTO>();
+            CreateMap<AllowanceType, AllowanceTypeDTO>().ReverseMap();
+
             CreateMap<SalaryType, SalaryTypeDTO>();
 
             CreateMap<LogOt, LogOtDTO>();

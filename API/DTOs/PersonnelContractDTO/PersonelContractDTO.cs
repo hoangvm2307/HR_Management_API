@@ -34,7 +34,7 @@ namespace API.DTOs.PersonnelContractDTO
 
         public bool ContractStatus { get; set; }
 
-        public virtual ICollection<AllowancesDTO> Allowances { get; set; } = new List<AllowancesDTO>();
+        public virtual ICollection<AllowanceDTO> Allowances { get; set; } = new List<AllowanceDTO>();
 
         public virtual ContractTypeDTO? ContractType { get; set; }
 

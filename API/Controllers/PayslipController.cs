@@ -1,4 +1,5 @@
 using API.DTOs.PayslipDTOs;
+using API.DTOs.PersonnelContractDTO;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
@@ -15,7 +16,7 @@ namespace API.Controllers
         private readonly IMapper _mapper;
 
         public PayslipController(
-            SwpProjectContext context, 
+            SwpProjectContext context,
             IMapper mapper
             )
         {
@@ -26,16 +27,18 @@ namespace API.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<Payslip>>> GetPayslipList()
+        public async Task<ActionResult<List<PayslipDTO>>> GetPayslipList()
         {
-            var payslip = await _context.Payslips.ToListAsync();
+            var payslips = await _context.Payslips.ToListAsync();
 
-            if (payslip == null)
+            if (payslips == null)
             {
                 return NotFound();
             }
 
-            return payslip;
+            var payslipsDTO = _mapper.Map<List<PayslipDTO>>(payslips);
+
+            return payslipsDTO;
         }
 
         [HttpGet("StaffId", Name = "GetPayslipListByStaffId")]
@@ -56,47 +59,53 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PayslipDTO>> CreatePayslipByStaffIdForAMonth(int StaffId, int month)
+        public async Task<ActionResult<PayslipDTO>> CreatePayslipByStaffIdForAMonth(int StaffId, int month, int year)
         {
-            
-            // var userInfo = await _context.UserInfors
-            //     .Where(c => c.StaffId == StaffId && c.AccountStatus == true)
-            //     .FirstOrDefaultAsync();
 
-            // if (userInfo == null)
-            // {
-            //     return NotFound();
-            // }
-            
-            // var staffPayslip = await _context.Payslips
-            //     .Where(c => c.StaffId == StaffId)
-            //     .FirstOrDefaultAsync();
+            var userInfo = await _context.UserInfors
+                .Where(c => c.StaffId == StaffId && c.AccountStatus == true)
+                .FirstOrDefaultAsync();
 
-            // if (staffPayslip == null)
-            // {
-            //     return NotFound();
-            // }
+            if (userInfo == null)
+            {
+                return NotFound();
+            }
 
             //Du lieu Fake
 
-            int GrossSalary = 30000000;
+            var personnelContract = await _context.PersonnelContracts.Where(c => c.StaffId == StaffId).FirstOrDefaultAsync();
 
-            string type = "GrossToNet";
+            if (personnelContract == null)
+            {
+                return NotFound();
+            }
 
-            var PayslipExtensions = new PayslipExtensions();
+            var personnelContractDTO = _mapper.Map<PersonnelContractDTO>(personnelContract);
 
-            PayslipDTO payslipDTO = PayslipExtensions.ConvertGrossToNet(GrossSalary);
+            // int GrossSalary = 30000000;
+
+            // string type = "GrossToNet";
+
+            var PayslipExtensions = new PayslipExtensions(_context, _mapper);
+
+            PayslipDTO payslipDTO = await PayslipExtensions.ConvertGrossToNet(personnelContractDTO, month, year);
 
             var finalPayslips = _mapper.Map<Payslip>(payslipDTO);
 
-            _context.Payslips.Add(finalPayslips);
+            var userInfoNew = await _context.UserInfors.Include(c => c.Payslips).Where(c => c.StaffId == StaffId).FirstOrDefaultAsync();
+
+            userInfoNew.Payslips.Add(finalPayslips);
+
+            // _context.Payslips.Add(finalPayslips);
 
             await _context.SaveChangesAsync();
 
-            return CreatedAtRoute(
-                "GetPayslipListByStaffId",
-                finalPayslips
-            );
+            // return CreatedAtRoute(
+            //     "GetPayslipListByStaffId",
+            //     finalPayslips
+            // );
+            return NoContent();
+
         }
 
     }
