@@ -13,14 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c => 
+builder.Services.AddSwaggerGen(c =>
 {
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
-        BearerFormat ="JWT",
+        BearerFormat = "JWT",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
@@ -56,7 +55,8 @@ builder.Services.AddControllers(option =>
 
 builder.Services.AddCors();
 
-builder.Services.AddIdentityCore<User>(opt => {
+builder.Services.AddIdentityCore<User>(opt =>
+{
     opt.User.RequireUniqueEmail = true;
 })
     .AddRoles<IdentityRole>()
@@ -92,16 +92,18 @@ if (app.Environment.IsDevelopment())
         c.ConfigObject.AdditionalItems.Add("persistAuthorization", true);
     });
 }
-app.UseCors(opt => 
+app.UseCors(opt =>
 {
     opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
 });
 
 app.UseHttpsRedirection();
-app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapControllers();
+
 
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<SwpProjectContext>();
@@ -112,7 +114,8 @@ try
 {
     await context.Database.MigrateAsync();
     await DbInitializer.Initialize(context, userManager);
-}catch (Exception ex)
+}
+catch (Exception ex)
 {
     logger.LogError(ex, "A problem occurred during migration");
 }

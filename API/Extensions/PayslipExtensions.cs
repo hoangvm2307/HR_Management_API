@@ -1,9 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using API.DTOs;
+using API.DTOs.LogOtDTOs;
 using API.DTOs.PayslipDTOs;
+using API.DTOs.PersonnelContractDTO;
+using API.Entities;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Extensions
 {
@@ -25,23 +25,50 @@ namespace API.Extensions
         private static int COMPANY_MAX_SOCIAL_INSURANCE_FEE = 5215000;
         private static int COMPANY_MAX_HEALTH_INSURANCE_FEE = 894000;
         private static int COMPANY_MAX_UNEMPLOYEMENT_INSURANCE_FEE = 884000;
+        private readonly SwpProjectContext _context;
+        private readonly IMapper _mapper;
 
+        public PayslipExtensions(SwpProjectContext context, IMapper mapper)
+        {
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
 
-        public PayslipDTO ConvertGrossToNet(
-            int grossSalary,
-            int NoOfDependences = 0
+        }
+        public PayslipExtensions()
+        {
+
+        }
+
+        public async Task<PayslipDTO> ConvertGrossToNet(
+                PersonnelContractDTO personnelContractDTO,
+                int month,
+                int year
             )
         {
 
-            //Insurance Calculate
-            int LuongThoaThuanTrenHopDong = 1490000;
-            var Insurance = PersonalInsuranceCalculate(grossSalary);
+            int taxableSalary = (int)personnelContractDTO.TaxableSalary;
+            int StandardWorkDays = await GetStandardWorkDays(month, year);
+
+            int PaiByDate = await GetPaifByDate(month, year, personnelContractDTO.Salary);
+            int allowances = await GetTotalAllowancesByStaffId(personnelContractDTO.StaffId);
+            double logOtHours = await GetLogOtHours(personnelContractDTO.StaffId);
+            int LeaveDays = await GetLogLeaveDays(personnelContractDTO.StaffId);
+            int logOtDays = await GetLogOtDays(personnelContractDTO.StaffId);
+
+
+            int ActualWorkDays = StandardWorkDays + logOtDays - LeaveDays;
+
+            //chỉnh sửa sau
+            int noOfDependences = 0;
+            
+            var Insurance = PersonalInsuranceCalculate(taxableSalary);
             // var Insurance = PersonalInsuranceCalculate(LuongThoaThuanTrenHopDong);
+            int grossSalary = personnelContractDTO.Salary;
 
             int ThuNhapTruocThue = ((int)(grossSalary - Insurance.SocialInsurance - Insurance.HealthInsurance - Insurance.UnemploymentInsurance));
 
             //Phu thuoc ca nhan, gia dinh, total
-            int FamilyAllowancesDeduction = FamilyAllowances * NoOfDependences;
+            int FamilyAllowancesDeduction = FamilyAllowances * noOfDependences;
 
             int TotalAllowancesDeduction = (PersonalTaxDeduction + FamilyAllowancesDeduction);
 
@@ -59,42 +86,43 @@ namespace API.Extensions
             DateTime CreatedDate = DateTime.UtcNow;
 
             //Nguoi su dung lao dong tra
-            CompanyInsuranceDTO companyInsuranceDto = CompanyInsuranceCalculate(grossSalary);
+            CompanyInsuranceDTO companyInsuranceDto = CompanyInsuranceCalculate(grossSalary, taxableSalary);
 
             PayslipDTO payslipDto = new PayslipDTO
             {
-                StaffId = 10000002,
-                ContractId = 2,
+                // Contract = 2,
                 GrossSalary = grossSalary,
-                StandardWorkDays = 0,
-                ActualWorkDays = 0,
-                OtHours = 0,
-                LeaveDays = 0,
-                BHXHEmp = (int)Insurance.SocialInsurance,
-                BHYTEmp = (int)Insurance.HealthInsurance,
-                BHTNEmp = (int)Insurance.UnemploymentInsurance,
+                StandardWorkDays = StandardWorkDays,
+                ActualWorkDays = ActualWorkDays,
+                OtHours = logOtHours,
+                LeaveDays = LeaveDays,
+                Bhxhemp = (int)Insurance.SocialInsurance,
+                Bhytemp = (int)Insurance.HealthInsurance,
+                Bhtnemp = (int)Insurance.UnemploymentInsurance,
                 //can chinh sua self Allowances
                 SelfAllowances = PersonalTaxDeduction,
-                NoOfDependences = NoOfDependences,
+                NoOfDependences = noOfDependences,
                 FamilyAllowances = FamilyAllowances,
                 SalaryBeforeTax = ThuNhapTruocThue,
                 TaxRate5M = result.TaxRate5M,
-                TaxRate5MTo10M = result.TaxRate5MTo10M,
-                TaxRate10MTo18M = result.TaxRate10MTo18M,
-                TaxRate18MTo23M = result.TaxRate18MTo23M,
-                TaxRate23MTo52M = result.TaxRate23MTo52M,
-                TaxRate52MTo82M = result.TaxRate52MTo82M,
+                TaxRate5Mto10M = result.TaxRate5MTo10M,
+                TaxRate10Mto18M = result.TaxRate10MTo18M,
+                TaxRate18Mto32M = result.TaxRate18MTo23M,
+                TaxRate32Mto52M = result.TaxRate23MTo52M,
+                TaxRate52Mto82M = result.TaxRate52MTo82M,
                 TaxRateOver82M = result.TaxRateOver82M,
-                Bonus = 0,
-                Deducion = 0,
+                PersonalIncomeTax = ThueThuNhapCaNhan,
+                Bonus = allowances,
+                // Deducion = 0,
+                TaxbleIncome = ThuNhapChiuThue,
                 NetSalary = NetSalary,
-                PaidByDate = 0,
-                PaidDate = CreatedDate,
-                BHXHComp = (int)companyInsuranceDto.SocialInsurance,
-                BHYTComp = (int)companyInsuranceDto.HealthInsurance,
-                BHTNComp = (int)companyInsuranceDto.UnemploymentInsurance,
-                TotalCompanyPaid = (int)companyInsuranceDto.Total,
+                //tính lương 1 ngày
+                PaiByDate = PaiByDate,
                 CreateAt = CreatedDate,
+                Bhxhcomp = (int)companyInsuranceDto.SocialInsurance,
+                Bhytcomp = (int)companyInsuranceDto.HealthInsurance,
+                Bhtncomp = (int)companyInsuranceDto.UnemploymentInsurance,
+                TotalInsured = (int)companyInsuranceDto.Total,
                 PayslipStatus = true
             };
 
@@ -111,6 +139,7 @@ namespace API.Extensions
                 (28000000, 0.3),
                 (0, 0.35),
             };
+        private readonly ILogger<PayslipExtensions> logger;
 
         public TaxRateDTO PersonalIncomeTaxCalculate(int ThuNhapChiuThue)
         {
@@ -186,11 +215,11 @@ namespace API.Extensions
             return InsuranceDeduction;
         }
 
-        public CompanyInsuranceDTO CompanyInsuranceCalculate(int grossSalary)
+        public CompanyInsuranceDTO CompanyInsuranceCalculate(int grossSalary, int taxableSalary)
         {
-            int SocialInsuranceDeduction = (int)(grossSalary * CompanySocialInsurance);
-            int HealthInsuranceDeduction = (int)(grossSalary * CompanyHealthInsurance);
-            int UnemploymentInsuranceDeduction = (int)(grossSalary * CompanyUnemploymentInsurance);
+            int SocialInsuranceDeduction = (int)(taxableSalary * CompanySocialInsurance);
+            int HealthInsuranceDeduction = (int)(taxableSalary * CompanyHealthInsurance);
+            int UnemploymentInsuranceDeduction = (int)(taxableSalary * CompanyUnemploymentInsurance);
 
             if (SocialInsuranceDeduction > COMPANY_MAX_SOCIAL_INSURANCE_FEE)
             {
@@ -219,6 +248,86 @@ namespace API.Extensions
             };
 
             return companyInsuranceDto;
+        }
+
+        public async Task<int> GetNumberWeekDaysInMonth(int month, int year)
+        {
+            var weekDays = await _context.DateDimensions.Where(c => c.IsWeekend == 0 && c.TheMonth == month && c.TheYear == year).CountAsync();
+
+            return weekDays;
+        }
+
+        public async Task<int> GetNumberHolidaysInMonth(int month, int year)
+        {
+            var holidays = await _context.HolidayDimensions.Where(c => c.TheDate.Month == month && c.TheDate.Year == year).CountAsync();
+
+            return holidays;
+        }
+
+        public async Task<int> GetStandardWorkDays(int month, int year)
+        {
+            var StandardWorkDays = await _context.TheCalendars
+            .Where(c => c.IsWorking == 1 && c.TheMonth == month && c.TheYear == year).CountAsync();
+
+            return StandardWorkDays;
+        }
+
+        public async Task<int> GetPaifByDate(int month, int year, int salary)
+        {
+            var StandardWorkDays = await _context.TheCalendars
+           .Where(c => c.IsWorking == 1 && c.TheMonth == month && c.TheYear == year).CountAsync();
+
+            int PaiByDate = 0;
+
+            PaiByDate = salary / StandardWorkDays;
+
+            return PaiByDate;
+        }
+
+
+        public async Task<double> GetLogOtHours(int StaffId)
+        {
+            var logOtHours = await _context.LogOts.Where(c => c.StaffId == StaffId && c.Status.ToLower().Equals("approved")).ToListAsync();
+
+            double total = 0;
+            total = logOtHours.Sum(c => c.LogHours);
+
+            return total;
+        }
+
+
+        public async Task<int> GetLogOtDays(int StaffId)
+        {
+            var logOtStaff = await _context.LogOts.Where(c =>c.StaffId == StaffId && c.Status.ToLower().Equals("approved")).ToListAsync();
+
+            int logOtDays = logOtStaff.Count();
+            return logOtDays;
+        }
+
+        public async Task<int> GetLogLeaveHours(int StaffId)
+        {
+            var LeaveDays = await _context.LogLeaves.ToListAsync();
+
+            var LogLeavesHours = LeaveDays.Sum(c => c.LeaveDays) * 8;
+
+            return (int)LogLeavesHours;
+        }
+
+        public async Task<int> GetLogLeaveDays(int StaffId)
+        {
+            var LeaveDays = await _context.LogLeaves.ToListAsync();
+
+
+            return (int)LeaveDays.Sum(c => c.LeaveDays);
+        }
+
+        public async Task<int> GetTotalAllowancesByStaffId(int StaffId)
+        {
+            var staffAllowances = await _context.PersonnelContracts.Include(c => c.Allowances).Where(c => c.StaffId == StaffId).ToListAsync();
+
+            var allowances = staffAllowances.SelectMany(c => c.Allowances).Sum(c => c.AllowanceSalary);
+
+            return (int)allowances;
         }
     }
 

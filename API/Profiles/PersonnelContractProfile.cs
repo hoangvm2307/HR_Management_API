@@ -16,8 +16,8 @@ namespace API.Profiles
             CreateMap<PersonnelContract, PersonnelContractUpdateDTO>();
 
             CreateMap<ContractType, ContractTypeDTO>();
-            CreateMap<Allowance, AllowancesDTO>();
-            CreateMap<AllowanceType, AllowanceTypeDTO>();
+
+
             
         }
     }
