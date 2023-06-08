@@ -17,11 +17,11 @@ public partial class Candidate
 
     public string? AppliedDepartment { get; set; }
 
-    public string? AppliedCompany { get; set; }
+    public string? AppliedCompany { get; set; } = "My Company";
 
     public string Department { get; set; } = null!;
 
-    public string? Company { get; set; }
+    public string? Company { get; set; } = "My Company";
 
     public int? ExpectedSalary { get; set; }
 

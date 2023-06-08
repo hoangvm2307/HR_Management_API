@@ -141,7 +141,8 @@ namespace API.Controllers
             ticket.TicketStatus = ticketStatusDto.TicketStatus;
             ticket.ChangeStatusTime = DateTime.Now;
             ticket.RespondencesId = userInfor.StaffId;
-            ticket.ProcessNote = ticketStatusDto.ProcessNote;
+            if(!string.IsNullOrWhiteSpace(ticketStatusDto.ProcessNote))
+                ticket.ProcessNote = ticketStatusDto.ProcessNote;
 
             await _context.SaveChangesAsync();
 

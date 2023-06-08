@@ -95,10 +95,7 @@ namespace API.Controllers
         [HttpPut]
         public async Task<ActionResult<Skill>> UpdateSkill(int id, [FromBody] SkillUpdateDto updatedSkill)
         {
-            if(updatedSkill == null)
-            {
-                return BadRequest("Invalid Skill Data");
-            }
+            if(updatedSkill == null) return BadRequest("Invalid Skill Data");
 
             if(!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -123,19 +120,13 @@ namespace API.Controllers
         {
             var skill = await _context.Skills.FindAsync(id);
 
-            if (skill == null)
-            {
-                return NotFound();
-            }
+            if (skill == null) return NotFound();
 
             var skillDto = _mapper.Map<SkillUpdateDto>(skill);
 
             patchDocument.ApplyTo(skillDto, ModelState);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             _mapper.Map(skillDto, skill);
 
