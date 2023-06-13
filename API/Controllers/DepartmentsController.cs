@@ -67,24 +67,9 @@ namespace API.Controllers
             return BadRequest(new ProblemDetails {Title = "Problem removing"});
         }
 
-        // [HttpPost]
-        // public async Task<ActionResult> CreateDepartment([FromBody] DepartmentCreateDto departmentDto)
-        // {
-        //     if(departmentDto == null) return BadRequest("Department data is missing");
-            
-        //     if(!ModelState.IsValid) return BadRequest(ModelState);
 
-        //     var returnDepartment = _mapper.Map<Department>(departmentDto);
-        //     _context.Departments.Add(returnDepartment);
-            
-        //     var result = await _context.SaveChangesAsync() > 0;
-
-        //     if(result) return CreatedAtAction(nameof(GetDepartment), new {id = returnDepartment.DepartmentId}, returnDepartment);
-
-        //     return BadRequest(new ProblemDetails {Title = "Problem adding item"});
-        // }
         [HttpPost]
-        public async Task<ActionResult> CreateDepartment([FromBody] DepartmentCreateDto departmentDto)
+        public async Task<ActionResult> CreateDepartment(DepartmentCreateDto departmentDto)
         {
             if(departmentDto == null) return BadRequest("Department data is missing");
             
@@ -92,15 +77,21 @@ namespace API.Controllers
 
             var department = new Department
             {
-                DepartmentName = User.Identity?.Name
+                DepartmentName = departmentDto.DepartmentName,
             };
-
-            var returnDepartment = _mapper.Map<Department>(departmentDto);
+        
+            if(departmentDto.ManagerId != 0)
+            {
+                var userInfor = _context.UserInfors
+                    .FirstOrDefault(c => c.StaffId == departmentDto.ManagerId);
+                userInfor.IsManager = true;
+            }
+             
             _context.Departments.Add(department);
             
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return CreatedAtAction(nameof(GetDepartment), new {id = returnDepartment.DepartmentId}, returnDepartment);
+            if(result) return CreatedAtAction(nameof(GetDepartment), new {id = department.DepartmentId}, department);
 
             return BadRequest(new ProblemDetails {Title = "Problem adding item"});
         }

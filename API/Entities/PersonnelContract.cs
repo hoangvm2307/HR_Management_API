@@ -27,7 +27,7 @@ public partial class PersonnelContract
 
     public string? SalaryType { get; set; }
 
-    public string? PaiDateNote { get; set; }
+    public string? PaidDateNote { get; set; }
 
     public string? ContractFile { get; set; }
 

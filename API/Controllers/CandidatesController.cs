@@ -68,11 +68,7 @@ namespace API.Controllers
                 Name = candidateDto.Name,
                 Email = candidateDto.Email,
                 Phone = candidateDto.Phone,
-                AppliedJob = candidateDto.AppliedJob,
-                AppliedDepartment = candidateDto.AppliedDepartment,
-                AppliedCompany = "My Company",
                 Department = "",
-                Company = "M",
                 ExpectedSalary = candidateDto.ExpectedSalary,
                 ResumeFile = candidateDto.ResumeFile,
                 ApplyDate = DateTime.Now,
@@ -99,8 +95,6 @@ namespace API.Controllers
 
             candidate.Department = candidateDto.Department;
 
-            candidate.ProposedSalary = candidateDto.ProposedSalary;
-
             var result = await _context.SaveChangesAsync() > 0;
 
             if(result) return CreatedAtAction(nameof(GetCandidateById), new{id = candidate.CandidateId}, candidate); 
@@ -120,8 +114,6 @@ namespace API.Controllers
             if(!string.IsNullOrEmpty(candidateDto.Name)) candidate.Name = candidateDto.Name;
             if(!string.IsNullOrEmpty(candidateDto.Email)) candidate.Email = candidateDto.Email;
             if(!string.IsNullOrEmpty(candidateDto.Phone)) candidate.Phone = candidateDto.Phone;
-            if(!string.IsNullOrEmpty(candidateDto.AppliedJob)) candidate.AppliedJob= candidateDto.AppliedJob;
-            if(!string.IsNullOrEmpty(candidateDto.AppliedDepartment)) candidate.AppliedDepartment = candidateDto.AppliedDepartment;
             if(!string.IsNullOrEmpty(candidateDto.ExpectedSalary.ToString())) candidate.ExpectedSalary = candidateDto.ExpectedSalary;
 
             var result = await _context.SaveChangesAsync() > 0;

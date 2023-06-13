@@ -9,9 +9,5 @@ public partial class Department
 
     public string? DepartmentName { get; set; }
 
-    public int? ManagerId { get; set; }
-
-    public virtual UserInfor? Manager { get; set; }
-
     public virtual ICollection<UserInfor> UserInfors { get; set; } = new List<UserInfor>();
 }

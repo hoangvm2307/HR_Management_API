@@ -51,6 +51,8 @@ namespace API.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register(RegisterDto registerDto)
         {
+            if(!_context.Departments.Any()) return NotFound("No Departments");
+
             var user = new User {UserName = registerDto.Username, Email = registerDto.Email};
             
             var result = await _userManager.CreateAsync(user, registerDto.Password);
@@ -70,27 +72,29 @@ namespace API.Controllers
             var userInfor = new UserInfor
             {
                 Id = user.Id,
-                LastName = registerDto.UserInforDto.LastName,
-                FirstName = registerDto.UserInforDto.FirstName,
-                Dob = registerDto.UserInforDto.Dob,
-                Gender = registerDto.UserInforDto.Gender,
-                Address = registerDto.UserInforDto.Address,
-                Country = registerDto.UserInforDto.Country,
-                CitizenId = registerDto.UserInforDto.CitizenId,
-                DepartmentId = registerDto.UserInforDto.DepartmentId,
-                Position = registerDto.UserInforDto.Position,
-                HireDate = registerDto.UserInforDto.HireDate,
-                BankAccount = registerDto.UserInforDto.BankAccount,
-                BankAccountName = registerDto.UserInforDto.BankAccountName,
-                Bank = registerDto.UserInforDto.Bank,
-                WorkTimeByYear = registerDto.UserInforDto.WorkTimeByYear,
-                AccountStatus = registerDto.UserInforDto.AccountStatus
+                LastName = registerDto.LastName,
+                FirstName = registerDto.FirstName,
+                Dob = registerDto.Dob,
+                Phone = registerDto.Phone,
+                Gender = registerDto.Gender,
+                Address = registerDto.Address,
+                Country = registerDto.Country,
+                CitizenId = registerDto.CitizenId,
+                DepartmentId = registerDto.DepartmentId,
+                IsManager = registerDto.IsManager,
+                HireDate = DateTime.Now,
+                BankAccount = registerDto.BankAccount,
+                BankAccountName = registerDto.BankAccountName,
+                Bank = registerDto.Bank,
+                WorkTimeByYear = 0,
+                AccountStatus = true
             };
+
             _context.UserInfors.Add(userInfor);
-            if(await _context.SaveChangesAsync() > 0)
-            {
-                return StatusCode(201);
-            }
+
+            if(await _context.SaveChangesAsync() > 0) return StatusCode(201);
+
+            _userManager.DeleteAsync(user);
 
             return BadRequest();
 

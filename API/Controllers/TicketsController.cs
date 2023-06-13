@@ -30,12 +30,24 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<TicketDto>>> GetTickets()
         {
-            var tickets = await _context.Tickets
+            var ticketDtos = await _context.Tickets
+                .Select(t => new TicketDto
+                {
+                    TicketId = t.TicketId,
+                    StaffId = t.StaffId,
+                    StaffName = t.Staff.LastName + " " + t.Staff.FirstName, // Include the staff name directly in the projection
+                    TicketTypeId = t.TicketTypeId,
+                    //TicketTitle = t.TicketTitle,
+                    TicketFile = t.TicketFile,
+                    TicketStatus = t.TicketStatus,
+                    ProcessNote = t.ProcessNote,
+                    RespondencesId = t.RespondencesId,
+                    CreateDate = t.CreateAt,
+                    ChangeStatusTime = t.ChangeStatusTime
+                })
                 .ToListAsync();
 
-            var returnTickets = _mapper.Map<List<TicketDto>>(tickets);
-
-            return returnTickets;
+            return ticketDtos;
         }
 
         [HttpGet("{id}", Name="GetTicket")]
@@ -87,7 +99,7 @@ namespace API.Controllers
             {
                 StaffId = userInfor.StaffId,
                 TicketTypeId = ticketDto.TicketTypeId,
-                TicketTitle = ticketDto.TicketTitle,
+                //TicketTitle = ticketDto.TicketTitle,
                 TicketFile = ticketDto.TicketFile,
                 TicketStatus = "Pending",
                 CreateAt = DateTime.Now,
