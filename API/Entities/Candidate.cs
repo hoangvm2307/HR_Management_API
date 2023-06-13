@@ -7,25 +7,23 @@ public partial class Candidate
 {
     public int CandidateId { get; set; }
 
+    public string? ImageFile { get; set; }
+
     public string Name { get; set; } = null!;
 
     public string? Email { get; set; }
 
     public string? Phone { get; set; }
 
-    public string? AppliedJob { get; set; }
+    public DateTime? Dob { get; set; }
 
-    public string? AppliedDepartment { get; set; }
+    public bool? Gender { get; set; }
 
-    public string? AppliedCompany { get; set; }
+    public string? Address { get; set; }
 
     public string Department { get; set; } = null!;
 
-    public string? Company { get; set; }
-
     public int? ExpectedSalary { get; set; }
-
-    public int? ProposedSalary { get; set; }
 
     public string? ResumeFile { get; set; }
 

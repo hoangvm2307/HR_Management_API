@@ -15,19 +15,11 @@ namespace API.DTOs.CandidateDTO
 
         public string? Phone { get; set; }
 
-        public string? AppliedJob { get; set; }
-
-        public string? AppliedDepartment { get; set; }
-
-        public string? AppliedCompany { get; set; }
-
         public string Department { get; set; } = null!;
 
         public string? Company { get; set; }
 
         public int? ExpectedSalary { get; set; }
-
-        public int? ProposedSalary { get; set; }
 
         public string? ResumeFile { get; set; }
 

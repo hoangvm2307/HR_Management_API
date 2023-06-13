@@ -9,7 +9,7 @@ public partial class LogOt
 
     public int StaffId { get; set; }
 
-    public string LogTitile { get; set; } = null!;
+    public int? OtTypeId { get; set; }
 
     public DateTime LogStart { get; set; }
 
@@ -17,11 +17,21 @@ public partial class LogOt
 
     public double LogHours { get; set; }
 
-    public string? Description { get; set; }
+    public string? Reason { get; set; }
 
     public string? Status { get; set; }
 
-    public DateTime? CreateAt { get; set; }
+    public string? ProcessNote { get; set; }
+
+    public int? RespondencesId { get; set; }
+
+    public DateTime CreateAt { get; set; }
+
+    public DateTime? ChangeStatusTime { get; set; }
+
+    public bool? Enable { get; set; }
+
+    public virtual OtType? OtType { get; set; }
 
     public virtual UserInfor Staff { get; set; } = null!;
 }

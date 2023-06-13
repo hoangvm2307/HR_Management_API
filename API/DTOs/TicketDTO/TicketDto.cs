@@ -6,6 +6,8 @@ namespace API.DTOs.TicketDTO
 
         public int StaffId { get; set; }
 
+        public string StaffName { get; set; }
+
         public int? TicketTypeId { get; set; }
 
         public string TicketTitle { get; set; } 

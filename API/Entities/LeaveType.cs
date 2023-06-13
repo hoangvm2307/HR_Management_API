@@ -11,7 +11,11 @@ public partial class LeaveType
 
     public string? LeaveTypeDetail { get; set; }
 
-    public int? LeaveTypeMaxDay { get; set; }
+    public int? LeaveTypeDay { get; set; }
+
+    public bool? IsSalary { get; set; }
+
+    public virtual ICollection<LeaveDayDetail> LeaveDayDetails { get; set; } = new List<LeaveDayDetail>();
 
     public virtual ICollection<LogLeave> LogLeaves { get; set; } = new List<LogLeave>();
 }

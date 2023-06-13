@@ -9,17 +9,19 @@ public partial class Payslip
 
     public int StaffId { get; set; }
 
+    public int? BasicSalary { get; set; }
+
+    public int? ActualSalary { get; set; }
+
     public double? StandardWorkDays { get; set; }
 
     public double? ActualWorkDays { get; set; }
 
-    public double? OtHours { get; set; }
-
-    public double? OtDay { get; set; }
-
     public double? LeaveHours { get; set; }
 
     public double? LeaveDays { get; set; }
+
+    public int? OtTotal { get; set; }
 
     public int? GrossSalary { get; set; }
 
@@ -29,33 +31,23 @@ public partial class Payslip
 
     public int? Bhtnemp { get; set; }
 
+    public int? SalaryBonus { get; set; }
+
     public int? SalaryBeforeTax { get; set; }
 
     public int? SelfAllowances { get; set; }
 
     public int? FamilyAllowances { get; set; }
 
-    public int? TaxbleIncome { get; set; }
-
-    public int? TaxRate5M { get; set; }
-
-    public int? TaxRate5Mto10M { get; set; }
-
-    public int? TaxRate10Mto18M { get; set; }
-
-    public int? TaxRate18Mto32M { get; set; }
-
-    public int? TaxRate32Mto52M { get; set; }
-
-    public int? TaxRate52Mto82M { get; set; }
-
-    public int? TaxRateOver82M { get; set; }
+    public int? SalaryTaxable { get; set; }
 
     public int? PersonalIncomeTax { get; set; }
 
-    public int? Bonus { get; set; }
-
     public int NetSalary { get; set; }
+
+    public int? TotalAllowance { get; set; }
+
+    public int? SalaryRecieved { get; set; }
 
     public int PaiByDate { get; set; }
 
@@ -67,9 +59,15 @@ public partial class Payslip
 
     public int? TotalInsured { get; set; }
 
+    public int? TotalPaid { get; set; }
+
     public DateTime? CreateAt { get; set; }
 
     public bool? PayslipStatus { get; set; }
 
+    public virtual ICollection<OtDetail> OtDetails { get; set; } = new List<OtDetail>();
+
     public virtual UserInfor Staff { get; set; } = null!;
+
+    public virtual ICollection<TaxDetail> TaxDetails { get; set; } = new List<TaxDetail>();
 }

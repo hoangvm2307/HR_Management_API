@@ -15,7 +15,7 @@ public partial class LogLeave
 
     public DateTime LeaveEnd { get; set; }
 
-    public double LeaveDays { get; set; }
+    public double? LeaveDays { get; set; }
 
     public int? LeaveHours { get; set; }
 
@@ -23,9 +23,15 @@ public partial class LogLeave
 
     public string? Status { get; set; }
 
-    public DateTime? CreateAt { get; set; }
+    public DateTime CreateAt { get; set; }
 
     public string? ProcessNote { get; set; }
+
+    public int? RespondencesId { get; set; }
+
+    public DateTime? ChangeStatusTime { get; set; }
+
+    public bool? Enable { get; set; }
 
     public virtual LeaveType? LeaveType { get; set; }
 
