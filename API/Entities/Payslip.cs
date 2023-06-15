@@ -65,8 +65,6 @@ public partial class Payslip
 
     public bool? PayslipStatus { get; set; }
 
-    public virtual ICollection<OtDetail> OtDetails { get; set; } = new List<OtDetail>();
-
     public virtual UserInfor Staff { get; set; } = null!;
 
     public virtual ICollection<TaxDetail> TaxDetails { get; set; } = new List<TaxDetail>();

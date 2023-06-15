@@ -38,4 +38,6 @@ public partial class TheCalendar
     public string? HolidayText { get; set; }
 
     public int IsWorking { get; set; }
+
+    public decimal Percent { get; set; }
 }

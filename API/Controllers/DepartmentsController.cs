@@ -2,6 +2,7 @@ using API.DTOs.DepartmentDTO;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,20 +13,40 @@ namespace API.Controllers
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
-        public DepartmentsController(SwpProjectContext context, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+        public DepartmentsController(SwpProjectContext context, IMapper mapper, UserManager<User> userManager)
         {
             _mapper = mapper;
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<DepartmentDto>>> GetDepartments()
         {
             var departments = await _context.Departments
-            .Include(i => i.UserInfors)
-            .ToListAsync();
+                .Include(i => i.UserInfors)
+                .ToListAsync();
+
+            // var managerUser = await _userManager.FindByIdAsync(manager.Id);
+            // var managerEmail = managerUser.Email;
 
             var returnDepartments = _mapper.Map<List<DepartmentDto>>(departments);
+
+            foreach (var departmentDto in returnDepartments)
+            {
+                var manager = departmentDto.UserInfors.FirstOrDefault(u => u.IsManager == true);
+
+                if (manager != null)
+                {
+                    departmentDto.Manager = $"{manager.FirstName} {manager.LastName}";
+                    departmentDto.ManagerPhone = $"{manager.Phone}";
+                    departmentDto.ManagerMail = await GetUserEmailByIdAsync(manager.Id);
+                }
+
+                departmentDto.numberOfStaff = departmentDto.UserInfors.Count;
+            }
+
             return returnDepartments;
         }
         
@@ -46,7 +67,7 @@ namespace API.Controllers
         {
             var department = await _context.Departments
                 .ProjectDepartmentToDepartmentDto()
-                .FirstOrDefaultAsync(d => d.DepartmentID == id);
+                .FirstOrDefaultAsync(d => d.DepartmentId == id);
             return department;
         }
 
@@ -147,6 +168,11 @@ namespace API.Controllers
             if(result) return NoContent();
 
             return BadRequest("Problem Updateing Department");
+        }
+        private async Task<string> GetUserEmailByIdAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            return user?.Email;
         }
     }
 }

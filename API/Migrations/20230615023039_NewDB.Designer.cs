@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    [Migration("20230613020351_NEWDB")]
-    partial class NEWDB
+    [Migration("20230615023039_NewDB")]
+    partial class NewDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -278,7 +278,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF33AAFBED8");
+                        .HasName("PK__DateDime__AA552EF3FCF6C274");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -564,8 +564,6 @@ namespace API.Migrations
                         .HasName("PK_OtDetail_otDetailId");
 
                     b.HasIndex("OtTypeId");
-
-                    b.HasIndex("PayslipId");
 
                     b.ToTable("OtDetail", (string)null);
                 });
@@ -951,6 +949,9 @@ namespace API.Migrations
                     b.Property<int>("IsWorking")
                         .HasColumnType("int")
                         .HasColumnName("isWorking");
+
+                    b.Property<decimal>("Percent")
+                        .HasColumnType("numeric(2, 1)");
 
                     b.Property<string>("Style101")
                         .HasMaxLength(10)
@@ -1346,19 +1347,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "4602462b-95a3-47e0-a98a-272175c97895",
+                            Id = "ff99dc8c-c681-4ac2-a525-b4bc15e2d243",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "293c27e9-be2a-4260-b335-d11c071dff28",
+                            Id = "3d946b48-1412-4b1b-8506-9abf25a18c6b",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "11bbdce4-550e-4c34-be3d-760c39ace2ba",
+                            Id = "b1f1d228-e05f-4345-b525-ea9281e471cd",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
@@ -1578,14 +1579,7 @@ namespace API.Migrations
                         .HasForeignKey("OtTypeId")
                         .HasConstraintName("FK_OtDetail_otTypeId_otTypeId");
 
-                    b.HasOne("API.Entities.Payslip", "Payslip")
-                        .WithMany("OtDetails")
-                        .HasForeignKey("PayslipId")
-                        .HasConstraintName("FK_OtDetail_payslipId_payslipId");
-
                     b.Navigation("OtType");
-
-                    b.Navigation("Payslip");
                 });
 
             modelBuilder.Entity("API.Entities.Payslip", b =>
@@ -1790,8 +1784,6 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.Payslip", b =>
                 {
-                    b.Navigation("OtDetails");
-
                     b.Navigation("TaxDetails");
                 });
 

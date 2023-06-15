@@ -83,7 +83,6 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 new IdentityRole{Name = "HRStaff", NormalizedName = "HRSTAFF"},
                 new IdentityRole{Name = "HRManager", NormalizedName = "HRMANAGER"}
         );
-
         modelBuilder.Entity<Allowance>(entity =>
         {
             entity.HasKey(e => e.AllowanceId).HasName("PK_Allowance_allowanceId");
@@ -210,7 +209,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF33AAFBED8")
+                .HasName("PK__DateDime__AA552EF3FCF6C274")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");
@@ -404,10 +403,6 @@ public partial class SwpProjectContext : IdentityDbContext<User>
             entity.HasOne(d => d.OtType).WithMany(p => p.OtDetails)
                 .HasForeignKey(d => d.OtTypeId)
                 .HasConstraintName("FK_OtDetail_otTypeId_otTypeId");
-
-            entity.HasOne(d => d.Payslip).WithMany(p => p.OtDetails)
-                .HasForeignKey(d => d.PayslipId)
-                .HasConstraintName("FK_OtDetail_payslipId_payslipId");
         });
 
         modelBuilder.Entity<OtType>(entity =>
@@ -608,6 +603,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
 
             entity.Property(e => e.HolidayText).HasMaxLength(255);
             entity.Property(e => e.IsWorking).HasColumnName("isWorking");
+            entity.Property(e => e.Percent).HasColumnType("numeric(2, 1)");
             entity.Property(e => e.Style101)
                 .HasMaxLength(10)
                 .IsUnicode(false)

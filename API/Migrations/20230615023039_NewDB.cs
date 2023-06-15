@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class NEWDB : Migration
+    public partial class NewDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -127,7 +127,7 @@ namespace API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__DateDime__AA552EF33AAFBED8", x => x.uniqueId)
+                    table.PrimaryKey("PK__DateDime__AA552EF3FCF6C274", x => x.uniqueId)
                         .Annotation("SqlServer:Clustered", false);
                     table.UniqueConstraint("AK_DateDimension_TheDate", x => x.TheDate);
                 });
@@ -348,6 +348,27 @@ namespace API.Migrations
                         column: x => x.TheDate,
                         principalTable: "DateDimension",
                         principalColumn: "TheDate");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OtDetail",
+                columns: table => new
+                {
+                    otDetailId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    payslipId = table.Column<int>(type: "int", nullable: true),
+                    otTypeId = table.Column<int>(type: "int", nullable: true),
+                    otHours = table.Column<int>(type: "int", nullable: true),
+                    otAmount = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OtDetail_otDetailId", x => x.otDetailId);
+                    table.ForeignKey(
+                        name: "FK_OtDetail_otTypeId_otTypeId",
+                        column: x => x.otTypeId,
+                        principalTable: "OtType",
+                        principalColumn: "otTypeId");
                 });
 
             migrationBuilder.CreateTable(
@@ -674,32 +695,6 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OtDetail",
-                columns: table => new
-                {
-                    otDetailId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    payslipId = table.Column<int>(type: "int", nullable: true),
-                    otTypeId = table.Column<int>(type: "int", nullable: true),
-                    otHours = table.Column<int>(type: "int", nullable: true),
-                    otAmount = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OtDetail_otDetailId", x => x.otDetailId);
-                    table.ForeignKey(
-                        name: "FK_OtDetail_otTypeId_otTypeId",
-                        column: x => x.otTypeId,
-                        principalTable: "OtType",
-                        principalColumn: "otTypeId");
-                    table.ForeignKey(
-                        name: "FK_OtDetail_payslipId_payslipId",
-                        column: x => x.payslipId,
-                        principalTable: "Payslip",
-                        principalColumn: "payslipId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TaxDetail",
                 columns: table => new
                 {
@@ -754,9 +749,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "11bbdce4-550e-4c34-be3d-760c39ace2ba", null, "HRManager", "HRMANAGER" },
-                    { "293c27e9-be2a-4260-b335-d11c071dff28", null, "HRStaff", "HRSTAFF" },
-                    { "4602462b-95a3-47e0-a98a-272175c97895", null, "Staff", "STAFF" }
+                    { "3d946b48-1412-4b1b-8506-9abf25a18c6b", null, "HRStaff", "HRSTAFF" },
+                    { "b1f1d228-e05f-4345-b525-ea9281e471cd", null, "HRManager", "HRMANAGER" },
+                    { "ff99dc8c-c681-4ac2-a525-b4bc15e2d243", null, "Staff", "STAFF" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -865,11 +860,6 @@ namespace API.Migrations
                 name: "IX_OtDetail_otTypeId",
                 table: "OtDetail",
                 column: "otTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OtDetail_payslipId",
-                table: "OtDetail",
-                column: "payslipId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payslip_staffId",
