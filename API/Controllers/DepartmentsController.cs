@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace API.Controllers
 {
@@ -66,9 +67,31 @@ namespace API.Controllers
         public async Task<ActionResult<DepartmentDto>> GetDepartment(int id)
         {
             var department = await _context.Departments
-                .ProjectDepartmentToDepartmentDto()
+                .Include(i => i.UserInfors)
                 .FirstOrDefaultAsync(d => d.DepartmentId == id);
-            return department;
+            
+            var departmentDto = _mapper.Map<DepartmentDto>(department);
+
+            foreach(var userInfor in departmentDto.UserInfors)
+            {
+                userInfor.FullName = userInfor.LastName + ' ' + userInfor.FirstName;
+                userInfor.Email = await GetUserEmailByIdAsync(userInfor.Id);
+                userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
+                userInfor.GioiTinh = userInfor.Gender ? "Nam" : "Nữ"; 
+            }
+
+            var manager = departmentDto.UserInfors.FirstOrDefault(u => u.IsManager == true);
+
+            if (manager != null)
+            {
+                departmentDto.Manager = $"{manager.FirstName} {manager.LastName}";
+                departmentDto.ManagerPhone = $"{manager.Phone}";
+                departmentDto.ManagerMail = await GetUserEmailByIdAsync(manager.Id);
+            }
+
+            departmentDto.numberOfStaff = departmentDto.UserInfors.Count;
+
+            return departmentDto;
         }
 
         [HttpDelete]

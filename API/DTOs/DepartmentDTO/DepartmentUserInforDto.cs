@@ -15,6 +15,8 @@ namespace API.DTOs.DepartmentDTO
 
         public string FirstName { get; set; } = null!;
 
+        public string FullName { get; set; }
+        
         public DateTime? Dob { get; set; }
 
         public string? Phone { get; set; }

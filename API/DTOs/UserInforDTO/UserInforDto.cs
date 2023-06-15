@@ -9,15 +9,21 @@ namespace API.DTOs.UserInforDTO
     public class UserInforDto
     {
         public int StaffId { get; set; }
+        public string Id { get; set; }
         public string LastName { get; set; } = null!;
 
         public string FirstName { get; set; } = null!;
 
+        public string FullName { get; set; }
+
+        public string Email { get; set; }
+        public string Position { get; set; }
         public DateTime? Dob { get; set; }
 
         public string? Phone { get; set; }
 
         public bool Gender { get; set; }
+        public string GioiTinh { get; set; }
 
         public string? Address { get; set; }
 
@@ -27,7 +33,7 @@ namespace API.DTOs.UserInforDTO
 
         public int? DepartmentId { get; set; }
 
-        public bool? IsManager { get; set; }
+        public bool IsManager { get; set; }
 
         public DateTime HireDate { get; set; }
 

@@ -275,7 +275,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF3FCF6C274");
+                        .HasName("PK__DateDime__AA552EF30CB84D50");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -344,6 +344,10 @@ namespace API.Migrations
                     b.Property<int?>("StaffId")
                         .HasColumnType("int")
                         .HasColumnName("staffId");
+
+                    b.Property<int?>("Time")
+                        .HasColumnType("int")
+                        .HasColumnName("time");
 
                     b.HasKey("LeaveDayDetailId")
                         .HasName("PK_LeaveDayDetail_leaveDayDetailId");
@@ -553,14 +557,20 @@ namespace API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("otTypeId");
 
-                    b.Property<int?>("PayslipId")
+                    b.Property<int?>("StaffId")
                         .HasColumnType("int")
-                        .HasColumnName("payslipId");
+                        .HasColumnName("staffId");
+
+                    b.Property<DateTime?>("Time")
+                        .HasColumnType("date")
+                        .HasColumnName("time");
 
                     b.HasKey("OtDetailId")
                         .HasName("PK_OtDetail_otDetailId");
 
                     b.HasIndex("OtTypeId");
+
+                    b.HasIndex("StaffId");
 
                     b.ToTable("OtDetail", (string)null);
                 });
@@ -1344,19 +1354,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ff99dc8c-c681-4ac2-a525-b4bc15e2d243",
+                            Id = "cc15c2a7-fe82-40d6-9e71-2dc4d0f07e06",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "3d946b48-1412-4b1b-8506-9abf25a18c6b",
+                            Id = "b9ade8d2-0438-4a47-8173-5e7bc0591f78",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "b1f1d228-e05f-4345-b525-ea9281e471cd",
+                            Id = "ced8e9ed-6639-4eea-b2ef-d5aea53c1811",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
@@ -1576,7 +1586,14 @@ namespace API.Migrations
                         .HasForeignKey("OtTypeId")
                         .HasConstraintName("FK_OtDetail_otTypeId_otTypeId");
 
+                    b.HasOne("API.Entities.UserInfor", "Staff")
+                        .WithMany("OtDetails")
+                        .HasForeignKey("StaffId")
+                        .HasConstraintName("FK_OtDetail_staffId_staffId");
+
                     b.Navigation("OtType");
+
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("API.Entities.Payslip", b =>
@@ -1829,6 +1846,8 @@ namespace API.Migrations
                     b.Navigation("LogLeaves");
 
                     b.Navigation("LogOts");
+
+                    b.Navigation("OtDetails");
 
                     b.Navigation("Payslips");
 

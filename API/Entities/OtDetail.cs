@@ -7,7 +7,7 @@ public partial class OtDetail
 {
     public int OtDetailId { get; set; }
 
-    public int? PayslipId { get; set; }
+    public int? StaffId { get; set; }
 
     public int? OtTypeId { get; set; }
 
@@ -15,5 +15,9 @@ public partial class OtDetail
 
     public int? OtAmount { get; set; }
 
+    public DateTime? Time { get; set; }
+
     public virtual OtType? OtType { get; set; }
+
+    public virtual UserInfor? Staff { get; set; }
 }

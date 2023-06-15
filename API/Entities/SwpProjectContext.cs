@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Entities;
 
-public partial class SwpProjectContext : IdentityDbContext<User>
+public partial class SwpProjectContext :  IdentityDbContext<User>
 {
     public SwpProjectContext()
     {
@@ -209,7 +209,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF3FCF6C274")
+                .HasName("PK__DateDime__AA552EF30CB84D50")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");
@@ -272,6 +272,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
             entity.Property(e => e.DayLeft).HasColumnName("dayLeft");
             entity.Property(e => e.LeaveTypeId).HasColumnName("leaveTypeId");
             entity.Property(e => e.StaffId).HasColumnName("staffId");
+            entity.Property(e => e.Time).HasColumnName("time");
 
             entity.HasOne(d => d.LeaveType).WithMany(p => p.LeaveDayDetails)
                 .HasForeignKey(d => d.LeaveTypeId)
@@ -398,11 +399,18 @@ public partial class SwpProjectContext : IdentityDbContext<User>
             entity.Property(e => e.OtAmount).HasColumnName("otAmount");
             entity.Property(e => e.OtHours).HasColumnName("otHours");
             entity.Property(e => e.OtTypeId).HasColumnName("otTypeId");
-            entity.Property(e => e.PayslipId).HasColumnName("payslipId");
+            entity.Property(e => e.StaffId).HasColumnName("staffId");
+            entity.Property(e => e.Time)
+                .HasColumnType("date")
+                .HasColumnName("time");
 
             entity.HasOne(d => d.OtType).WithMany(p => p.OtDetails)
                 .HasForeignKey(d => d.OtTypeId)
                 .HasConstraintName("FK_OtDetail_otTypeId_otTypeId");
+
+            entity.HasOne(d => d.Staff).WithMany(p => p.OtDetails)
+                .HasForeignKey(d => d.StaffId)
+                .HasConstraintName("FK_OtDetail_staffId_staffId");
         });
 
         modelBuilder.Entity<OtType>(entity =>
