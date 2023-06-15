@@ -13,6 +13,8 @@ public partial class LeaveDayDetail
 
     public int? DayLeft { get; set; }
 
+    public int? Time { get; set; }
+
     public virtual LeaveType? LeaveType { get; set; }
 
     public virtual UserInfor? Staff { get; set; }

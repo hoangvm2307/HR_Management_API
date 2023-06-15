@@ -28,6 +28,28 @@ namespace API.Data
                 await userManager.AddToRolesAsync(admin, new[] {"Staff", "HRStaff", "HRManager"});
             }
             
+            if(!context.Departments.Any())
+            {
+
+                var departments = new List<Department>()
+                {
+                    new Department{ DepartmentName = "Sales"},
+                    new Department{ DepartmentName = "Marketing"},
+                    new Department{ DepartmentName = "Finance"},
+                    new Department{ DepartmentName = "Human Resource"},
+                    new Department{ DepartmentName = "Operations"},
+                    new Department{ DepartmentName = "Engineering"},
+                    new Department{ DepartmentName = "Customer Support"},
+                    new Department{ DepartmentName = "Research & Development"},
+                    new Department{ DepartmentName = "Quality Assurance"},
+                    new Department{ DepartmentName = "Design"},
+                };
+
+                foreach(var department in departments)
+                {
+                    context.Departments.Add(department);
+                }
+            }
 
 
             context.SaveChanges();
