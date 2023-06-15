@@ -9,7 +9,7 @@ namespace API.DTOs.DepartmentDTO
     {
         public int StaffId { get; set; }
 
-        public int UserId { get; set; }
+        public string Id { get; set; }
 
         public string LastName { get; set; } = null!;
 
@@ -29,7 +29,7 @@ namespace API.DTOs.DepartmentDTO
 
         public int? DepartmentId { get; set; }
 
-        public string? Position { get; set; }
+        public bool? IsManager { get; set; }
 
         public DateTime HireDate { get; set; }
 

@@ -16,6 +16,4 @@ public partial class OtDetail
     public int? OtAmount { get; set; }
 
     public virtual OtType? OtType { get; set; }
-
-    public virtual Payslip? Payslip { get; set; }
 }
