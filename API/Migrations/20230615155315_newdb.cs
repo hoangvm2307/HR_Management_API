@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class NewDB : Migration
+    public partial class newdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -756,9 +756,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "b9ade8d2-0438-4a47-8173-5e7bc0591f78", null, "HRStaff", "HRSTAFF" },
-                    { "cc15c2a7-fe82-40d6-9e71-2dc4d0f07e06", null, "Staff", "STAFF" },
-                    { "ced8e9ed-6639-4eea-b2ef-d5aea53c1811", null, "HRManager", "HRMANAGER" }
+                    { "49c8d4a0-47ae-49b0-bf6c-89f05c439d19", null, "HRStaff", "HRSTAFF" },
+                    { "ad01ab83-ea0d-4ac9-ab55-3e2b6bd4362a", null, "Staff", "STAFF" },
+                    { "e3f17633-ca91-46e9-9081-1faa8fb8405e", null, "HRManager", "HRMANAGER" }
                 });
 
             migrationBuilder.CreateIndex(

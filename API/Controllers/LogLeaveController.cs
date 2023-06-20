@@ -1,5 +1,6 @@
 using API.DTOs.LogLeaveDTO;
 using API.Entities;
+using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -13,74 +14,84 @@ namespace API.Controllers
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
-        public LogLeaveController(SwpProjectContext context, IMapper mapper)
+        private readonly UserInfoService _userInfoService;
+        private readonly LogLeaveService _logLeaveService;
+        private readonly LeaveDayDetailService _leaveDayDetailService;
+
+        public LogLeaveController(
+            SwpProjectContext context, 
+            IMapper mapper,
+            UserInfoService userInfoService,
+            LogLeaveService logLeaveService,
+            LeaveDayDetailService leaveDayDetailService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
+            _logLeaveService = logLeaveService ?? throw new ArgumentNullException(nameof(logLeaveService));
+            _leaveDayDetailService = leaveDayDetailService ?? throw new ArgumentNullException(nameof(leaveDayDetailService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
         [HttpGet]
         public async Task<ActionResult<List<LogLeaveDTO>>> GetLogLeavesAsync()
         {
-            var logleaves = await _context.LogLeaves
-                                    .Include(c => c.LeaveType)
-                                    .ToListAsync();
-
-            var returnLogLeaves = _mapper.Map<List<LogLeaveDTO>>(logleaves);
-
-            return returnLogLeaves;
+            return await _logLeaveService.GetLogLeaveDTOs();
         }
+
+        
 
         [HttpGet("staffId/{staffId}")]
         public async Task<ActionResult<List<LogLeaveDTO>>> GetLogLeavesAsyncByStaffId(int staffId)
         {
-            var staffInfo = await _context.UserInfors.Where(c => c.StaffId == staffId).ToListAsync();
-
-            if (staffInfo == null)
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
 
-            var logLeaves = await _context.LogLeaves
-                                    .Include(c => c.LeaveType)
-                                    .Where(c => c.StaffId == staffId)
-                                    .ToListAsync();
-
-            var returnLogLeaves = _mapper.Map<List<LogLeaveDTO>>(logLeaves);
-
-            return returnLogLeaves;
+            return await _logLeaveService.GetLogLeavesByStaffId(staffId);
         }
 
-        [HttpGet("staffId/{staffId}/logLeaveId/{logLeaveId}")]
-        public async Task<ActionResult<LogLeaveDTO>> GetLogLeavesAsyncById(int staffId, int logLeaveId)
+        
+
+        [HttpGet("staffId/{staffId}/logLeaveId/{logLeaveId}", Name = "GetLogLeaveByStaffIdAndLogLeaveId")]
+        public async Task<ActionResult<LogLeaveDTO>> GetLogLeaveByStaffIdAndLogLeaveId(int staffId, int logLeaveId)
         {
-            var LogLeave = await _context.LogLeaves
-                                        .Include(c => c.LeaveType)
-                                        .Where(c => c.LeaveLogId == logLeaveId && c.LeaveLogId == logLeaveId)
-                                        .FirstOrDefaultAsync();
-
-            if (LogLeave == null)
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
 
-            var reuturnLogLeave = _mapper.Map<LogLeaveDTO>(LogLeave);
+            if (await _logLeaveService.IsLogLeaveExist(logLeaveId))
+            {
+                return NotFound();
+            }
 
-            return reuturnLogLeave;
+            var returnLogLeave = await _logLeaveService.GetLogLeaveByStaffIdAndLogLeaveId(staffId, logLeaveId);
+
+            return returnLogLeave;
         }
+
+        
 
         [HttpPost]
         public async Task<ActionResult<LogLeaveDTO>> CreateLogLeaveByStaffId(int staffId, LogLeaveCreationDTO logLeaveCreationDTO)
         {
-            var staffInfo = await _context.UserInfors
-                                            .Include(c => c.LogLeaves)
-                                            .Where(c => c.StaffId == staffId)
-                                            .FirstOrDefaultAsync();
-
-            if (staffInfo == null)
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
+
+            if(!await _leaveDayDetailService.IsLeaveTypeDetailExist(staffId, logLeaveCreationDTO.LeaveTypeId))
+            {
+                return BadRequest("Invalid Leave Type Id Of Staff");
+            }
+
+            if(!await _leaveDayDetailService.IsLeaveDayDetailValid(staffId, (int)logLeaveCreationDTO.LeaveDays))
+            {
+                return BadRequest("Invalid Leave Days");
+            }
+
+            var user = await _logLeaveService.GetUserLogLeave(staffId);
 
             var logLeave = _mapper.Map<LogLeave>(logLeaveCreationDTO);
 
@@ -89,27 +100,28 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            staffInfo.LogLeaves.Add(logLeave);
+            user.LogLeaves.Add(logLeave);
+
             await _context.SaveChangesAsync();
 
-
-
             return CreatedAtRoute(
+                "GetLogLeaveByStaffIdAndLogLeaveId",
                 new
                 {
-                    staffId = staffId,
+                    staffId = logLeave.StaffId,
                     logLeaveId = logLeave.LeaveLogId
                 },
                 logLeave
             );
         }
 
+        
         [HttpPut]
         public async Task<ActionResult<LogLeaveDTO>> UpdateLogLeave(int staffId, int logLeaveId, LogLeaveUpdateDTO logLeaveUpdateDTO)
         {
             var logLeave = await _context.LogLeaves
                                          .Include(c => c.LeaveType)
-                                         .Where(c => c.LeaveLogId == logLeaveId && c.LeaveLogId == logLeaveId)
+                                         .Where(c => c.StaffId == staffId && c.LeaveLogId == logLeaveId)
                                          .FirstOrDefaultAsync();
 
             if (logLeave == null)
@@ -128,9 +140,9 @@ namespace API.Controllers
         public async Task<ActionResult<LogLeaveDTO>> UpdateStatusLogLeave(int staffId, int logLeaveId, JsonPatchDocument<LogLeaveUpdateDTO> patchDocument)
         {
             var logLeave = await _context.LogLeaves
-                                                     .Include(c => c.LeaveType)
-                                                     .Where(c => c.LeaveLogId == logLeaveId && c.LeaveLogId == logLeaveId)
-                                                     .FirstOrDefaultAsync();
+                .Include(c => c.LeaveType)
+                .Where(c => c.LeaveLogId == logLeaveId && c.LeaveLogId == logLeaveId)
+                .FirstOrDefaultAsync();
 
             if (logLeave == null)
             {
@@ -156,6 +168,5 @@ namespace API.Controllers
 
             return NoContent();
         }
-
     }
 }

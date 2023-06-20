@@ -9,6 +9,6 @@ namespace API.DTOs.UserInforDTO
         public string? LeaveTypeDetail { get; set; }
 
         public int? LaveTypeMaxDay { get; set; }
-        public List<LeaveDayLeftDto> LeaveDayLefts { get; set;}
+        public List<LeaveDayLeftDto> LeaveDayLefts { get; set; }
     }
 }

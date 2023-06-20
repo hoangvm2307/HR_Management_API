@@ -77,6 +77,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AccountController>();
+builder.Services.AddScoped<UserInfoService>();
+builder.Services.AddScoped<LogOtService>();
+builder.Services.AddScoped<TheCalendarService>();
+builder.Services.AddScoped<LogOtTypeService>();
+builder.Services.AddScoped<PersonnelContractService>();
+builder.Services.AddScoped<LeaveDayDetailService>();
+builder.Services.AddScoped<LogLeaveService>();
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
