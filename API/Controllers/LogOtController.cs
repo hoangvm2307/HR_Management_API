@@ -1,9 +1,12 @@
 using API.DTOs.LogOtDTOs;
+using API.DTOs.UserInforDTO;
 using API.Entities;
+using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace API.Controllers
 {
@@ -13,102 +16,135 @@ namespace API.Controllers
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
-        public LogOtController(SwpProjectContext context, IMapper mapper)
+        private readonly LogOtService _logOtService;
+        private readonly UserInfoService _userInfoService;
+
+        public TheCalendarService TheCalendarService { get; set; }
+        public LogOtController(
+            SwpProjectContext context, 
+            IMapper mapper, 
+            LogOtService logOtService,
+            UserInfoService userInfoService
+            )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logOtService = logOtService ?? throw new ArgumentNullException(nameof(logOtService));
+            _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
+            TheCalendarService = new TheCalendarService(_context, _mapper);
         }
 
         [HttpGet]
         public async Task<ActionResult<List<LogOtDTO>>> GetLogOtList()
         {
-            var logOtList = await _context.LogOts
-                                .ToListAsync();
-
-            var returnLogOtList = _mapper.Map<List<LogOtDTO>>(logOtList);
-
-            return returnLogOtList;
-        }
-        [HttpGet("{StaffId}", Name = "GetLogOtListByStaffId")]
-        public async Task<ActionResult<List<LogOtDTO>>> GetLogOtListByStaffId(int StaffId)
-        {
-            var logOtList = await _context.LogOts
-                                .Where(c => c.StaffId == StaffId)
-                                .ToListAsync();
-
-            var returnLogOtList = _mapper.Map<List<LogOtDTO>>(logOtList);
+            var returnLogOtList = await _logOtService.GetLogOts();
 
             return returnLogOtList;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<LogOtDTO>> CreateLogOtByStaffId(int StaffId, LogOtCreationDTO createLogOtDTO)
+        [HttpGet("staffId/{staffId}", Name = "GetLogOtOfStaff")]
+        public async Task<ActionResult<List<LogOtDTO>>> GetLogOtListByStaffId(int staffId)
         {
-            var staffInfo = await _context.UserInfors
-                                .Include(c => c.LogOts).Where(c => c.StaffId == StaffId)
-                                .FirstOrDefaultAsync();
-
-            if (staffInfo == null)
+            if(!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
 
-            var logOt = _mapper.Map<LogOt>(createLogOtDTO);
+            var logOtList = await _logOtService.GetLogOtByStaffIdAsync(staffId);
 
-            staffInfo.LogOts.Add(logOt);
-
-            await _context.SaveChangesAsync();
-
-            if (!(await _context.SaveChangesAsync() >= 0))
-            {
-                return NotFound();
-            }
-
-            var returnLogOtDTO = _mapper.Map<LogOtDTO>(logOt);
-
-            return CreatedAtRoute(
-                "GetLogOtListByStaffId",
-                new { StaffId = StaffId },
-                returnLogOtDTO
-            );
+            return logOtList;
         }
-        
-        [HttpPut]
-        public async Task<ActionResult<LogOtDTO>> UpdateLogOt(int StaffId, int LogOtId, LogOtUpdateDTO logOtUpdateDTO)
+
+        [HttpGet("{logOtId}", Name = "GetLogOtByOtId")]
+        public async Task<ActionResult<LogOtDTO>> GetLogOTByOtId(int logOtId)
         {
-            var staffInfo = await _context.UserInfors.Include(c => c.LogOts).Where(c => c.StaffId == StaffId).FirstOrDefaultAsync();
-
-            if (staffInfo == null)
-            {
-                return NotFound();
-            }
-
-
-            var logOt = await _context.LogOts
-                                        .Where(c => c.StaffId == StaffId && c.OtLogId == LogOtId)
-                                        .FirstOrDefaultAsync();
+            var logOt = await _logOtService.GetLogOtById(logOtId);
 
             if (logOt == null)
             {
                 return NotFound();
             }
 
-            _mapper.Map(logOtUpdateDTO, logOt);
+            return logOt;
+        }
 
-            _context.SaveChanges();
+
+        [HttpPost("staffId/{staffId}")]
+        public async Task<ActionResult<LogOtDTO>> CreateLogOtByStaffId(int staffId, LogOtCreationDTO createLogOtDTO)
+        {
+            if (!await _userInfoService.IsUserExist(staffId))
+            {
+                return NotFound();
+            }
+
+            //Here 
+            if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            {
+                return BadRequest("Unvalid DateTime");
+            }
+
+            if (!await _logOtService.IsContainHoliday(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            {
+                return BadRequest("Not contain holiday");
+            }
+            var logOt = _mapper.Map<LogOt>(createLogOtDTO);
+
+
+            if (await _logOtService.IsDuplicateLogOt(staffId, logOt.OtLogId, createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            {
+                return BadRequest("You have signed up for overtime");
+            }
+
+            await _logOtService.CreateLogOT(staffId, createLogOtDTO);
+
+            if (!(await _context.SaveChangesAsync() >= 0))
+            {
+                return BadRequest("Save Change Problem");
+            }
+
+            var returnLogOtDTO = _mapper.Map<LogOtDTO>(logOt);
+
+            return CreatedAtRoute(
+                "GetLogOtOfStaff",
+                new
+                {
+                    staffId = returnLogOtDTO.StaffId
+                },
+                 returnLogOtDTO
+            );
+        }
+
+
+        [HttpPut("logOtId/{logOtId}/staffId/{staffId}")]
+        public async Task<ActionResult<LogOtDTO>> UpdateLogOt(int staffId, int logOtId, LogOtUpdateDTO logOtUpdateDTO)
+        {
+            var staffInfo = await _context.UserInfors.Include(c => c.LogOts).Where(c => c.StaffId == staffId).FirstOrDefaultAsync();
+
+            if (!await _userInfoService.IsUserExist(staffId))
+            {
+                return NotFound();
+            }
+
+            if (!await _logOtService.IsLogOtExist(logOtId))
+            {
+                return NotFound();
+            }
+
+            await _logOtService.UpdateLogOt(staffId, logOtId,logOtUpdateDTO);
 
             return NoContent();
         }
 
-        [HttpPatch]
+        
+
+        [HttpPatch("logOtId/{logOtId}/staffId/{staffId}")]
         public async Task<ActionResult<LogOtDTO>> PartiallyUpdateLogOt(
             int StaffId,
             int LogOtId,
             JsonPatchDocument<LogOtUpdateDTO> patchDocument
         )
         {
-
             var staffInfo = await _context.UserInfors.Where(c => c.StaffId == StaffId).FirstOrDefaultAsync();
 
             if (staffInfo == null)
@@ -159,11 +195,13 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            _context.LogOts.Remove(logOt);
+            //_context.LogOts.Remove(logOt);
 
-            await   _context.SaveChangesAsync();
+            //await   _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+
     }
 }

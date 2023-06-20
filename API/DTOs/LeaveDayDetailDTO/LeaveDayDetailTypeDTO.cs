@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace API.DTOs.LogLeaveDTO {
-
-    public class LeaveTypeDTO
+﻿namespace API.DTOs.LeaveDayDetailDTO
+{
+    public class LeaveDayDetailTypeDTO
     {
         public int LeaveTypeId { get; set; }
 

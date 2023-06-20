@@ -1,5 +1,6 @@
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
+using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +14,18 @@ namespace API.Controllers
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
+        private readonly PersonnelContractService _personnelContractService;
+        private readonly UserInfoService _userInfoService;
 
-        public ContractController(SwpProjectContext context, IMapper mapper)
+        public ContractController(
+            SwpProjectContext context,  
+            IMapper mapper,
+            PersonnelContractService personnelContractService,
+            UserInfoService userInfoService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
+            _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
@@ -24,64 +33,72 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<PersonnelContractDTO>>> GetPersonnelContracts()
         {
+            var personnelContracts = await _personnelContractService.GetPersonnelContractsAsync();
 
-
-            var PersonnelContracts = await _context.PersonnelContracts
-                                            .Include(c => c.ContractType)
-                                            .Include(c => c.Allowances)
-                                            .ThenInclude(c => c.AllowanceType)
-                                            .ToListAsync();
-
-            var finalPersonnelContracts = _mapper.Map<List<PersonnelContractDTO>>(PersonnelContracts);
-
-            return finalPersonnelContracts;
+            return personnelContracts;
         }
 
-        [HttpGet("staffId", Name = "GetPersonnelContractByStaffId")]
-        public async Task<ActionResult<PersonnelContractDTO>> GetPersonnelContractByStaffId(int staffId)
+        
+
+        [HttpGet("{staffId}", Name = "GetPersonnelContractByStaffId")]
+        public async Task<ActionResult<List<PersonnelContractDTO>>> GetPersonnelContractByStaffId(int staffId)
         {
 
-            if (!await IsStaffInfoExist(staffId))
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
+            var finalPersonnelContract = await _personnelContractService.GetPersonnelContractById(staffId);
 
-            var PersonnelContract = await _context.PersonnelContracts
-                                        .Include(c => c.ContractType)
-                                        .Include(c => c.Allowances)
-                                        .ThenInclude(c => c.AllowanceType)
-                                        .Where(c => c.StaffId == staffId)
-                                        .FirstOrDefaultAsync();
-
-
-            if (PersonnelContract == null)
-            {
-                return NotFound();
-            }
-
-            var finalPersonnelContracts = _mapper.Map<PersonnelContractDTO>(PersonnelContract);
-
-            return finalPersonnelContracts;
+            return finalPersonnelContract;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<PersonnelContractDTO>> CreatePersonnelContract(int staffId, PersonnelContractCreationDTO personnelContractCreationDTO)
+        [HttpGet("valid/{staffId}")]
+        public async Task<ActionResult<PersonnelContractDTO>> GetValidPersonnelContractByStaffId(int staffId)
         {
-            if (!await IsStaffInfoExist(staffId))
+            if(!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
 
-            var PersonnelContract = _mapper.Map<PersonnelContract>(personnelContractCreationDTO);
+            var validPersonnelContract = await _personnelContractService.GetValidPersonnelContractByStaffId(staffId);
 
-            var userInfor = await _context.UserInfors.Include(c => c.PersonnelContracts).Where(c => c.StaffId == staffId).FirstOrDefaultAsync();
-
-            if (userInfor == null)
+            if (validPersonnelContract == null)
             {
                 return NotFound();
             }
 
-            userInfor.PersonnelContracts.Add(PersonnelContract);
+            return validPersonnelContract;
+
+        }
+
+        [HttpPost("staffId/{staffId}")]
+        public async Task<ActionResult<PersonnelContractDTO>> CreatePersonnelContract(
+            int staffId, 
+            PersonnelContractCreationDTO personnelContractCreationDTO)
+        {
+            if (!await _userInfoService.IsUserExist(staffId))
+            {
+                return NotFound();
+            }
+
+            if (!await _personnelContractService.IsContractTypeValid(personnelContractCreationDTO.ContractTypeId))
+            {
+                return BadRequest("Invalid ContractTypeId");
+            }
+
+            if (!await _personnelContractService.IsContractTimeValid(personnelContractCreationDTO.StartDate, personnelContractCreationDTO.EndDate))
+            {
+                return BadRequest("InValid DateTime");
+            }
+
+            if (await _personnelContractService.IsValidContractExist(staffId))
+            {
+                return BadRequest("This account already have contract");
+            }
+
+            var returnPersonnelContract = await _personnelContractService.CreatePersonnelContract(staffId, personnelContractCreationDTO);
+            
             await _context.SaveChangesAsync();
 
             if(!await SaveChangeAsync())
@@ -89,26 +106,35 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var returnPersonnelContract = _mapper.Map<PersonnelContractDTO>(PersonnelContract);
 
             return CreatedAtRoute(
-                new {staffId = staffId},
+                "GetPersonnelContractByStaffId",
+                new {staffId},
                 returnPersonnelContract
             );
         }
 
-        [HttpPut]
+        [HttpPut("{contractId}/staffid{staffId}")]
         public async Task<ActionResult<PersonnelContractDTO>> UpdatePersonnelContract(int staffId, int contractId, PersonnelContractUpdateDTO personnelContractUpdateDTO)
         {
-            if (!await IsStaffInfoExist(staffId))
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
+            }
+
+            if (!await _personnelContractService.IsContractTypeValid(personnelContractUpdateDTO.ContractTypeId))
+            {
+                return BadRequest("Invalid ContractTypeId");
+            }
+
+            if (!await _personnelContractService.IsContractTimeValid(personnelContractUpdateDTO.StartDate, personnelContractUpdateDTO.EndDate))
+            {
+                return BadRequest("InValid DateTime");
             }
 
             var personnelContract = await _context.PersonnelContracts
                                             .Where(c => c.StaffId == staffId && c.ContractId == contractId)
                                             .FirstOrDefaultAsync();
-
             if (personnelContract == null)
             {
                 return NotFound();
@@ -126,14 +152,14 @@ namespace API.Controllers
             return NoContent();
         }
 
-        [HttpPatch]
+        [HttpPatch("{contractId}/staffid{staffId}")]
         public async Task<ActionResult<PersonnelContractDTO>> PartiallyPersonnelContract(
                 int staffId, 
                 int contractId, 
                 JsonPatchDocument<PersonnelContractUpdateDTO> patchDocument
                 )
         {
-            if(!await IsStaffInfoExist(staffId))
+            if(!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
@@ -180,9 +206,5 @@ namespace API.Controllers
             return await _context.SaveChangesAsync() >= 0;
         }
 
-        private async Task<bool> IsStaffInfoExist(int staffId)
-        {
-            return await _context.UserInfors.AnyAsync(c => c.StaffId == staffId);
-        }
     }
 }
