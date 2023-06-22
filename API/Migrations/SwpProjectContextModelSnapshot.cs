@@ -1323,19 +1323,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "440ec7e6-e68f-4bda-bf25-93029911f180",
+                            Id = "401f20ac-8cc8-45f9-8132-2d78ad1909e5",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "cff055a7-2aac-45dc-a875-6f8b910a2adc",
+                            Id = "300aa559-caaf-4a31-8545-a8d2ebe9b5bb",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "2d3f7c1a-b7ff-4f91-9223-d5d0e2da0db0",
+                            Id = "8cf172f8-3542-44e2-b7d5-8692fc5d6e23",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

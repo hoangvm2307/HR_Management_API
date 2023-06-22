@@ -48,5 +48,7 @@ namespace API.DTOs.UserInforDTO
 
         public bool? AccountStatus { get; set; }
 
+
+
     }
 }

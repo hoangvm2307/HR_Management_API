@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.DTOs.UserInforDTO;
 using API.Entities;
 
 namespace API.DTOs.PersonnelContractDTO
@@ -24,11 +25,13 @@ namespace API.DTOs.PersonnelContractDTO
 
         public string? Note { get; set; }
 
+        public int? NoOfDependences { get; set; }
+
         public int? ContractTypeId { get; set; }
 
         public string? SalaryType { get; set; }
 
-        public string? PaiDateNote { get; set; }
+        public string? PaidDateNote { get; set; }
 
         public string? ContractFile { get; set; }
 
@@ -37,6 +40,8 @@ namespace API.DTOs.PersonnelContractDTO
         public virtual ICollection<AllowanceDTO> Allowances { get; set; } = new List<AllowanceDTO>();
 
         public virtual ContractTypeDTO? ContractType { get; set; }
+
+        public virtual UserInforDto Staff { get; set; } = null!;
 
     }
 }
