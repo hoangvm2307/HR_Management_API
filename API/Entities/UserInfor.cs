@@ -51,8 +51,6 @@ public partial class UserInfor
 
     public virtual ICollection<LogOt> LogOts { get; set; } = new List<LogOt>();
 
-    public virtual ICollection<OtDetail> OtDetails { get; set; } = new List<OtDetail>();
-
     public virtual ICollection<Payslip> Payslips { get; set; } = new List<Payslip>();
 
     public virtual ICollection<PersonnelContract> PersonnelContracts { get; set; } = new List<PersonnelContract>();

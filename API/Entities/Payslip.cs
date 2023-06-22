@@ -31,8 +31,6 @@ public partial class Payslip
 
     public int? Bhtnemp { get; set; }
 
-    public int? SalaryBonus { get; set; }
-
     public int? SalaryBeforeTax { get; set; }
 
     public int? SelfAllowances { get; set; }
@@ -62,6 +60,8 @@ public partial class Payslip
     public int? TotalPaid { get; set; }
 
     public DateTime? CreateAt { get; set; }
+
+    public DateTime? ChangeAt { get; set; }
 
     public bool? PayslipStatus { get; set; }
 

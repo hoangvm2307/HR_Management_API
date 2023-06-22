@@ -11,6 +11,8 @@ namespace API.DTOs.TicketDTO
 
         public string TicketTitle { get; set; } = null!;
 
+        public string TicketReason { get; set; }
+
         public string? TicketFile { get; set; }
 
     }

@@ -17,6 +17,8 @@ public partial class LogOt
 
     public double LogHours { get; set; }
 
+    public int? Amount { get; set; }
+
     public string? Reason { get; set; }
 
     public string? Status { get; set; }

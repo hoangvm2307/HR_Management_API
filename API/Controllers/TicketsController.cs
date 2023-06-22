@@ -99,7 +99,7 @@ namespace API.Controllers
             {
                 StaffId = userInfor.StaffId,
                 TicketTypeId = ticketDto.TicketTypeId,
-                //TicketTitle = ticketDto.TicketTitle,
+                TicketReason = ticketDto.TicketReason,
                 TicketFile = ticketDto.TicketFile,
                 TicketStatus = "Pending",
                 CreateAt = DateTime.Now,
