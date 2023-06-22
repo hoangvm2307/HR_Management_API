@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/leave-type")]
+    [Route("api/leave-types")]
     public class LogLeaveTypeController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -78,7 +78,7 @@ namespace API.Controllers
             );
         }
 
-        [HttpPut]
+        [HttpPut("{leaveTypeId}")]
         public async Task<ActionResult<LeaveTypeDTO>> UpdateLeaveType(int leaveTypeId, LeaveTypeUpdateDTO leaveTypeUpdateDTO)
         {
             var leaveType = await _context.LeaveTypes.Where(c => c.LeaveTypeId == leaveTypeId).FirstOrDefaultAsync();

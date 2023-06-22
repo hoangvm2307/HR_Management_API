@@ -1,17 +1,12 @@
-using API.DTOs.UserInforDTO;
-using API.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using API.DTOs.UserInforDTO;
 
 namespace API.DTOs.PayslipDTOs
 {
-    public class PayslipDTO
+    public class PayslipCreationDTO
     {
-        public int PayslipId { get; set; }
+        //public int PayslipId { get; set; }
 
-        public int StaffId { get; set; }
+        //public int StaffId { get; set; }
 
         public int? BasicSalary { get; set; }
 

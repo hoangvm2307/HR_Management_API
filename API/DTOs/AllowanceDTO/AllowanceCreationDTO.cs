@@ -8,8 +8,8 @@ namespace API.DTOs.AllowanceDTO
     public class AllowanceCreationDTO
     {
 
-        public int? AllowanceTypeId { get; set; }
+        public int AllowanceTypeId { get; set; }
 
-        public int? AllowanceSalary { get; set; }
+        public int AllowanceSalary { get; set; }
     }
 }

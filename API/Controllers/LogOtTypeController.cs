@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/ottype")]
+    [Route("api/ot-types")]
     [ApiController]
     public class LogOtTypeController : ControllerBase
     {

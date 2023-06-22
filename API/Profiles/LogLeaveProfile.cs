@@ -16,6 +16,7 @@ namespace API.Profiles
             CreateMap<LeaveType, LeaveTypeWithLogLeavesDTO>();
             CreateMap<LeaveTypeCreationDTO, LeaveType>();
             CreateMap<LeaveTypeUpdateDTO, LeaveType>();
+            CreateMap<LeaveTypeDTO, LeaveTypeUpdateDTO>();
 
             CreateMap<LogLeave, LeaveTypeLogDTO>();
             
