@@ -13,7 +13,7 @@ public partial class LeaveDayDetail
 
     public int? DayLeft { get; set; }
 
-    public int? Time { get; set; }
+    public DateTime? ChangeAt { get; set; }
 
     public virtual LeaveType? LeaveType { get; set; }
 

@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace API.Controllers
 {
@@ -12,31 +13,48 @@ namespace API.Controllers
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
-        public UserInforController(SwpProjectContext context, IMapper mapper)
+        private readonly UserManager<User> _userManager;
+        public UserInforController(SwpProjectContext context, IMapper mapper, UserManager<User> userManager)
         {
             _mapper = mapper;
             _context = context;
+            _userManager = userManager;
         }
         [HttpGet]
         public async Task<ActionResult<List<UserInforDto>>> GetUserInfors()
         {
-            var staffs = await _context.UserInfors
-                .ProjectUserInforToUserInforDto()
+            var userInfors = await _context.UserInfors
                 .ToListAsync();
-            return staffs;
+            
+            var userInforDtos = _mapper.Map<List<UserInforDto>>(userInfors);
+            
+            userInforDtos = userInforDtos.Select(userInforDto => 
+            {
+                userInforDto.Email = GetUserEmailByIdAsync(userInforDto.Id).Result;
+                userInforDto.Position = userInforDto.IsManager ? "Manager" : "Staff";
+
+                userInforDto.DepartmentName = GetDepartmentNameByIdAsync
+                    (userInforDto.DepartmentId ?? 0).Result;
+                return userInforDto;
+            }).ToList();
+
+            return userInforDtos;
         }
 
         [HttpGet("{id}", Name ="GetUserInforById")]
         public async Task<ActionResult<UserInforDto>> GetUserInforById(int id)
         {
-            var staff = await _context.UserInfors
+            var userInfor = await _context.UserInfors
                 .FirstOrDefaultAsync(u => u.StaffId == id);
-            
-            if(staff == null) return NotFound();
+        
+            if(userInfor == null) return NotFound();
 
-            var returnStaff = _mapper.Map<UserInforDto>(staff);
+            var userInforDto = _mapper.Map<UserInforDto>(userInfor);
 
-            return returnStaff;
+            userInforDto.Email = GetUserEmailByIdAsync(userInforDto.Id).Result;
+            userInforDto.Position = userInforDto.IsManager ? "Manager" : "Staff";
+
+            return userInforDto;
         }
 
         [HttpDelete]
@@ -115,6 +133,16 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+        private async Task<string> GetUserEmailByIdAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            return user?.Email;
+        }
+        private async Task<string> GetDepartmentNameByIdAsync(int id)
+        {
+            var department = await _context.Departments.FirstOrDefaultAsync(x => x.DepartmentId == id);
+            return department?.DepartmentName;
         }
     }
 }

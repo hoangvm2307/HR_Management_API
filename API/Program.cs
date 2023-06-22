@@ -74,7 +74,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .GetBytes(builder.Configuration["JWTSettings:TokenKey"]))
         };
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization();  
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AccountController>();
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
@@ -84,14 +84,16 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
+    app.UseSwaggerUI(c => 
     {
-        c.ConfigObject.AdditionalItems.Add("persistAuthorization", true);
+        c.ConfigObject.AdditionalItems.Add("persistAuthorization", "true");
     });
 }
+
 app.UseCors(opt =>
 {
     opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class NewDB : Migration
+    public partial class newDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -127,7 +127,7 @@ namespace API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__DateDime__AA552EF30CB84D50", x => x.uniqueId)
+                    table.PrimaryKey("PK__DateDime__AA552EF3396C42A8", x => x.uniqueId)
                         .Annotation("SqlServer:Clustered", false);
                     table.UniqueConstraint("AK_DateDimension_TheDate", x => x.TheDate);
                 });
@@ -138,7 +138,8 @@ namespace API.Migrations
                 {
                     departmentId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    departmentName = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: true)
+                    departmentName = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: true),
+                    status = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -450,7 +451,7 @@ namespace API.Migrations
                     staffId = table.Column<int>(type: "int", nullable: true),
                     leaveTypeId = table.Column<int>(type: "int", nullable: true),
                     dayLeft = table.Column<int>(type: "int", nullable: true),
-                    time = table.Column<int>(type: "int", nullable: true)
+                    changeAt = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -513,6 +514,7 @@ namespace API.Migrations
                     logStart = table.Column<DateTime>(type: "datetime", nullable: false),
                     logEnd = table.Column<DateTime>(type: "datetime", nullable: false),
                     logHours = table.Column<double>(type: "float", nullable: false),
+                    amount = table.Column<int>(type: "int", nullable: true),
                     reason = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     processNote = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
@@ -537,33 +539,6 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OtDetail",
-                columns: table => new
-                {
-                    otDetailId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    staffId = table.Column<int>(type: "int", nullable: true),
-                    otTypeId = table.Column<int>(type: "int", nullable: true),
-                    otHours = table.Column<int>(type: "int", nullable: true),
-                    otAmount = table.Column<int>(type: "int", nullable: true),
-                    time = table.Column<DateTime>(type: "date", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OtDetail_otDetailId", x => x.otDetailId);
-                    table.ForeignKey(
-                        name: "FK_OtDetail_otTypeId_otTypeId",
-                        column: x => x.otTypeId,
-                        principalTable: "OtType",
-                        principalColumn: "otTypeId");
-                    table.ForeignKey(
-                        name: "FK_OtDetail_staffId_staffId",
-                        column: x => x.staffId,
-                        principalTable: "UserInfor",
-                        principalColumn: "staffId");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Payslip",
                 columns: table => new
                 {
@@ -581,7 +556,6 @@ namespace API.Migrations
                     BHXHEmp = table.Column<int>(type: "int", nullable: true),
                     BHYTEmp = table.Column<int>(type: "int", nullable: true),
                     BHTNEmp = table.Column<int>(type: "int", nullable: true),
-                    salaryBonus = table.Column<int>(type: "int", nullable: true),
                     salaryBeforeTax = table.Column<int>(type: "int", nullable: true),
                     selfAllowances = table.Column<int>(type: "int", nullable: true),
                     familyAllowances = table.Column<int>(type: "int", nullable: true),
@@ -597,6 +571,7 @@ namespace API.Migrations
                     totalInsured = table.Column<int>(type: "int", nullable: true),
                     totalPaid = table.Column<int>(type: "int", nullable: true),
                     createAt = table.Column<DateTime>(type: "date", nullable: true),
+                    changeAt = table.Column<DateTime>(type: "date", nullable: true),
                     payslipStatus = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
@@ -756,9 +731,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "b9ade8d2-0438-4a47-8173-5e7bc0591f78", null, "HRStaff", "HRSTAFF" },
-                    { "cc15c2a7-fe82-40d6-9e71-2dc4d0f07e06", null, "Staff", "STAFF" },
-                    { "ced8e9ed-6639-4eea-b2ef-d5aea53c1811", null, "HRManager", "HRMANAGER" }
+                    { "2d3f7c1a-b7ff-4f91-9223-d5d0e2da0db0", null, "HRManager", "HRMANAGER" },
+                    { "440ec7e6-e68f-4bda-bf25-93029911f180", null, "Staff", "STAFF" },
+                    { "cff055a7-2aac-45dc-a875-6f8b910a2adc", null, "HRStaff", "HRSTAFF" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -861,16 +836,6 @@ namespace API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_LogOT_staffId",
                 table: "LogOT",
-                column: "staffId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OtDetail_otTypeId",
-                table: "OtDetail",
-                column: "otTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OtDetail_staffId",
-                table: "OtDetail",
                 column: "staffId");
 
             migrationBuilder.CreateIndex(
@@ -989,9 +954,6 @@ namespace API.Migrations
 
             migrationBuilder.DropTable(
                 name: "LogOT");
-
-            migrationBuilder.DropTable(
-                name: "OtDetail");
 
             migrationBuilder.DropTable(
                 name: "StaffSkill");

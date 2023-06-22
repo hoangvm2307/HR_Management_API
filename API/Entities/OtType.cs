@@ -12,6 +12,4 @@ public partial class OtType
     public double? TypePercentage { get; set; }
 
     public virtual ICollection<LogOt> LogOts { get; set; } = new List<LogOt>();
-
-    public virtual ICollection<OtDetail> OtDetails { get; set; } = new List<OtDetail>();
 }

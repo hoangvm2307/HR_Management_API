@@ -2,11 +2,13 @@ using API.DTOs.DepartmentDTO;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 
 namespace API.Controllers
 {
@@ -21,7 +23,7 @@ namespace API.Controllers
             _context = context;
             _userManager = userManager;
         }
-
+ 
         [HttpGet]
         public async Task<ActionResult<List<DepartmentDto>>> GetDepartments()
         {
@@ -29,12 +31,9 @@ namespace API.Controllers
                 .Include(i => i.UserInfors)
                 .ToListAsync();
 
-            // var managerUser = await _userManager.FindByIdAsync(manager.Id);
-            // var managerEmail = managerUser.Email;
-
             var returnDepartments = _mapper.Map<List<DepartmentDto>>(departments);
 
-            foreach (var departmentDto in returnDepartments)
+            returnDepartments = returnDepartments.Select(departmentDto =>
             {
                 var manager = departmentDto.UserInfors.FirstOrDefault(u => u.IsManager == true);
 
@@ -42,42 +41,39 @@ namespace API.Controllers
                 {
                     departmentDto.Manager = $"{manager.FirstName} {manager.LastName}";
                     departmentDto.ManagerPhone = $"{manager.Phone}";
-                    departmentDto.ManagerMail = await GetUserEmailByIdAsync(manager.Id);
+                    departmentDto.ManagerMail = GetUserEmailByIdAsync(manager.Id).Result;
                 }
 
+                departmentDto.UserInfors = departmentDto.UserInfors.Select(userInfor =>
+                {
+                    userInfor.Email = GetUserEmailByIdAsync(userInfor.Id).Result;
+                    userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
+                    return userInfor;
+                }).ToList();
+
                 departmentDto.numberOfStaff = departmentDto.UserInfors.Count;
-            }
+
+                return departmentDto;
+            }).ToList();
 
             return returnDepartments;
         }
-        
-        // [HttpGet]
-        // public async Task<ActionResult<List<DepartmentUserInforDto>>> GetDepartmentss()
-        // {
-        //     var departments = await _context.UserInfors
-        //     .Include(i => i.Department)
-        //     .ToListAsync();
 
-        //     var returnDepartments = _mapper.Map<List<DepartmentUserInforDto>>(departments);
 
-        //     return returnDepartments;
-        // }
-
-        [HttpGet("{id}", Name="GetDepartment")]
+        [HttpGet("{id}", Name = "GetDepartment")]
         public async Task<ActionResult<DepartmentDto>> GetDepartment(int id)
         {
             var department = await _context.Departments
                 .Include(i => i.UserInfors)
                 .FirstOrDefaultAsync(d => d.DepartmentId == id);
-            
+
             var departmentDto = _mapper.Map<DepartmentDto>(department);
 
-            foreach(var userInfor in departmentDto.UserInfors)
+            foreach (var userInfor in departmentDto.UserInfors)
             {
-                userInfor.FullName = userInfor.LastName + ' ' + userInfor.FirstName;
+
                 userInfor.Email = await GetUserEmailByIdAsync(userInfor.Id);
                 userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
-                userInfor.GioiTinh = userInfor.Gender ? "Nam" : "Nữ"; 
             }
 
             var manager = departmentDto.UserInfors.FirstOrDefault(u => u.IsManager == true);
@@ -99,72 +95,126 @@ namespace API.Controllers
         {
             var department = await _context.Departments
                 .FirstOrDefaultAsync(d => d.DepartmentId == departmentId);
-            
-            if(department == null) return NotFound();
+
+            if (department == null) return NotFound();
 
             _context.Departments.Remove(department);
 
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return Ok();
+            if (result) return Ok();
 
-            return BadRequest(new ProblemDetails {Title = "Problem removing"});
+            return BadRequest(new ProblemDetails { Title = "Problem removing" });
         }
 
 
         [HttpPost]
         public async Task<ActionResult> CreateDepartment(DepartmentCreateDto departmentDto)
         {
-            if(departmentDto == null) return BadRequest("Department data is missing");
-            
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (departmentDto == null) return BadRequest("Department data is missing");
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var department = new Department
             {
                 DepartmentName = departmentDto.DepartmentName,
             };
-        
-            if(departmentDto.ManagerId != 0)
+
+            if (departmentDto.ManagerId != 0)
             {
                 var userInfor = _context.UserInfors
                     .FirstOrDefault(c => c.StaffId == departmentDto.ManagerId);
                 userInfor.IsManager = true;
             }
-             
+
             _context.Departments.Add(department);
-            
+
+            await _context.SaveChangesAsync();
+
+            var userInfors = await _context.UserInfors
+                .Where(u => departmentDto.UserInfors.Select(d => d.StaffId).Contains(u.StaffId))
+                .ToListAsync();
+
+            userInfors = userInfors.Select(userInfor =>
+            {
+                userInfor.DepartmentId = department.DepartmentId;
+
+                return userInfor;
+            }).ToList();
+
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return CreatedAtAction(nameof(GetDepartment), new {id = department.DepartmentId}, department);
+            if (result) return CreatedAtAction(nameof(GetDepartment), new { id = department.DepartmentId }, department);
 
-            return BadRequest(new ProblemDetails {Title = "Problem adding item"});
+            return BadRequest(new ProblemDetails { Title = "Problem adding item" });
         }
 
-        [HttpPut]
-        public async Task<ActionResult<Department>> UpdateDepartment(int id, [FromBody] Department updatedDepartment)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Department>> UpdateDepartment(int id, [FromBody] DepartmentUpdateDto departmentDto)
         {
-            if(updatedDepartment == null || updatedDepartment.DepartmentId != id)
+            if (departmentDto == null)
             {
                 return BadRequest("Invalid Department Data");
             }
 
-            if(!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var existingDepartment = await _context.Departments.FindAsync(id);
+            var existingDepartment = await _context.Departments
+                .Include(i => i.UserInfors)
+                .FirstOrDefaultAsync(d => d.DepartmentId == id);
 
-            if(existingDepartment == null) return NotFound("Department Not Found");
+            if (existingDepartment == null) return NotFound("Department Not Found");
 
-            existingDepartment.DepartmentName = updatedDepartment.DepartmentName;
+            var existingDepartmentDto = _mapper.Map<DepartmentDto>(existingDepartment);
 
-            _context.Departments.Update(existingDepartment);
+            if (!string.IsNullOrWhiteSpace(departmentDto.DepartmentName))
+                existingDepartmentDto.DepartmentName = departmentDto.DepartmentName;
+
+            if (departmentDto.UserInfors.Any())
+            {
+                var userInfors = await _context.UserInfors
+                    .Where(u => departmentDto.UserInfors.Select(d => d.StaffId).Contains(u.StaffId))
+                    .ToListAsync();
+
+                userInfors = userInfors.Select(userInfor =>
+                {
+                    userInfor.DepartmentId = id;
+
+                    return userInfor;
+                }).ToList();
+
+                _context.Departments.Update(_mapper.Map<Department>(existingDepartment));
+            }
+
+            // Retrieve the new manager information
+            var newManager = await _context.UserInfors
+                .FirstOrDefaultAsync(u => u.StaffId == departmentDto.ManagerId);
+
+            if (newManager != null)
+            {
+                // Remove the previous manager flag from the old manager
+                // var oldManager = existingDepartmentDto.UserInfors
+                //    .FirstOrDefault(u => u.IsManager == true);
+
+                var oldManager = await _context.UserInfors
+                    .FirstOrDefaultAsync(u => u.DepartmentId == id && u.IsManager == true);
+                    
+                if (oldManager != null) oldManager.IsManager = false;
+            }
+
+            // Set the new manager flag in the new manager's UserInfor object
+            var newManagerUserInfor = _context.UserInfors
+                .FirstOrDefault(ui => ui.StaffId == newManager.StaffId);
+
+            if (newManagerUserInfor != null) newManagerUserInfor.IsManager = true;
 
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return Ok(existingDepartment);
+            if (result) return Ok(existingDepartment);
 
-            return BadRequest(new ProblemDetails {Title = "Problem Update Department"});
+            return BadRequest(new ProblemDetails { Title = "Problem Update Department" });
         }
-        
+
         [HttpPatch("{id}")]
         public async Task<IActionResult> PatchDepartment(int id, [FromBody] JsonPatchDocument<DepartmentUpdateDto> patchDocument)
         {
@@ -188,7 +238,7 @@ namespace API.Controllers
 
             var result = await _context.SaveChangesAsync() > 0;
 
-            if(result) return NoContent();
+            if (result) return NoContent();
 
             return BadRequest("Problem Updateing Department");
         }

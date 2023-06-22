@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API.Entities;
 
-public partial class SwpProjectContext :  IdentityDbContext<User>
+public partial class SwpProjectContext : IdentityDbContext<User>
 {
     public SwpProjectContext()
     {
@@ -41,8 +41,6 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
 
     public virtual DbSet<LogOt> LogOts { get; set; }
 
-    public virtual DbSet<OtDetail> OtDetails { get; set; }
-
     public virtual DbSet<OtType> OtTypes { get; set; }
 
     public virtual DbSet<Payslip> Payslips { get; set; }
@@ -75,7 +73,7 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
+         base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<IdentityRole>()
             .HasData(
@@ -209,7 +207,7 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF30CB84D50")
+                .HasName("PK__DateDime__AA552EF3396C42A8")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");
@@ -242,6 +240,7 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
             entity.Property(e => e.DepartmentName)
                 .HasMaxLength(35)
                 .HasColumnName("departmentName");
+            entity.Property(e => e.Status).HasColumnName("status");
         });
 
         modelBuilder.Entity<HolidayDimension>(entity =>
@@ -269,10 +268,12 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
             entity.ToTable("LeaveDayDetail");
 
             entity.Property(e => e.LeaveDayDetailId).HasColumnName("leaveDayDetailId");
+            entity.Property(e => e.ChangeAt)
+                .HasColumnType("datetime")
+                .HasColumnName("changeAt");
             entity.Property(e => e.DayLeft).HasColumnName("dayLeft");
             entity.Property(e => e.LeaveTypeId).HasColumnName("leaveTypeId");
             entity.Property(e => e.StaffId).HasColumnName("staffId");
-            entity.Property(e => e.Time).HasColumnName("time");
 
             entity.HasOne(d => d.LeaveType).WithMany(p => p.LeaveDayDetails)
                 .HasForeignKey(d => d.LeaveTypeId)
@@ -352,6 +353,7 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
             entity.ToTable("LogOT");
 
             entity.Property(e => e.OtLogId).HasColumnName("otLogId");
+            entity.Property(e => e.Amount).HasColumnName("amount");
             entity.Property(e => e.ChangeStatusTime)
                 .HasColumnType("datetime")
                 .HasColumnName("changeStatusTime");
@@ -389,30 +391,6 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
                 .HasConstraintName("FK_LogOT_staffId_staffId");
         });
 
-        modelBuilder.Entity<OtDetail>(entity =>
-        {
-            entity.HasKey(e => e.OtDetailId).HasName("PK_OtDetail_otDetailId");
-
-            entity.ToTable("OtDetail");
-
-            entity.Property(e => e.OtDetailId).HasColumnName("otDetailId");
-            entity.Property(e => e.OtAmount).HasColumnName("otAmount");
-            entity.Property(e => e.OtHours).HasColumnName("otHours");
-            entity.Property(e => e.OtTypeId).HasColumnName("otTypeId");
-            entity.Property(e => e.StaffId).HasColumnName("staffId");
-            entity.Property(e => e.Time)
-                .HasColumnType("date")
-                .HasColumnName("time");
-
-            entity.HasOne(d => d.OtType).WithMany(p => p.OtDetails)
-                .HasForeignKey(d => d.OtTypeId)
-                .HasConstraintName("FK_OtDetail_otTypeId_otTypeId");
-
-            entity.HasOne(d => d.Staff).WithMany(p => p.OtDetails)
-                .HasForeignKey(d => d.StaffId)
-                .HasConstraintName("FK_OtDetail_staffId_staffId");
-        });
-
         modelBuilder.Entity<OtType>(entity =>
         {
             entity.HasKey(e => e.OtTypeId).HasName("PK_OtType_otTypeId");
@@ -442,6 +420,9 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
             entity.Property(e => e.Bhxhemp).HasColumnName("BHXHEmp");
             entity.Property(e => e.Bhytcomp).HasColumnName("BHYTComp");
             entity.Property(e => e.Bhytemp).HasColumnName("BHYTEmp");
+            entity.Property(e => e.ChangeAt)
+                .HasColumnType("date")
+                .HasColumnName("changeAt");
             entity.Property(e => e.CreateAt)
                 .HasColumnType("date")
                 .HasColumnName("createAt");
@@ -455,7 +436,6 @@ public partial class SwpProjectContext :  IdentityDbContext<User>
             entity.Property(e => e.PayslipStatus).HasColumnName("payslipStatus");
             entity.Property(e => e.PersonalIncomeTax).HasColumnName("personalIncomeTax");
             entity.Property(e => e.SalaryBeforeTax).HasColumnName("salaryBeforeTax");
-            entity.Property(e => e.SalaryBonus).HasColumnName("salaryBonus");
             entity.Property(e => e.SalaryRecieved).HasColumnName("salaryRecieved");
             entity.Property(e => e.SalaryTaxable).HasColumnName("salaryTaxable");
             entity.Property(e => e.SelfAllowances).HasColumnName("selfAllowances");
