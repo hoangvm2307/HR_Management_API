@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API\\HR_Management_API\\API\\API.csproj": {}
+    "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API - Copy\\HR_Management_API\\API\\API.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API\\HR_Management_API\\API\\API.csproj": {
+    "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API - Copy\\HR_Management_API\\API\\API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API\\HR_Management_API\\API\\API.csproj",
+        "projectUniqueName": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API - Copy\\HR_Management_API\\API\\API.csproj",
         "projectName": "API",
-        "projectPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API\\HR_Management_API\\API\\API.csproj",
+        "projectPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API - Copy\\HR_Management_API\\API\\API.csproj",
         "packagesPath": "C:\\Users\\Nguyen Huy Linh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API\\HR_Management_API\\API\\obj\\",
+        "outputPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API - Copy\\HR_Management_API\\API\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Nguyen Huy Linh\\AppData\\Roaming\\NuGet\\NuGet.Config",

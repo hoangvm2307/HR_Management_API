@@ -84,6 +84,9 @@ builder.Services.AddScoped<LogOtTypeService>();
 builder.Services.AddScoped<PersonnelContractService>();
 builder.Services.AddScoped<LeaveDayDetailService>();
 builder.Services.AddScoped<LogLeaveService>();
+builder.Services.AddScoped<AllowanceService>();
+builder.Services.AddScoped<AllowanceTypeService>();
+builder.Services.AddScoped<PayslipService>();
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {

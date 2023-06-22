@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/contract")]
+    [Route("api/contracts")]
     public class ContractController : ControllerBase
     {
         private readonly SwpProjectContext _context;

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ljzmmVYZNnnT92T67+9ZfrdlNrDXfwA3nACWaHAKKTP7jZxndRbTz0aVND1wnriDiWD+X+XY/PlXY1jEC3Pmow==",
+  "dgSpecHash": "g8YczWruvQlIFMqDIBp1vIElLY8cphAIrPq+GCBKTwzMkQYnXVhwx6uun9jQnOduU6qfoL2mJr1rdcWjChY2dg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API\\HR_Management_API\\API\\API.csproj",
+  "projectFilePath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP_API - Copy\\HR_Management_API\\API\\API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Nguyen Huy Linh\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Nguyen Huy Linh\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

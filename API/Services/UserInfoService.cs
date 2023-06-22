@@ -20,12 +20,17 @@ namespace API.Services
         {
             return await _context.UserInfors
                                 .Include(c => c.LogOts)
-                                .Where(c => c.StaffId == StaffId)
+                                .Where(c => c.StaffId == StaffId && c.AccountStatus == true)
                                 .FirstOrDefaultAsync();
         }
         public async Task<bool> IsUserExist(int StaffId)
         {
-            return await _context.UserInfors.Where(c => c.StaffId == StaffId).AnyAsync();
+            return await _context.UserInfors.Where(c => c.StaffId == StaffId && c.AccountStatus == true).AnyAsync();
+        }
+
+        public async Task<bool> IsSaveChangeAsync()
+        {
+            return await _context.SaveChangesAsync() >= 0;
         }
 
     }

@@ -28,6 +28,7 @@ namespace API.Services
         {
             var logleaves = await _context.LogLeaves
                                     .Include(c => c.LeaveType)
+                                    .Include(c => c.Staff)
                                     .ToListAsync();
 
             var returnLogLeaves = _mapper.Map<List<LogLeaveDTO>>(logleaves);
@@ -37,6 +38,7 @@ namespace API.Services
         {
             var logLeaves = await _context.LogLeaves
                                     .Include(c => c.LeaveType)
+                                    .Include(c => c.Staff)
                                     .Where(c => c.StaffId == staffId)
                                     .ToListAsync();
 
@@ -48,14 +50,43 @@ namespace API.Services
         {
             return await _context.LogLeaves.AnyAsync(c => c.LeaveLogId == logLeaveId);
         }
+
+        public async Task<LogLeave> GetLogLeaveAsync(int staffId, int logLeaveId)
+        {
+            return  await _context.LogLeaves
+                                       .Include(c => c.LeaveType)
+                                       .Include(c => c.Staff)
+                                       .Where(c => c.StaffId == staffId && c.LeaveLogId == logLeaveId)
+                                       .FirstOrDefaultAsync();
+        }
+
         public async Task<LogLeaveDTO> GetLogLeaveByStaffIdAndLogLeaveId(int staffId, int logLeaveId)
         {
-            var LogLeave = await _context.LogLeaves
+            var logLeave = await _context.LogLeaves
                                         .Include(c => c.LeaveType)
+                                        .Include(c => c.Staff)
                                         .Where(c => c.StaffId == staffId && c.LeaveLogId == logLeaveId)
                                         .FirstOrDefaultAsync();
-            var returnLogLeave = _mapper.Map<LogLeaveDTO>(LogLeave);
+            var returnLogLeave = _mapper.Map<LogLeaveDTO>(logLeave);
             return returnLogLeave;
+        }
+        public async Task UpdateLogLeave(int staffId, int logLeaveId, LogLeaveUpdateDTO logLeaveUpdateDTO)
+        {
+            var logLeave = await _context.LogLeaves
+                                        .Include(c => c.LeaveType)
+                                        .Include(c => c.Staff)
+                                        .Where(c => c.StaffId == staffId && c.LeaveLogId == logLeaveId)
+                                        .FirstOrDefaultAsync();
+
+            if (logLeave == null)
+            {
+                return;
+            }
+
+            _mapper.Map(logLeaveUpdateDTO, logLeave);
+
+            await _context.SaveChangesAsync();
+
         }
         public async Task<UserInfor?> GetUserLogLeave(int staffId)
         {
