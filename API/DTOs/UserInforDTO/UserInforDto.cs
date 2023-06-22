@@ -14,16 +14,17 @@ namespace API.DTOs.UserInforDTO
 
         public string FirstName { get; set; } = null!;
 
-        public string FullName { get; set; }
+        public string FullName => $"{LastName} {FirstName}";
 
         public string Email { get; set; }
         public string Position { get; set; }
+        public string DepartmentName { get; set; }
         public DateTime? Dob { get; set; }
 
         public string? Phone { get; set; }
 
         public bool Gender { get; set; }
-        public string GioiTinh { get; set; }
+        public string GioiTinh => Gender ? "Nam" : "Nữ";
 
         public string? Address { get; set; }
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    [Migration("20230615155315_newdb")]
-    partial class newdb
+    [Migration("20230622013800_newDB")]
+    partial class newDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -278,7 +278,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF30CB84D50");
+                        .HasName("PK__DateDime__AA552EF3396C42A8");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -303,6 +303,10 @@ namespace API.Migrations
                         .HasMaxLength(35)
                         .HasColumnType("nvarchar(35)")
                         .HasColumnName("departmentName");
+
+                    b.Property<bool?>("Status")
+                        .HasColumnType("bit")
+                        .HasColumnName("status");
 
                     b.HasKey("DepartmentId")
                         .HasName("PK_Department_departmentId");
@@ -336,6 +340,10 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveDayDetailId"));
 
+                    b.Property<DateTime?>("ChangeAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("changeAt");
+
                     b.Property<int?>("DayLeft")
                         .HasColumnType("int")
                         .HasColumnName("dayLeft");
@@ -347,10 +355,6 @@ namespace API.Migrations
                     b.Property<int?>("StaffId")
                         .HasColumnType("int")
                         .HasColumnName("staffId");
-
-                    b.Property<int?>("Time")
-                        .HasColumnType("int")
-                        .HasColumnName("time");
 
                     b.HasKey("LeaveDayDetailId")
                         .HasName("PK_LeaveDayDetail_leaveDayDetailId");
@@ -478,6 +482,10 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OtLogId"));
 
+                    b.Property<int?>("Amount")
+                        .HasColumnType("int")
+                        .HasColumnName("amount");
+
                     b.Property<DateTime?>("ChangeStatusTime")
                         .HasColumnType("datetime")
                         .HasColumnName("changeStatusTime");
@@ -537,45 +545,6 @@ namespace API.Migrations
                     b.HasIndex("StaffId");
 
                     b.ToTable("LogOT", (string)null);
-                });
-
-            modelBuilder.Entity("API.Entities.OtDetail", b =>
-                {
-                    b.Property<int>("OtDetailId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("otDetailId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OtDetailId"));
-
-                    b.Property<int?>("OtAmount")
-                        .HasColumnType("int")
-                        .HasColumnName("otAmount");
-
-                    b.Property<int?>("OtHours")
-                        .HasColumnType("int")
-                        .HasColumnName("otHours");
-
-                    b.Property<int?>("OtTypeId")
-                        .HasColumnType("int")
-                        .HasColumnName("otTypeId");
-
-                    b.Property<int?>("StaffId")
-                        .HasColumnType("int")
-                        .HasColumnName("staffId");
-
-                    b.Property<DateTime?>("Time")
-                        .HasColumnType("date")
-                        .HasColumnName("time");
-
-                    b.HasKey("OtDetailId")
-                        .HasName("PK_OtDetail_otDetailId");
-
-                    b.HasIndex("OtTypeId");
-
-                    b.HasIndex("StaffId");
-
-                    b.ToTable("OtDetail", (string)null);
                 });
 
             modelBuilder.Entity("API.Entities.OtType", b =>
@@ -647,6 +616,10 @@ namespace API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("BHYTEmp");
 
+                    b.Property<DateTime?>("ChangeAt")
+                        .HasColumnType("date")
+                        .HasColumnName("changeAt");
+
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("date")
                         .HasColumnName("createAt");
@@ -690,10 +663,6 @@ namespace API.Migrations
                     b.Property<int?>("SalaryBeforeTax")
                         .HasColumnType("int")
                         .HasColumnName("salaryBeforeTax");
-
-                    b.Property<int?>("SalaryBonus")
-                        .HasColumnType("int")
-                        .HasColumnName("salaryBonus");
 
                     b.Property<int?>("SalaryRecieved")
                         .HasColumnType("int")
@@ -1357,19 +1326,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "ad01ab83-ea0d-4ac9-ab55-3e2b6bd4362a",
+                            Id = "401f20ac-8cc8-45f9-8132-2d78ad1909e5",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "49c8d4a0-47ae-49b0-bf6c-89f05c439d19",
+                            Id = "300aa559-caaf-4a31-8545-a8d2ebe9b5bb",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "e3f17633-ca91-46e9-9081-1faa8fb8405e",
+                            Id = "8cf172f8-3542-44e2-b7d5-8692fc5d6e23",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
@@ -1582,23 +1551,6 @@ namespace API.Migrations
                     b.Navigation("Staff");
                 });
 
-            modelBuilder.Entity("API.Entities.OtDetail", b =>
-                {
-                    b.HasOne("API.Entities.OtType", "OtType")
-                        .WithMany("OtDetails")
-                        .HasForeignKey("OtTypeId")
-                        .HasConstraintName("FK_OtDetail_otTypeId_otTypeId");
-
-                    b.HasOne("API.Entities.UserInfor", "Staff")
-                        .WithMany("OtDetails")
-                        .HasForeignKey("StaffId")
-                        .HasConstraintName("FK_OtDetail_staffId_staffId");
-
-                    b.Navigation("OtType");
-
-                    b.Navigation("Staff");
-                });
-
             modelBuilder.Entity("API.Entities.Payslip", b =>
                 {
                     b.HasOne("API.Entities.UserInfor", "Staff")
@@ -1795,8 +1747,6 @@ namespace API.Migrations
             modelBuilder.Entity("API.Entities.OtType", b =>
                 {
                     b.Navigation("LogOts");
-
-                    b.Navigation("OtDetails");
                 });
 
             modelBuilder.Entity("API.Entities.Payslip", b =>
@@ -1849,8 +1799,6 @@ namespace API.Migrations
                     b.Navigation("LogLeaves");
 
                     b.Navigation("LogOts");
-
-                    b.Navigation("OtDetails");
 
                     b.Navigation("Payslips");
 
