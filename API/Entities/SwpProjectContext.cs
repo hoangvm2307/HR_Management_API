@@ -73,7 +73,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-         base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<IdentityRole>()
             .HasData(
@@ -207,7 +207,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF3396C42A8")
+                .HasName("PK__DateDime__AA552EF3FE9C0F83")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");
@@ -458,12 +458,18 @@ public partial class SwpProjectContext : IdentityDbContext<User>
             entity.ToTable("PersonnelContract");
 
             entity.Property(e => e.ContractId).HasColumnName("contractId");
+            entity.Property(e => e.ChangeAt)
+                .HasColumnType("date")
+                .HasColumnName("changeAt");
             entity.Property(e => e.ContractFile)
                 .HasMaxLength(150)
                 .IsUnicode(false)
                 .HasColumnName("contractFile");
             entity.Property(e => e.ContractStatus).HasColumnName("contractStatus");
             entity.Property(e => e.ContractTypeId).HasColumnName("contractTypeId");
+            entity.Property(e => e.CreateAt)
+                .HasColumnType("date")
+                .HasColumnName("createAt");
             entity.Property(e => e.EndDate)
                 .HasColumnType("date")
                 .HasColumnName("endDate");

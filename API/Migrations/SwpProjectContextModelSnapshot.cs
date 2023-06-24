@@ -275,7 +275,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF3396C42A8");
+                        .HasName("PK__DateDime__AA552EF3FE9C0F83");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -710,6 +710,10 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
+                    b.Property<DateTime?>("ChangeAt")
+                        .HasColumnType("date")
+                        .HasColumnName("changeAt");
+
                     b.Property<string>("ContractFile")
                         .HasMaxLength(150)
                         .IsUnicode(false)
@@ -723,6 +727,10 @@ namespace API.Migrations
                     b.Property<int?>("ContractTypeId")
                         .HasColumnType("int")
                         .HasColumnName("contractTypeId");
+
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("date")
+                        .HasColumnName("createAt");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("date")
@@ -1323,19 +1331,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "401f20ac-8cc8-45f9-8132-2d78ad1909e5",
+                            Id = "c6729458-6c30-458b-a011-494fc319d56f",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "300aa559-caaf-4a31-8545-a8d2ebe9b5bb",
+                            Id = "1300f980-bc32-401a-bfb6-6e332575cf50",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "8cf172f8-3542-44e2-b7d5-8692fc5d6e23",
+                            Id = "9cc22363-ef78-45af-bb19-f2b565399044",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
