@@ -8,14 +8,15 @@ using AutoMapper;
 
 namespace API.Profiles
 {
-    public class TicketProfile : Profile
+  public class TicketProfile : Profile
+  {
+    public TicketProfile()
     {
-        public TicketProfile()
-        {
-            CreateMap<Ticket, TicketDto>().ReverseMap();
-            CreateMap<TicketType, TicketTypeCreateDto>().ReverseMap();
-            CreateMap<Ticket,TicketCreateDto>().ReverseMap();
-            CreateMap<Ticket,TicketUpdateDto>().ReverseMap();
-        }
+      CreateMap<Ticket, TicketDto>().ReverseMap();
+      CreateMap<TicketType, TicketTypeCreateDto>().ReverseMap();
+      CreateMap<Ticket, TicketCreateDto>().ReverseMap();
+      CreateMap<Ticket, TicketUpdateDto>().ReverseMap();
+      CreateMap<TicketType, TicketTypeDto>().ReverseMap();
     }
+  }
 }

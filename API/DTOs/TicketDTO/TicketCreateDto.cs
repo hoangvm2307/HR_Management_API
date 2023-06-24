@@ -9,7 +9,6 @@ namespace API.DTOs.TicketDTO
     {
         public int? TicketTypeId { get; set; }
 
-        public string TicketTitle { get; set; } = null!;
 
         public string TicketReason { get; set; }
 

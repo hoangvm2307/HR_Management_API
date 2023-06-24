@@ -13,9 +13,13 @@ namespace API.DTOs.CandidateDTO
 
         public string? Phone { get; set; }
 
-        public string? AppliedJob { get; set; }
+        public DateTime? Dob { get; set; }
 
-        public string? AppliedDepartment { get; set; }
+        public bool? Gender { get; set; }
+
+        public string? Address { get; set; }
+
+        public string Department { get; set; }
 
         public int? ExpectedSalary { get; set; }
 
