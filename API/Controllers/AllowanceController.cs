@@ -1,6 +1,7 @@
 using API.DTOs.AllowanceDTO;
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
+using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -9,15 +10,20 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/allowance")]
+    [Route("api/allowances")]
     public class AllowanceController : ControllerBase
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
+        private readonly AllowanceService _allowanceService;
 
-        public AllowanceController(SwpProjectContext context, IMapper mapper)
+        public AllowanceController(
+            SwpProjectContext context,
+            IMapper mapper,
+            AllowanceService allowanceService)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _allowanceService = allowanceService ?? throw new ArgumentNullException(nameof(allowanceService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
@@ -25,90 +31,102 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<AllowanceDTO>>> GetAllowancesAsync()
         {
-            var allowances = await _context.Allowances
-                                .Include(c => c.AllowanceType)
-                                .ToListAsync();
-
-            var finalAllowances = _mapper.Map<List<AllowanceDTO>>(allowances);
+            var finalAllowances = await _allowanceService.GetAllowanceDTOs();
 
             return finalAllowances;
         }
 
 
-        [HttpGet("{contractId}")]
+
+        [HttpGet("contract/{contractId}")]
         public async Task<ActionResult<List<AllowanceDTO>>> GetAllowanceAsync(int contractId)
         {
-            if (!await IsContractExist(contractId))
+            if (!await _allowanceService.IsContractExist(contractId))
             {
                 return NotFound();
             }
 
-            var allowances = await _context.Allowances
-                                .Include(c => c.AllowanceType)
-                                .Where(c => c.ContractId == contractId).ToListAsync();
-
-            var finalAllowances = _mapper.Map<List<AllowanceDTO>>(allowances);
+            var finalAllowances = await _allowanceService.GetAllowanceByContractId(contractId);
 
             return finalAllowances;
         }
 
-        [HttpPost]
-        public async Task<ActionResult<AllowanceDTO>> CreateAllowanceAsync(int contractId, AllowanceCreationDTO allowanceCreationDTO)
+        [HttpGet("{allowanceId}/contract/{contractId}", Name = "GetAllowance")]
+        public async Task<ActionResult<AllowanceDTO>> GetAllowanceByContractIdAndAllowanceId(int contractId, int allowanceId)
         {
-            if (!await IsContractExist(contractId))
+            if (!await _allowanceService.IsContractExist(contractId))
             {
                 return NotFound();
             }
 
-            var allowance = _mapper.Map<Allowance>(allowanceCreationDTO);
+            var finalAllowances = await _allowanceService.GetAllowanceByAllowanceId(contractId, allowanceId);
 
-            var allowanceFromStore = await _context.PersonnelContracts
-                                .Include(c => c.Allowances)
-                                .Where(c => c.ContractId == contractId)
-                                .FirstOrDefaultAsync();
-
-            if (allowanceFromStore == null)
-            {
-                return NotFound();
-            }
-
-            allowanceFromStore.Allowances.Add(allowance);
-            await SaveChangeAsync();
-
-            if (!await SaveChangeAsync())
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return finalAllowances;
         }
 
-        [HttpPut]
+
+
+
+        [HttpPost("contract/{contractId}")]
+        public async Task<ActionResult<AllowanceDTO>> CreateAllowanceAsync(
+            int contractId,
+            AllowanceCreationDTO allowanceCreationDTO)
+        {
+            if (!await _allowanceService.IsContractExist(contractId))
+            {
+                return NotFound();
+            }
+
+            if (!await _allowanceService.IsAllowanceTypeValid(allowanceCreationDTO.AllowanceTypeId))
+            {
+                return BadRequest("Invalid Allowance Type");
+            }
+
+            if (!await _allowanceService.IsProjectAlreadyHaveAllowanceType(contractId, allowanceCreationDTO.AllowanceTypeId))
+            {
+                return BadRequest("Already have this allowance ");
+            }
+
+            var returnAllowance = await _allowanceService.CreateAllowance(contractId, allowanceCreationDTO);
+
+            if (!await _allowanceService.SaveChangeAsync())
+            {
+                return BadRequest("Save Change Async occur");
+            }
+
+            return CreatedAtRoute(
+                "GetAllowance",
+                new { contractId = returnAllowance.ContractId, allowanceId = returnAllowance.AllowanceId },
+                returnAllowance
+            );
+        }
+
+
+
+
+        [HttpPut("{allowanceId}/contract/{contractId}")]
         public async Task<ActionResult<AllowanceDTO>> UpdateAllowanceAsync(
             int contractId,
             int allowanceId,
             AllowanceUpdateDTO allowanceUpdateDTO
         )
         {
-            if (!await IsContractExist(contractId))
+            if (!await _allowanceService.IsContractExist(contractId))
             {
                 return NotFound();
             }
 
-            var allowance = await GetAllowanceByAllowanceId(contractId, allowanceId);
 
-            if (allowance == null)
+            if (!await _allowanceService.IsAllowanceTypeValid(allowanceUpdateDTO.AllowanceTypeId))
             {
-                return NotFound();
+                return BadRequest("Invalid Allowance Type");
             }
 
-            var returnAllowance = _mapper.Map(allowanceUpdateDTO, allowance);
+            await _allowanceService.UpdateAllowance(contractId, allowanceId, allowanceUpdateDTO); 
 
-            await _context.SaveChangesAsync();
-
-            if (!await SaveChangeAsync())
+            if (!await _allowanceService.SaveChangeAsync())
             {
-                return NotFound();
+                return BadRequest("Save Change Async Problem");
             }
 
             return NoContent();
@@ -116,19 +134,19 @@ namespace API.Controllers
 
         
 
-        [HttpPatch]
+        [HttpPatch("{allowanceId}/contract/{contractId}")]
         public async Task<ActionResult<AllowanceDTO>> PartiallUpdateAllowance(
             int contractId,
             int allowanceId,
             JsonPatchDocument<AllowanceUpdateDTO> patchDocument
         )
         {
-            if(!await IsContractExist(contractId))
+            if (!await _allowanceService.IsContractExist(contractId))
             {
                 return NotFound();
             }
 
-            var allowance = await GetAllowanceByAllowanceId(contractId, allowanceId);
+            var allowance = await _allowanceService.GetAllowanceByAllowanceId(contractId, allowanceId);
 
             if(allowance == null)
             {
@@ -152,7 +170,7 @@ namespace API.Controllers
             _mapper.Map(allowancePath, allowance);
             await _context.SaveChangesAsync();
 
-            if(!await SaveChangeAsync())
+            if(!await _allowanceService.SaveChangeAsync())
             {
                 return NotFound();
             }
@@ -161,19 +179,6 @@ namespace API.Controllers
 
         }
 
-        private async Task<bool> SaveChangeAsync()
-        {
-            return await _context.SaveChangesAsync() >= 0;
-        }
-
-        private async Task<bool> IsContractExist(int contractId)
-        {
-            return await _context.PersonnelContracts.AnyAsync(c => c.ContractId == contractId);
-        }
-        private async Task<Allowance?> GetAllowanceByAllowanceId(int contractId, int allowanceId)
-        {
-            return await _context.Allowances.Where(c => c.ContractId == contractId && c.AllowanceId == allowanceId)
-                                            .FirstOrDefaultAsync();
-        }
+        
     }
 }

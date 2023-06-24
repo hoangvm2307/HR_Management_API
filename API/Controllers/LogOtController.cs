@@ -11,7 +11,7 @@ using System;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/logot")]
+    [Route("api/logots")]
     public class LogOtController : ControllerBase
     {
         private readonly SwpProjectContext _context;

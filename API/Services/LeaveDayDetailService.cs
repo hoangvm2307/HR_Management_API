@@ -128,19 +128,45 @@ namespace API.Services
         }
 
 
-        public async Task<bool> IsLeaveDayDetailValid(int staffId, int leaveDays)
+        public async Task<bool> IsLeaveDayDetailValid(int staffId, int leaveTypeId, int leaveDays)
         {
             var isLeaveDayDetailValid = await _context.LeaveDayDetails
-                .AnyAsync(c => c.StaffId == staffId && c.DayLeft <  leaveDays);
+                .AnyAsync(c => c.StaffId == staffId &&
+                        c.LeaveTypeId == leaveTypeId &&    
+                        c.DayLeft >  leaveDays);
 
             return isLeaveDayDetailValid;
         }
 
-        public async Task UpdateLeaveDayDetail(int staffId, LeaveDayDetailUpdateDTO leaveDayDetailUpdateDTO)
+        public async Task UpdateLeaveDayDetail(int staffId, int leaveDayDetailId, LeaveDayDetailUpdateDTO leaveDayDetailUpdateDTO)
         {
             var leaveDayDetailOfStaff = await _context.LeaveDayDetails
-                .Where(c => c.StaffId == staffId && c.LeaveTypeId == leaveDayDetailUpdateDTO.LeaveTypeId)
+                .Where(c => 
+                    c.StaffId == staffId && 
+                    c.LeaveDayDetailId == leaveDayDetailId &&
+                    c.LeaveTypeId == leaveDayDetailUpdateDTO.LeaveTypeId)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task DecreaseDayLeft(int staffId, int leaveTypeId, int leaveDays)
+        {
+            var leaveDayDetail = _context.LeaveDayDetails
+                .Where(c => c.StaffId == staffId && c.LeaveTypeId == leaveTypeId) 
+                .FirstOrDefault();
+
+            var remainingDay = leaveDayDetail.DayLeft - leaveDays;
+
+            if(remainingDay > 0 && leaveDayDetail != null) 
+            {
+                leaveDayDetail.DayLeft = remainingDay;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public bool IsApproved(string message)
+        {
+            return message.Equals("approved");
         }
     }
 }

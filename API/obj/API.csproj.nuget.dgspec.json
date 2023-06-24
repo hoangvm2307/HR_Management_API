@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+
     "D:\\HR_Management_API\\API\\API.csproj": {}
   },
   "projects": {
@@ -12,6 +13,7 @@
         "projectPath": "D:\\HR_Management_API\\API\\API.csproj",
         "packagesPath": "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\",
         "outputPath": "D:\\HR_Management_API\\API\\obj\\",
+
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hoangvmdeptrai\\AppData\\Roaming\\NuGet\\NuGet.Config",

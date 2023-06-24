@@ -87,7 +87,7 @@ namespace API.Services
                 .Include(c => c.ContractType)
                 .Include(c => c.Allowances)
                 .ThenInclude(c => c.AllowanceType)
-                .Where(c => c.StaffId == staffId)
+                .Where(c => c.StaffId == staffId && c.ContractStatus == true)
                 .FirstOrDefaultAsync();
 
             var returnValidPersonnelContract = _mapper.Map<PersonnelContractDTO>(validPersonnelContract);
@@ -116,7 +116,8 @@ namespace API.Services
 
         public async Task<bool> IsValidContractExist(int staffId)
         {
-            var IsValidContractExist = await _context.PersonnelContracts.AnyAsync(c => c.ContractStatus == true && c.StaffId == staffId);
+            var IsValidContractExist = await _context.PersonnelContracts
+                .AnyAsync(c => c.ContractStatus == true && c.StaffId == staffId);
 
             return IsValidContractExist;
         }
