@@ -4,6 +4,7 @@ using API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    partial class SwpProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230622092116_newdb2")]
+    partial class newdb2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -710,9 +713,6 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
-                    b.Property<DateTime?>("ChangeAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("ContractFile")
                         .HasMaxLength(150)
                         .IsUnicode(false)
@@ -726,9 +726,6 @@ namespace API.Migrations
                     b.Property<int?>("ContractTypeId")
                         .HasColumnType("int")
                         .HasColumnName("contractTypeId");
-
-                    b.Property<DateTime?>("CreateAt")
-                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("date")
@@ -1329,19 +1326,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "956e1bff-aa1e-42ee-b03e-ae63b977b84f",
+                            Id = "727dcdfb-209f-4626-a734-b5f5fc19bd0f",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "6e13be1e-d4cd-4243-8113-4785149fac93",
+                            Id = "495a89fa-e956-49a7-b64a-cd7e467efc51",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "1e0a9e37-8f5c-490e-b726-cc675e1f7fa4",
+                            Id = "ce0120d7-2682-4624-8081-f26b18c1ef48",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

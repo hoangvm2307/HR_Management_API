@@ -1,4 +1,5 @@
 ﻿using API.DTOs.UserInforDTO;
+using API.Entities;
 
 namespace API.DTOs.PayslipDTOs
 {
@@ -30,8 +31,6 @@ namespace API.DTOs.PayslipDTOs
 
         public int? Bhtnemp { get; set; }
 
-        public int? SalaryBonus { get; set; }
-
         public int? SalaryBeforeTax { get; set; }
 
         public int? SelfAllowances { get; set; }
@@ -60,12 +59,14 @@ namespace API.DTOs.PayslipDTOs
 
         public int? TotalPaid { get; set; }
 
-        public DateTime? CreateAt { get; set; }
+        public DateTime? CreateAt { get; set; } = DateTime.Now;
+
+        public DateTime? ChangeAt { get; set; } = DateTime.Now;
 
         public bool? PayslipStatus { get; set; }
 
         public virtual UserInforDto Staff { get; set; } = null!;
 
-        //public virtual ICollection<TaxDetail> TaxDetails { get; set; } = new List<TaxDetail>();
+        public virtual ICollection<TaxDetailDTO> TaxDetails { get; set; } = new List<TaxDetailDTO>();
     }
 }

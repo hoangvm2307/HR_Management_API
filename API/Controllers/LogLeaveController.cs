@@ -40,7 +40,7 @@ namespace API.Controllers
 
         
 
-        [HttpGet("staffId/{staffId}")]
+        [HttpGet("staffs/{staffId}")]
         public async Task<ActionResult<List<LogLeaveDTO>>> GetLogLeavesAsyncByStaffId(int staffId)
         {
             if (!await _userInfoService.IsUserExist(staffId))
@@ -51,8 +51,8 @@ namespace API.Controllers
             return await _logLeaveService.GetLogLeavesByStaffId(staffId);
         }
 
-        [HttpGet("{logLeaveId}/staffId/{staffId}", Name = "GetLogLeaveByStaffIdAndLogLeaveId")]
-        public async Task<ActionResult<LogLeaveDTO>> GetLogLeaveByStaffIdAndLogLeaveId(int staffId, int logLeaveId)
+        [HttpGet("{logLeaveId}/staffs/{staffId}", Name = "GetLogLeaveByStaffIdAndLogLeaveId")]
+        public async Task<ActionResult<LogLeaveDTO>> GetLogLeaveByStaffIdAndLogLeaveId(int logLeaveId, int staffId)
         {
             if (!await _userInfoService.IsUserExist(staffId))
             {
@@ -69,7 +69,7 @@ namespace API.Controllers
             return returnLogLeave;
         }
 
-        [HttpPost("staffId/{staffId}")]
+        [HttpPost("staffs/{staffId}")]
         public async Task<ActionResult<LogLeaveDTO>> CreateLogLeaveByStaffId(int staffId, LogLeaveCreationDTO logLeaveCreationDTO)
         {
             if (!await _userInfoService.IsUserExist(staffId))
@@ -82,28 +82,31 @@ namespace API.Controllers
                 return BadRequest("Invalid Leave Type Id Of Staff");
             }
 
-            logLeaveCreationDTO.LeaveDays = (logLeaveCreationDTO.LeaveEnd - logLeaveCreationDTO.LeaveStart).TotalDays;
-            logLeaveCreationDTO.LeaveHours = (int?)(logLeaveCreationDTO.LeaveDays * 8);
+            int leaveDays  = await _logLeaveService.LeaveDaysCalculation
+                                                (logLeaveCreationDTO.LeaveStart,
+                                                logLeaveCreationDTO.LeaveEnd);
 
-            if (!await _leaveDayDetailService.IsLeaveDayDetailValid(staffId, logLeaveCreationDTO.LeaveTypeId, (int)logLeaveCreationDTO.LeaveDays))
+
+            logLeaveCreationDTO.LeaveDays = leaveDays;
+            logLeaveCreationDTO.LeaveHours = leaveDays * 8;
+
+            if (!await _leaveDayDetailService.IsLeaveDayDetailValid(
+                staffId, 
+                logLeaveCreationDTO.LeaveTypeId, 
+                leaveDays))
             {
                 return BadRequest("Invalid Leave Days");
             }
 
-            var user = await _logLeaveService.GetUserLogLeave(staffId);
+            var returnLogLeave = await _logLeaveService.CreateLogLeave(staffId, logLeaveCreationDTO);
 
-            var logLeave = _mapper.Map<LogLeave>(logLeaveCreationDTO);
 
-            if (logLeave == null)
+            if (!await _userInfoService.IsSaveChangeAsync())
             {
-                return NotFound();
+                return BadRequest("Error");
+
             }
 
-            user.LogLeaves.Add(logLeave);
-
-            await _context.SaveChangesAsync();
-
-            var returnLogLeave = _mapper.Map<LogLeaveDTO>(logLeave);
 
             return CreatedAtRoute(
                 "GetLogLeaveByStaffIdAndLogLeaveId",
@@ -117,7 +120,7 @@ namespace API.Controllers
         }
 
         
-        [HttpPut("{logLeaveId}/staffId/{staffId}")]
+        [HttpPut("{logLeaveId}/staffs/{staffId}")]
         public async Task<ActionResult<LogLeaveDTO>> UpdateLogLeave(int staffId, int logLeaveId, LogLeaveUpdateDTO logLeaveUpdateDTO)
         {
 
@@ -161,7 +164,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{logLeaveId}/staffId/{staffId}")]
+        [HttpPatch("{logLeaveId}/staffs/{staffId}")]
         public async Task<ActionResult<LogLeaveDTO>> UpdateStatusLogLeave(
             int staffId, 
             int logLeaveId, 

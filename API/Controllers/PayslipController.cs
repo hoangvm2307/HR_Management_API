@@ -18,19 +18,22 @@ namespace API.Controllers
         private readonly PayslipService _payslipService;
         private readonly UserInfoService _userInfoService;
         private readonly PersonnelContractService _personnelContractService;
+        private readonly LogLeaveService _logLeaveService;
 
         public PayslipController(
             SwpProjectContext context,
             IMapper mapper,
             PayslipService payslipService,
             UserInfoService userInfoService,
-            PersonnelContractService personnelContractService
+            PersonnelContractService personnelContractService,
+            LogLeaveService logLeaveService
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _payslipService = payslipService ?? throw new ArgumentNullException(nameof(payslipService));
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
+            _logLeaveService = logLeaveService ?? throw new ArgumentNullException(nameof(logLeaveService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
@@ -50,7 +53,7 @@ namespace API.Controllers
             return await _payslipService.GetPayslipOfStaff(staffId);
         }
 
-        [HttpGet("{payslipId}/staffId/{staffId}")]
+        [HttpGet("{payslipId}/staffs/{staffId}")]
         public async Task<ActionResult<PayslipDTO>> GetPayslipByStaffId(int staffId, int payslipId)
         {
             if(!await _payslipService.IsPayslipExist(staffId, payslipId))
@@ -62,37 +65,31 @@ namespace API.Controllers
 
         }
 
-        [HttpPost]
-        public async Task<ActionResult<PayslipDTO>> CreatePayslipByStaffIdForAMonth(int staffId, DateOnly dateOnly)
+        [HttpPost("staffs/{staffId}")]
+        public async Task<ActionResult<PayslipDTO>> CreatePayslipByStaffIdForAMonth(
+            int staffId,
+            int month,
+            int year
+            )
         {
-            if(!await _userInfoService.IsUserExist(staffId))
-            {
-                return NotFound();
-            }
-            
-            if(!await _personnelContractService.IsValidContractExist(staffId))
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return NotFound();
             }
 
-            
+            if (!await _personnelContractService.IsValidContractExist(staffId))
+            {
+                return NotFound();
+            }
+
+            await _payslipService.AddPayslipToDatabase(staffId, month, year);
 
 
-            //Du lieu Fake
-
-            //var personnelContract = await _personnelContractService.GetValidPersonnelContractByStaffId(staffId);
-
-            //if (personnelContract == null)
-            //{
-            //    return NotFound();
-            //}
+            return NoContent();
+            ////Du lieu Fake
 
             //var personnelContractDTO = _mapper.Map<PersonnelContractDTO>(personnelContract);
             //var userInfo = await _userInfoService.GetUserInforEntityByStaffId(staffId);
-
-            // int GrossSalary = 30000000;
-
-            // string type = "GrossToNet";
 
             //var PayslipExtensions = new PayslipExtensions(_context, _mapper);
 
@@ -106,11 +103,11 @@ namespace API.Controllers
 
             //await _context.SaveChangesAsync();
 
-            // return CreatedAtRoute(
-            //     "GetPayslipListByStaffId",
-            //     finalPayslips
-            // );
-            return NoContent();
+            //return CreatedAtRoute(
+            //    "GetPayslipListByStaffId",
+            //    finalPayslips
+            //);
+            //return NoContent();
 
         }
 

@@ -32,6 +32,9 @@ public partial class PersonnelContract
     public string? ContractFile { get; set; }
 
     public bool ContractStatus { get; set; }
+    public DateTime? CreateAt { get; set; }
+
+    public DateTime? ChangeAt { get; set; }
 
     public virtual ICollection<Allowance> Allowances { get; set; } = new List<Allowance>();
 
