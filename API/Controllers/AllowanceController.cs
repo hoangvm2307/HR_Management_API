@@ -38,7 +38,7 @@ namespace API.Controllers
 
 
 
-        [HttpGet("contract/{contractId}")]
+        [HttpGet("contracts/{contractId}")]
         public async Task<ActionResult<List<AllowanceDTO>>> GetAllowanceAsync(int contractId)
         {
             if (!await _allowanceService.IsContractExist(contractId))
@@ -51,7 +51,7 @@ namespace API.Controllers
             return finalAllowances;
         }
 
-        [HttpGet("{allowanceId}/contract/{contractId}", Name = "GetAllowance")]
+        [HttpGet("{allowanceId}/contracts/{contractId}", Name = "GetAllowance")]
         public async Task<ActionResult<AllowanceDTO>> GetAllowanceByContractIdAndAllowanceId(int contractId, int allowanceId)
         {
             if (!await _allowanceService.IsContractExist(contractId))
@@ -67,7 +67,7 @@ namespace API.Controllers
 
 
 
-        [HttpPost("contract/{contractId}")]
+        [HttpPost("contracts/{contractId}")]
         public async Task<ActionResult<AllowanceDTO>> CreateAllowanceAsync(
             int contractId,
             AllowanceCreationDTO allowanceCreationDTO)
@@ -104,7 +104,7 @@ namespace API.Controllers
 
 
 
-        [HttpPut("{allowanceId}/contract/{contractId}")]
+        [HttpPut("{allowanceId}/contracts/{contractId}")]
         public async Task<ActionResult<AllowanceDTO>> UpdateAllowanceAsync(
             int contractId,
             int allowanceId,
@@ -134,7 +134,7 @@ namespace API.Controllers
 
         
 
-        [HttpPatch("{allowanceId}/contract/{contractId}")]
+        [HttpPatch("{allowanceId}/contracts/{contractId}")]
         public async Task<ActionResult<AllowanceDTO>> PartiallUpdateAllowance(
             int contractId,
             int allowanceId,

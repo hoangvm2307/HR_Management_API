@@ -12,12 +12,16 @@ namespace API.Services
         private readonly IMapper _mapper;
         private readonly TheCalendarService _theCalendarService;
         private readonly UserInfoService _userInfoService;
+        private readonly PayslipService _payslipService;
+        private readonly PersonnelContractService _personnelContractService;
 
         public LogOtService(
             SwpProjectContext context,
             IMapper mapper,
             TheCalendarService theCalendarService,
-            UserInfoService userInfoService
+            UserInfoService userInfoService,
+            //PayslipService payslipService,
+            PersonnelContractService personnelContractService
 
             )
         {
@@ -25,7 +29,8 @@ namespace API.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
-            
+            //_payslipService = payslipService ?? throw new ArgumentNullException(nameof(payslipService));
+            _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
         }
 
         public async Task<List<LogOtDTO>> GetLogOts()
@@ -100,7 +105,6 @@ namespace API.Services
 
             List<TheCalendar> list = new List<TheCalendar>();
 
-            var staffInfo = await _userInfoService.GetUserInforEntityByStaffId(staffId);
 
             int length = theCalendar.Count;
 
@@ -115,37 +119,65 @@ namespace API.Services
                 else if (endPosition != length && theCalendar[i + 1].TheDay != current.TheDay + 1)
                 {
                     list.Add(theCalendar[i]);
-                    AddToDatabase(logOtCreation, type, list, staffInfo);
+                    await AddToDatabase(staffId, logOtCreation, type, list);
+
                     list.Clear();
                 }
                 else if (endPosition == length)
                 {
                     list.Add(theCalendar[i]);
-                    AddToDatabase(logOtCreation, type, list, staffInfo);
+                    await AddToDatabase(staffId, logOtCreation, type, list);
+
                     list.Clear();
                 }
-
             }
-
             await _context.SaveChangesAsync();
+
         }
 
-        private async void AddToDatabase(LogOtCreationDTO logOtCreation, int type, List<TheCalendar> list, UserInfor? staffInfo)
+        private async Task AddToDatabase(
+            int staffId, 
+            LogOtCreationDTO logOtCreation, 
+            int type, 
+            List<TheCalendar> list)
         {
             DateTime startDay = (DateTime)list.First().TheDate;
             DateTime endDay = (DateTime)list.Last().TheDate;
+
+            var basicSalaryOfOneDay = await _personnelContractService
+                .BasicSalaryOneDayOfMonth(staffId, startDay.Month, startDay.Year);
+
+            var staffInfo = await GetUserInforEntityByStaffId(staffId);
+
+
+
             logOtCreation.LogStart = startDay;
             logOtCreation.LogEnd = endDay;
             logOtCreation.OtTypeId = type;
             logOtCreation.LogHours = list.Count() * 8;
+            //thêm field amount, check lại những field còn thiếu đổi Creation DTO Update 
+            logOtCreation.Amount = (basicSalaryOfOneDay * getPercent((int)logOtCreation.OtTypeId));
+
+
             logOtCreation.CreateAt = DateTime.Now; 
             logOtCreation.ChangeStatusTime = DateTime.Now;
-            logOtCreation.Status = "pending";
+
             var WeekendsEntity = _mapper.Map<LogOt>(logOtCreation);
+
             staffInfo.LogOts.Add(WeekendsEntity);
 
+            await _context.SaveChangesAsync();
+        }
 
-
+        public int getPercent(int otTypeId)
+        {
+            if (otTypeId == 1)
+                return 2;
+            else if (otTypeId == 2)
+                return 3;
+            else if (otTypeId == 3)
+                return 4;
+            return 0;
         }
 
         public int getOtType(TheCalendar theCalendar)
@@ -175,11 +207,11 @@ namespace API.Services
         {
             DateTime now = DateTime.Now;
 
-            if (now >  startDate || now > endDate)
+            if (startDate < now || now > endDate)
             {
                 return false;
             }
-            else if (startDate < endDate)
+            else if (startDate > endDate)
             {
                 return false;
             }
@@ -228,7 +260,6 @@ namespace API.Services
                 isDuplicate = await _context.LogOts.AnyAsync(c =>
                 c.StaffId == staffId &&
                 c.LogStart < endDate && c.LogEnd > startDate
-
                 );
             }
 
@@ -245,6 +276,48 @@ namespace API.Services
 
             await _context.SaveChangesAsync();
 
+        }
+
+        public async Task<int> GetOtDays(int staffId, int month, int year)
+        {
+            var logOts = await _context.LogOts
+                .Where(c => 
+                    c.StaffId == staffId && 
+                    c.LogStart.Month == month &&
+                    c.LogStart.Year == year &&
+                    c.Status == "aprroved")
+                .ToListAsync();
+
+            var logOtDays = logOts.Sum(c => c.LogHours) / 8;
+
+            return (int)logOtDays;
+        }
+
+        public async Task<int> OtSalary(int staffId, int month, int year)
+        {
+            var logOts = await _context.LogOts
+                .Where(c => 
+                    c.StaffId == staffId && 
+                    c.LogStart.Month == month && 
+                    c.LogStart.Year == year)
+                .ToListAsync();
+
+            var OtSalary = logOts.Sum(c => c.Amount);
+
+            if(OtSalary != null)
+            {
+                return (int)OtSalary;
+            }
+
+            return 0;
+        }
+
+        public async Task<UserInfor> GetUserInforEntityByStaffId(int StaffId)
+        {
+            return await _context.UserInfors
+                                .Include(c => c.LogOts)
+                                .Where(c => c.StaffId == StaffId && c.AccountStatus == true)
+                                .FirstOrDefaultAsync();
         }
     }
 }

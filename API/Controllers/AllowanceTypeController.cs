@@ -22,7 +22,7 @@ namespace API.Controllers
             return await _allowanceTypeService.GetAllowanceTypeDTOsAsync();
         }
 
-        [HttpGet("valid/contract/{contractId}")]
+        [HttpGet("valid/contracts/{contractId}")]
         public async Task<ActionResult<List<AllowanceTypeDTO>>> GetValidAllowanceTypesOfContract(int contractId)
         {
             return await _allowanceTypeService.GetValidAllowanceTypes(contractId);

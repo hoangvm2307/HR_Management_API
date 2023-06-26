@@ -113,6 +113,31 @@ namespace API.Services
             return await _context.Allowances.AnyAsync(c => c.ContractId == contractId && c.AllowanceTypeId == allowanceTypeId);
         }
 
-        
+        public async Task<int> GetAllowancesOfStaff(int staffId)
+        {
+            var personnelContractId = await _context.PersonnelContracts
+                .Where(c => 
+                    c.StaffId == staffId &&
+                    c.ContractStatus == true
+                    )
+                .Select(c => c.ContractId)
+                .FirstOrDefaultAsync();
+
+            var allowance = await _context.Allowances
+                                        .Where(c => c.ContractId == personnelContractId)
+                                        .ToListAsync();
+
+
+            int? allowanceSalary = 0;
+
+            foreach (var item in allowance)
+            {
+                allowanceSalary += item.AllowanceSalary;
+            }
+
+            return (int)allowanceSalary;
+
+
+        }
     }
 }

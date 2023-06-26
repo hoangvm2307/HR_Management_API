@@ -43,7 +43,7 @@ namespace API.Controllers
             return returnLogOtList;
         }
 
-        [HttpGet("staffId/{staffId}", Name = "GetLogOtOfStaff")]
+        [HttpGet("staffs/{staffId}", Name = "GetLogOtOfStaff")]
         public async Task<ActionResult<List<LogOtDTO>>> GetLogOtListByStaffId(int staffId)
         {
             if(!await _userInfoService.IsUserExist(staffId))
@@ -70,7 +70,7 @@ namespace API.Controllers
         }
 
 
-        [HttpPost("staffId/{staffId}")]
+        [HttpPost("staffs/{staffId}")]
         public async Task<ActionResult<LogOtDTO>> CreateLogOtByStaffId(int staffId, LogOtCreationDTO createLogOtDTO)
         {
             if (!await _userInfoService.IsUserExist(staffId))
@@ -79,10 +79,10 @@ namespace API.Controllers
             }
 
             //Here 
-            if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
-            {
-                return BadRequest("Unvalid DateTime");
-            }
+            //if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            //{
+            //    return BadRequest("Invalid DateTime");
+            //}
 
             if (!await _logOtService.IsContainHoliday(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
             {
@@ -116,7 +116,7 @@ namespace API.Controllers
         }
 
 
-        [HttpPut("logOtId/{logOtId}/staffId/{staffId}")]
+        [HttpPut("{logOtId}/staffs/{staffId}")]
         public async Task<ActionResult<LogOtDTO>> UpdateLogOt(int staffId, int logOtId, LogOtUpdateDTO logOtUpdateDTO)
         {
             var staffInfo = await _context.UserInfors.Include(c => c.LogOts).Where(c => c.StaffId == staffId).FirstOrDefaultAsync();
@@ -138,7 +138,7 @@ namespace API.Controllers
 
         
 
-        [HttpPatch("logOtId/{logOtId}/staffId/{staffId}")]
+        [HttpPatch("/{logOtId}/staffs/{staffId}")]
         public async Task<ActionResult<LogOtDTO>> PartiallyUpdateLogOt(
             int StaffId,
             int LogOtId,

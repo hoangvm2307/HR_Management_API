@@ -43,7 +43,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-builder.Services.AddDbContext<SwpProjectContext>();
+//builder.Services.AddDbContext<SwpProjectContext>();
+builder.Services.AddDbContext<SwpProjectContext>(ServiceLifetime.Transient);
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 

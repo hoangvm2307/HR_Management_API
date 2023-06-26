@@ -35,8 +35,6 @@ namespace API.DTOs.PayslipDTOs
 
         public int? Bhtnemp { get; set; }
 
-        public int? SalaryBonus { get; set; }
-
         public int? SalaryBeforeTax { get; set; }
 
         public int? SelfAllowances { get; set; }
@@ -67,10 +65,12 @@ namespace API.DTOs.PayslipDTOs
 
         public DateTime? CreateAt { get; set; }
 
+        public DateTime? ChangeAt { get; set; }
+
         public bool? PayslipStatus { get; set; }
 
         public virtual UserInforDto Staff { get; set; } = null!;
 
-        //public virtual ICollection<TaxDetail> TaxDetails { get; set; } = new List<TaxDetail>();
+        public virtual ICollection<TaxDetailDTO> TaxDetails { get; set; } = new List<TaxDetailDTO>();
     }
 }

@@ -19,6 +19,7 @@ namespace API.DTOs.LogOtDTOs
         public DateTime LogEnd { get; set; }
 
         public double LogHours { get; set; }
+        public int? Amount { get; set; }
 
         public string? Reason { get; set; }
 

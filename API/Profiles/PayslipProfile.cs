@@ -30,8 +30,12 @@ namespace API.Profiles
             CreateMap<LogOt, LogOtUpdateDTO>();
             
             CreateMap<Payslip, PayslipDTO>();
+            CreateMap<PayslipCreationDTO, Payslip>();
             CreateMap<PayslipDTO, Payslip>();
 
+            CreateMap<TaxDetail, TaxDetailDTO>();
+            CreateMap<TaxDetailCreationDTO, TaxDetail>();
+            CreateMap<TaxList, TaxListDTO>();
 
             CreateMap<Ticket, TicketDto>();
             CreateMap<TicketDto, Ticket>();

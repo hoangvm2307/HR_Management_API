@@ -3719,21 +3719,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\": {}
+    "C:\\Users\\Nguyen Huy Linh\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-
-      "projectUniqueName": "D:\\HR_Management_API\\API\\API.csproj",
+      "projectUniqueName": "C:\\Users\\Nguyen Huy Linh\\Desktop\\new\\HR_Management_API\\API\\API.csproj",
       "projectName": "API",
-      "projectPath": "D:\\HR_Management_API\\API\\API.csproj",
-      "packagesPath": "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\",
-      "outputPath": "D:\\HR_Management_API\\API\\obj\\",
-
+      "projectPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\new\\HR_Management_API\\API\\API.csproj",
+      "packagesPath": "C:\\Users\\Nguyen Huy Linh\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\new\\HR_Management_API\\API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\hoangvmdeptrai\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Nguyen Huy Linh\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -3741,6 +3739,7 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -3829,7 +3828,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
       }
     }
   }
