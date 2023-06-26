@@ -18,12 +18,11 @@ namespace API.Extensions
                         TicketId = ticket.TicketId,
                         StaffId = ticket.StaffId,
                         TicketTypeId = ticket.TicketTypeId,
-                        TicketTitle = ticket.TicketFile,
                         TicketFile = ticket.TicketFile,
                         TicketStatus = ticket.TicketStatus,
                         ProcessNote = ticket.ProcessNote,
                         RespondencesId = ticket.RespondencesId,
-                        CreateDate = ticket.CreateAt,
+                        CreateAt = ticket.CreateAt,
                         ChangeStatusTime = ticket.ChangeStatusTime
                     }).AsNoTracking();
         }

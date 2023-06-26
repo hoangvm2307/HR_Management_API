@@ -9,8 +9,9 @@ namespace API.DTOs.TicketDTO
         public string StaffName { get; set; }
 
         public int? TicketTypeId { get; set; }
+        public string TicketName { get; set; }
 
-        public string TicketTitle { get; set; } 
+        public string TicketReason { get; set; }
 
         public string? TicketFile { get; set; }
 
@@ -20,7 +21,7 @@ namespace API.DTOs.TicketDTO
 
         public int? RespondencesId { get; set; }
 
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateAt { get; set; }
 
         public DateTime? ChangeStatusTime { get; set; }
         
