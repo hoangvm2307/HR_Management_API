@@ -110,7 +110,8 @@ namespace API.Services
 
         public async Task<bool> IsProjectAlreadyHaveAllowanceType(int contractId, int allowanceTypeId)
         {
-            return await _context.Allowances.AnyAsync(c => c.ContractId == contractId && c.AllowanceTypeId == allowanceTypeId);
+            return await _context.Allowances
+                .AnyAsync(c => c.ContractId == contractId && c.AllowanceTypeId == allowanceTypeId);
         }
 
         public async Task<int> GetAllowancesOfStaff(int staffId)

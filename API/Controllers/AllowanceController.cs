@@ -82,7 +82,7 @@ namespace API.Controllers
                 return BadRequest("Invalid Allowance Type");
             }
 
-            if (!await _allowanceService.IsProjectAlreadyHaveAllowanceType(contractId, allowanceCreationDTO.AllowanceTypeId))
+            if (await _allowanceService.IsProjectAlreadyHaveAllowanceType(contractId, allowanceCreationDTO.AllowanceTypeId))
             {
                 return BadRequest("Already have this allowance ");
             }
