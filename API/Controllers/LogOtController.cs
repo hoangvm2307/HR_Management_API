@@ -138,7 +138,7 @@ namespace API.Controllers
 
         
 
-        [HttpPatch("/{logOtId}/staffs/{staffId}")]
+        [HttpPatch("{logOtId}/staffs/{staffId}")]
         public async Task<ActionResult<LogOtDTO>> PartiallyUpdateLogOt(
             int StaffId,
             int LogOtId,
