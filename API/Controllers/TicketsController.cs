@@ -49,6 +49,7 @@ namespace API.Controllers
             TicketStatus = t.TicketStatus,
             ProcessNote = t.ProcessNote,
             RespondencesId = t.RespondencesId,
+            Enable = t.Enable,
             CreateAt = t.CreateAt,
             ChangeStatusTime = t.ChangeStatusTime
           })
@@ -74,8 +75,13 @@ namespace API.Controllers
             TicketReason = t.TicketReason,
             TicketFile = t.TicketFile,
             TicketStatus = t.TicketStatus,
+            Enable = t.Enable,
             ProcessNote = t.ProcessNote,
             RespondencesId = t.RespondencesId,
+            ResponsdenceName = _context.UserInfors
+              .Where(c => c.StaffId == t.RespondencesId)
+              .Select(s => s.LastName + " " + s.FirstName)
+              .FirstOrDefault(),
             CreateAt = t.CreateAt,
             ChangeStatusTime = t.ChangeStatusTime
           })
@@ -90,7 +96,7 @@ namespace API.Controllers
 
       var ticketDtos = await _context.Tickets
           .Include(t => t.TicketType)
-          .Where(t => t.StaffId != userInfor.StaffId) // Filter tickets by the current user's ID
+          .Where(t => t.StaffId != userInfor.StaffId && t.Enable == true) // Filter tickets by the current user's ID
           .Select(t => new TicketDto
           {
             TicketId = t.TicketId,
@@ -101,8 +107,13 @@ namespace API.Controllers
             TicketReason = t.TicketReason,
             TicketFile = t.TicketFile,
             TicketStatus = t.TicketStatus,
+            Enable = t.Enable,
             ProcessNote = t.ProcessNote,
             RespondencesId = t.RespondencesId,
+            ResponsdenceName = _context.UserInfors
+            .Where(c => c.StaffId == t.RespondencesId)
+            .Select(s => s.LastName + " " + s.FirstName)
+            .FirstOrDefault(),
             CreateAt = t.CreateAt,
             ChangeStatusTime = t.ChangeStatusTime
           })
@@ -121,7 +132,7 @@ namespace API.Controllers
       return ticket;
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> RemoveTicket(int id)
     {
       var ticket = await _context.Tickets
@@ -133,10 +144,9 @@ namespace API.Controllers
 
       if (userInfor == null) return BadRequest("User Not Found");
 
-      ticket.TicketStatus = "Canceled";
+      ticket.TicketStatus = "Đã hủy";
       ticket.ChangeStatusTime = DateTime.Now;
-      ticket.RespondencesId = userInfor.StaffId;
-      ticket.ProcessNote = "S";
+      ticket.Enable = false;
 
       var result = await _context.SaveChangesAsync() > 0;
 
@@ -163,7 +173,8 @@ namespace API.Controllers
         TicketTypeId = ticketDto.TicketTypeId,
         TicketReason = ticketDto.TicketReason,
         TicketFile = ticketDto.TicketFile,
-        TicketStatus = "Pending",
+        TicketStatus = "Chờ duyệt",
+        Enable = true,
         CreateAt = DateTime.Now,
       };
 
@@ -199,7 +210,7 @@ namespace API.Controllers
     }
 
     // For HR Staff
-    [HttpPost("tickets/{id}/status")]
+    [HttpPut("{id}")]
     public async Task<ActionResult> UpdateTicketStatus(int id, [FromBody] TicketStatusDto ticketStatusDto)
     {
       if (ticketStatusDto == null) return BadRequest("Invalid ticket status data");
@@ -215,6 +226,8 @@ namespace API.Controllers
       ticket.TicketStatus = ticketStatusDto.TicketStatus;
       ticket.ChangeStatusTime = DateTime.Now;
       ticket.RespondencesId = userInfor.StaffId;
+      ticket.Enable = false;
+
       if (!string.IsNullOrWhiteSpace(ticketStatusDto.ProcessNote))
         ticket.ProcessNote = ticketStatusDto.ProcessNote;
 
@@ -222,7 +235,26 @@ namespace API.Controllers
 
       return NoContent();
     }
+    //For current user
+    [HttpPut("update/{id}")]
+    public async Task<ActionResult> UpdateTicket(int id, TicketUpdateDto ticketDto)
+    {
+      if (ticketDto == null) return BadRequest("Invalid ticket status data");
 
+      var ticket = await _context.Tickets.FindAsync(id);
+
+      if (ticket == null) return NotFound("Ticket not found");
+
+      // Update the ticket status
+      ticket.TicketTypeId = ticketDto.TicketTypeId;
+      ticket.TicketReason = ticketDto.TicketReason;
+      ticket.ChangeStatusTime = DateTime.Now;
+
+
+      await _context.SaveChangesAsync();
+
+      return NoContent();
+    }
 
   }
 }

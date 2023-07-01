@@ -7,7 +7,7 @@ public partial class Candidate
 {
     public int CandidateId { get; set; }
 
-    public string? ImageFile { get; set; }
+    public byte[]? ImageFile { get; set; }
 
     public string Name { get; set; } = null!;
 

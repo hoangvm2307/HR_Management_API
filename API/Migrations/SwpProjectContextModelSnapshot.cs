@@ -123,10 +123,9 @@ namespace API.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("gender");
 
-                    b.Property<string>("ImageFile")
-                        .HasMaxLength(120)
-                        .IsUnicode(false)
-                        .HasColumnType("varchar(120)")
+                    b.Property<byte[]>("ImageFile")
+                        .HasMaxLength(8000)
+                        .HasColumnType("varbinary(8000)")
                         .HasColumnName("imageFile");
 
                     b.Property<string>("Name")
@@ -275,7 +274,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF3FE9C0F83");
+                        .HasName("PK__DateDime__AA552EF3CF06A31E");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -1331,19 +1330,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c6729458-6c30-458b-a011-494fc319d56f",
+                            Id = "fb0f7d66-ae89-4801-95b1-07411b39fa5c",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "1300f980-bc32-401a-bfb6-6e332575cf50",
+                            Id = "6f7d2d2e-a00a-44de-84c7-b9c4114b2505",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "9cc22363-ef78-45af-bb19-f2b565399044",
+                            Id = "86dd7aeb-d64c-4e24-a548-b66bfb6da0c8",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

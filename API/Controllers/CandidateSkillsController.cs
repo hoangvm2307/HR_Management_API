@@ -21,7 +21,16 @@ namespace API.Controllers
     public async Task<ActionResult<List<CandidateSkillDto>>> GetCandidateSkills()
     {
       var candidateSkills = await _context.CandidateSkills
-          .Include(c => c.Skill)
+           .Include(c => c.Skill)
+          .Select(s => new CandidateSkillDto
+          {
+            UniqueId = s.UniqueId,
+            CandidateId = s.CandidateId,
+            Level = s.Level,
+            SkillId = s.SkillId,
+            CandidateName = s.Candidate.Name,
+            SkillName = s.Skill.SkillName
+          })
           .ToListAsync();
 
       var candidateSkillDtos = _mapper.Map<List<CandidateSkillDto>>(candidateSkills);
@@ -29,6 +38,27 @@ namespace API.Controllers
       return candidateSkillDtos;
     }
 
+    [HttpGet("candidate/{id}")]
+    public async Task<ActionResult<List<CandidateSkillDto>>> GetCandidateSkillsByCandidateId(int id)
+    {
+      var candidateSkills = await _context.CandidateSkills
+          .Include(c => c.Skill)
+          .Where(c => c.CandidateId == id)
+          .Select(s => new CandidateSkillDto
+          {
+            UniqueId = s.UniqueId,
+            CandidateId = s.CandidateId,
+            Level = s.Level,
+            SkillId = s.SkillId,
+            CandidateName = s.Candidate.Name,
+            SkillName = s.Skill.SkillName
+          })
+          .ToListAsync();
+
+      //var candidateSkillDtos = _mapper.Map<List<CandidateSkillDto>>(candidateSkills);
+
+      return candidateSkills;
+    }
     [HttpGet("{id}", Name = "GetCandidateSkillById")]
     public async Task<ActionResult<CandidateSkillDto>> GetCandidateSkillById(int id)
     {
@@ -102,14 +132,14 @@ namespace API.Controllers
       return BadRequest();
     }
 
-    [HttpPost("Update")]
+     [HttpPut]
     public async Task<IActionResult> UpdateCandidateSkillAndSkill(CandidateSkillUpdateDto candidateSkillDto)
     {
       // Retrieve the staff skill record to update based on the provided data
       var candidateSkill = await _context.CandidateSkills
           .FirstOrDefaultAsync(s => s.UniqueId == candidateSkillDto.UniqueId);
 
-      if (candidateSkill != null) return NotFound("Candidate Skill Not Found");
+      if (candidateSkill == null) return NotFound("Candidate Skill Not Found");
 
       // Update the Level property
       if (!string.IsNullOrWhiteSpace(candidateSkillDto.Level))
@@ -119,7 +149,7 @@ namespace API.Controllers
       if (!string.IsNullOrWhiteSpace(candidateSkillDto.SkillName))
       {
         var existingSkill = await _context.Skills
-            .FirstOrDefaultAsync(s => s.SkillName.ToLower().Equals(candidateSkillDto.SkillName.ToLower()));
+            .FirstOrDefaultAsync(s => s.SkillName.ToLower().Trim().Equals(candidateSkillDto.SkillName.ToLower().Trim()));
 
         // Update Skill ID Property
         if (existingSkill != null) candidateSkill!.SkillId = existingSkill.SkillId;
@@ -137,12 +167,8 @@ namespace API.Controllers
         }
       }
 
-      var result = await _context.SaveChangesAsync() > 0;
-
-      // Return successful save changes
-      if (result) return Ok();
-
-      return BadRequest("Problem updating");
+      await _context.SaveChangesAsync();
+      return Ok();
     }
   }
 }

@@ -26,11 +26,21 @@ namespace API.Controllers
     {
       var staffSkills = await _context.StaffSkills
           .Include(s => s.Skill)
+          .Include(s => s.Staff)
+          .Select(s => new StaffSkillDto{
+            UniqueId = s.UniqueId,
+            StaffId = s.StaffId,
+            DepartmentName = s.Staff.Department.DepartmentName,
+            Level = s.Level,
+            SkillId = s.SkillId,
+            StaffName = s.Staff.LastName + " " + s.Staff.FirstName,
+            SkillName = s.Skill.SkillName
+          })
           .ToListAsync();
 
       var returnStaffSkills = _mapper.Map<List<StaffSkillDto>>(staffSkills);
 
-      return returnStaffSkills;
+      return staffSkills;
     }
 
     [HttpGet("{id}", Name = "GetStaffSkill")]
@@ -64,6 +74,27 @@ namespace API.Controllers
       return BadRequest(new ProblemDetails { Title = "Problem removing Staff Skill" });
     }
 
+    [HttpGet("candidate/{id}")]
+    public async Task<ActionResult<List<StaffSkillDto>>> GetStaffSkillsByCandidateId(int id)
+    {
+      var staffSkills = await _context.StaffSkills
+          .Include(c => c.Skill)
+          .Where(c => c.StaffId == id)
+          .Select(s => new StaffSkillDto
+          {
+            UniqueId = s.UniqueId,
+            StaffId = s.StaffId,
+            Level = s.Level,
+            SkillId = s.SkillId,
+            StaffName = s.Staff.LastName + " " + s.Staff.FirstName,
+            SkillName = s.Skill.SkillName
+          })
+          .ToListAsync();
+
+      //var candidateSkillDtos = _mapper.Map<List<CandidateSkillDto>>(candidateSkills);
+
+      return staffSkills;
+    }
     // [HttpPost]
     // public async Task<ActionResult> CreateStaffSkill(SkillCreateDto skillCreateDto)
     // {
