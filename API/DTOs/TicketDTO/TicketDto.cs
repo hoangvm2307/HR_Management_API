@@ -19,7 +19,10 @@ namespace API.DTOs.TicketDTO
 
         public string? ProcessNote { get; set; }
 
+        public bool? Enable { get; set; }
+
         public int? RespondencesId { get; set; }
+        public string? ResponsdenceName { get; set; }
 
         public DateTime CreateAt { get; set; }
 

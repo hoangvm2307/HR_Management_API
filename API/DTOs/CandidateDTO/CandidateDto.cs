@@ -5,26 +5,34 @@ using System.Threading.Tasks;
 
 namespace API.DTOs.CandidateDTO
 {
-    public class CandidateDto
-    {
-        public int CandidateId { get; set; }
+  public class CandidateDto
+  {
+    public int CandidateId { get; set; }
+    
+    public string? ImageFile { get; set; }
 
-        public string Name { get; set; } = null!;
+    public string Name { get; set; } = null!;
 
-        public string? Email { get; set; }
+    public string? Email { get; set; }
 
-        public string? Phone { get; set; }
+    public string? Phone { get; set; }
+    
+    public DateTime? Dob { get; set; }
 
-        public string Department { get; set; } = null!;
+    public bool Gender { get; set; }
+    
+    public string GioiTinh => Gender ? "Nam" : "Nữ";
 
-        public string? Company { get; set; }
+    public string? Address { get; set; }
+    
+    public string Department { get; set; } = null!; 
 
-        public int? ExpectedSalary { get; set; }
+    public int? ExpectedSalary { get; set; }
 
-        public string? ResumeFile { get; set; }
+    public string? ResumeFile { get; set; }
 
-        public DateTime ApplyDate { get; set; }
+    public DateTime ApplyDate { get; set; }
 
-        public string? Result { get; set; }
-    }
+    public string? Result { get; set; }
+  }
 }

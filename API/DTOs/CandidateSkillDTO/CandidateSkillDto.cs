@@ -11,6 +11,10 @@ namespace API.DTOs.CandidateSkillDTO
         
         public int CandidateId { get; set; }
 
+        public string CandidateName { get; set; }
+
+        public string SkillName { get; set; }
+
         public int SkillId { get; set; }
 
         public string Level { get; set; }
