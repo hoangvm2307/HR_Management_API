@@ -23,8 +23,8 @@ namespace API.DTOs.PersonnelContractDTO
         
         public int? WorkDatePerWeek { get; set; } = 5;
         public string? Note { get; set; }
-       
-        public int? NoOfDependences { get; set; } = 0;
+
+        public int NoOfDependences { get; set; }
 
         public int ContractTypeId { get; set; }
 

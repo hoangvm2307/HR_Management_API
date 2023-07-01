@@ -4,6 +4,7 @@ using API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    partial class SwpProjectContextModelSnapshot : ModelSnapshot
+    [Migration("20230624015954_newdb3")]
+    partial class newdb3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -123,9 +126,10 @@ namespace API.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("gender");
 
-                    b.Property<byte[]>("ImageFile")
-                        .HasMaxLength(8000)
-                        .HasColumnType("varbinary(8000)")
+                    b.Property<string>("ImageFile")
+                        .HasMaxLength(120)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(120)")
                         .HasColumnName("imageFile");
 
                     b.Property<string>("Name")
@@ -274,7 +278,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF3CF06A31E");
+                        .HasName("PK__DateDime__AA552EF3396C42A8");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -710,9 +714,7 @@ namespace API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
                     b.Property<DateTime?>("ChangeAt")
-
-                        .HasColumnType("date")
-                        .HasColumnName("changeAt");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ContractFile")
                         .HasMaxLength(150)
@@ -729,9 +731,7 @@ namespace API.Migrations
                         .HasColumnName("contractTypeId");
 
                     b.Property<DateTime?>("CreateAt")
-
-                        .HasColumnType("date")
-                        .HasColumnName("createAt");
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("date")
@@ -1332,19 +1332,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fb0f7d66-ae89-4801-95b1-07411b39fa5c",
+                            Id = "956e1bff-aa1e-42ee-b03e-ae63b977b84f",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "6f7d2d2e-a00a-44de-84c7-b9c4114b2505",
+                            Id = "6e13be1e-d4cd-4243-8113-4785149fac93",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "86dd7aeb-d64c-4e24-a548-b66bfb6da0c8",
+                            Id = "1e0a9e37-8f5c-490e-b726-cc675e1f7fa4",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

@@ -45,6 +45,7 @@ namespace API.Services
             var userInfor = await GetUserInfoContract(staffId);
 
             userInfor.PersonnelContracts.Add(PersonnelContract);
+            await _context.SaveChangesAsync();
 
             var returnPersonnelContract = _mapper.Map<PersonnelContractDTO>(PersonnelContract);
 
@@ -81,17 +82,40 @@ namespace API.Services
             return IsContractTypeValid;
         }
 
+        public async Task<PersonnelContract> GetValidPersonnelContractEntityByStaffId(int staffId)
+        {
+            return await _context.PersonnelContracts
+                            .Where(c => c.StaffId == staffId && c.ContractStatus == true)
+                            .FirstOrDefaultAsync();
+        }
+
         public async Task<PersonnelContractDTO> GetValidPersonnelContractByStaffId(int staffId)
         {
             var validPersonnelContract = await _context.PersonnelContracts
                 .Include(c => c.ContractType)
                 .Include(c => c.Allowances)
                 .ThenInclude(c => c.AllowanceType)
-                .Where(c => c.StaffId == staffId)
+                .Where(c => c.StaffId == staffId && c.ContractStatus == true)
                 .FirstOrDefaultAsync();
 
             var returnValidPersonnelContract = _mapper.Map<PersonnelContractDTO>(validPersonnelContract);
-                
+
+            return returnValidPersonnelContract;
+        }
+        public async Task<PersonnelContractDTO> GetContractByIdAndStaffId(int contractId, int staffId)
+        {
+            var validPersonnelContract = await _context.PersonnelContracts
+                .Include(c => c.ContractType)
+                .Include(c => c.Allowances)
+                .ThenInclude(c => c.AllowanceType)
+                .Where(c => 
+                    c.StaffId == staffId && 
+                    c.ContractId == contractId &&
+                    c.ContractStatus == true)
+                .FirstOrDefaultAsync();
+
+            var returnValidPersonnelContract = _mapper.Map<PersonnelContractDTO>(validPersonnelContract);
+
             return returnValidPersonnelContract;
         }
 
@@ -116,9 +140,68 @@ namespace API.Services
 
         public async Task<bool> IsValidContractExist(int staffId)
         {
-            var IsValidContractExist = await _context.PersonnelContracts.AnyAsync(c => c.ContractStatus == true && c.StaffId == staffId);
+            var IsValidContractExist = await _context.PersonnelContracts
+                .AnyAsync(c => c.ContractStatus == true && c.StaffId == staffId);
 
             return IsValidContractExist;
+        }
+
+        public async Task<int> GetNoDependencies(int staffId)
+        {
+            var noOfDependencies = await _context.PersonnelContracts
+                .Where(c => c.StaffId == staffId)
+                .Select(c => c.NoOfDependences)
+                .FirstOrDefaultAsync();
+            return (int)noOfDependencies;
+        }
+
+        public async Task<int> GetFamilyAllowance(int staffId)
+        {
+            int familyAllowance = 4400000;
+
+            var noOfDependencies = await _context.PersonnelContracts
+               .Where(c => c.StaffId == staffId)
+               .Select(c => c.NoOfDependences)
+               .FirstOrDefaultAsync();
+
+            return (int)noOfDependencies * familyAllowance;
+        }
+
+        public async Task<int> BasicGrossSalary(int staffId)
+        {
+            var personnelContract = await _context.PersonnelContracts
+                .Where(c => c.StaffId == staffId && c.ContractStatus == true)
+                .FirstOrDefaultAsync();
+
+            if(personnelContract != null && personnelContract.SalaryType == "GrossToNet")
+            {
+                return personnelContract.Salary;
+            }
+            return 0;
+        }
+        public async Task<int> BasicSalaryOneDayOfMonth(int staffId, int month, int year)
+        {
+            var personnelContract = await _context.PersonnelContracts
+                .Where(c => c.StaffId == staffId && c.ContractStatus == true)
+                .FirstOrDefaultAsync();
+
+            var standardWorkDays = await _context.TheCalendars
+                                            .Where(c =>
+                                                c.IsWeekend == 0 &&
+                                                c.TheMonth == month &&
+                                                c.TheYear == year)
+                                            .ToListAsync();
+
+            int totalDays = standardWorkDays.Count;
+            int salaryOneDay = 0;
+
+            if (personnelContract != null && personnelContract.SalaryType == "GrossToNet")
+            {
+                var basicSalary = personnelContract.Salary;
+                salaryOneDay = basicSalary / totalDays;
+            }
+
+            return salaryOneDay;
         }
     }
 }

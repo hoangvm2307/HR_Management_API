@@ -12,7 +12,7 @@ namespace API.DTOs.LeaveDayDetailDTO
 
         public int? DayLeft { get; set; }
 
-        public int? Time { get; set; }
+        public DateTime? ChangeAt { get; set; } = DateTime.Now;
 
         //public virtual LeaveDayDetailTypeDTO? LeaveType { get; set; }
 

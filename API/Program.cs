@@ -43,7 +43,9 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
-builder.Services.AddDbContext<SwpProjectContext>();
+//builder.Services.AddDbContext<SwpProjectContext>();
+builder.Services.AddDbContext<SwpProjectContext>(ServiceLifetime.Transient);
+
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
@@ -85,6 +87,10 @@ builder.Services.AddScoped<PersonnelContractService>();
 builder.Services.AddScoped<LeaveDayDetailService>();
 builder.Services.AddScoped<LogLeaveService>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<AllowanceService>();
+builder.Services.AddScoped<AllowanceTypeService>();
+builder.Services.AddScoped<PayslipService>();
+
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {

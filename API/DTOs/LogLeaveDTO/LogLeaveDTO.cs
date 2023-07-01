@@ -1,3 +1,4 @@
+using API.DTOs.UserInforDTO;
 using API.Entities;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace API.DTOs.LogLeaveDTO
 
         public virtual LeaveTypeDTO? LeaveType { get; set; }
 
-        public virtual UserInfor Staff { get; set; } = null!;
+        public virtual UserInforDto Staff { get; set; } = null!;
 
     }
 }

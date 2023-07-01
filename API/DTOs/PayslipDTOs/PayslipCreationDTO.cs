@@ -1,17 +1,13 @@
-using API.DTOs.UserInforDTO;
+﻿using API.DTOs.UserInforDTO;
 using API.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace API.DTOs.PayslipDTOs
 {
-    public class PayslipDTO
+    public class PayslipCreationDTO
     {
-        public int PayslipId { get; set; }
+        //public int PayslipId { get; set; }
 
-        public int StaffId { get; set; }
+        //public int StaffId { get; set; }
 
         public int? BasicSalary { get; set; }
 
@@ -63,9 +59,9 @@ namespace API.DTOs.PayslipDTOs
 
         public int? TotalPaid { get; set; }
 
-        public DateTime? CreateAt { get; set; }
+        public DateTime? CreateAt { get; set; } = DateTime.Now;
 
-        public DateTime? ChangeAt { get; set; }
+        public DateTime? ChangeAt { get; set; } = DateTime.Now;
 
         public bool? PayslipStatus { get; set; }
 

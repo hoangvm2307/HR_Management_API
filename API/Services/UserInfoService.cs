@@ -16,16 +16,15 @@ namespace API.Services
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<UserInfor> GetUserInforEntityByStaffId(int StaffId)
-        {
-            return await _context.UserInfors
-                                .Include(c => c.LogOts)
-                                .Where(c => c.StaffId == StaffId)
-                                .FirstOrDefaultAsync();
-        }
+        
         public async Task<bool> IsUserExist(int StaffId)
         {
-            return await _context.UserInfors.Where(c => c.StaffId == StaffId).AnyAsync();
+            return await _context.UserInfors.Where(c => c.StaffId == StaffId && c.AccountStatus == true).AnyAsync();
+        }
+
+        public async Task<bool> IsSaveChangeAsync()
+        {
+            return await _context.SaveChangesAsync() >= 0;
         }
 
     }

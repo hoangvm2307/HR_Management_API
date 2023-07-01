@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/contract")]
+    [Route("api/contracts")]
     public class ContractController : ControllerBase
     {
         private readonly SwpProjectContext _context;
@@ -48,7 +48,8 @@ namespace API.Controllers
             {
                 return NotFound();
             }
-            var finalPersonnelContract = await _personnelContractService.GetPersonnelContractById(staffId);
+            var finalPersonnelContract = await _personnelContractService
+                .GetPersonnelContractById(staffId);
 
             return finalPersonnelContract;
         }
@@ -61,7 +62,8 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            var validPersonnelContract = await _personnelContractService.GetValidPersonnelContractByStaffId(staffId);
+            var validPersonnelContract = await _personnelContractService
+                .GetValidPersonnelContractByStaffId(staffId);
 
             if (validPersonnelContract == null)
             {
@@ -69,10 +71,27 @@ namespace API.Controllers
             }
 
             return validPersonnelContract;
-
         }
 
-        [HttpPost("staffId/{staffId}")]
+        [HttpGet("{contractId}/staffs/{staffId}", Name = "GetContractByIdAndStaffId")]
+        public async Task<ActionResult<PersonnelContractDTO>> GetContractByIdAndStaffId(int contractId, int staffId)
+        {
+            if (!await _userInfoService.IsUserExist(staffId))
+            {
+                return NotFound();
+            }
+
+            if(!await _personnelContractService.IsValidContractExist(contractId))
+            {
+                return NotFound();
+            }
+
+            var contract = await _personnelContractService.GetContractByIdAndStaffId(contractId, staffId);
+
+            return contract;
+        }
+
+        [HttpPost("staffs/{staffId}")]
         public async Task<ActionResult<PersonnelContractDTO>> CreatePersonnelContract(
             int staffId, 
             PersonnelContractCreationDTO personnelContractCreationDTO)
@@ -82,12 +101,15 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            if (!await _personnelContractService.IsContractTypeValid(personnelContractCreationDTO.ContractTypeId))
+            if (!await _personnelContractService
+                .IsContractTypeValid(personnelContractCreationDTO.ContractTypeId))
             {
                 return BadRequest("Invalid ContractTypeId");
             }
 
-            if (!await _personnelContractService.IsContractTimeValid(personnelContractCreationDTO.StartDate, personnelContractCreationDTO.EndDate))
+            if (!await _personnelContractService.IsContractTimeValid(
+                personnelContractCreationDTO.StartDate, 
+                personnelContractCreationDTO.EndDate))
             {
                 return BadRequest("InValid DateTime");
             }
@@ -97,9 +119,9 @@ namespace API.Controllers
                 return BadRequest("This account already have contract");
             }
 
-            var returnPersonnelContract = await _personnelContractService.CreatePersonnelContract(staffId, personnelContractCreationDTO);
+            var returnPersonnelContract = await _personnelContractService
+                .CreatePersonnelContract(staffId, personnelContractCreationDTO);
             
-            await _context.SaveChangesAsync();
 
             if(!await SaveChangeAsync())
             {
@@ -108,13 +130,16 @@ namespace API.Controllers
 
 
             return CreatedAtRoute(
-                "GetPersonnelContractByStaffId",
-                new {staffId},
+                "GetContractByIdAndStaffId",
+                new {
+                    contractId = returnPersonnelContract.ContractId,
+                    staffId = returnPersonnelContract.StaffId
+                },
                 returnPersonnelContract
             );
         }
 
-        [HttpPut("{contractId}/staffid{staffId}")]
+        [HttpPut("{contractId}/staffs/{staffId}")]
         public async Task<ActionResult<PersonnelContractDTO>> UpdatePersonnelContract(int staffId, int contractId, PersonnelContractUpdateDTO personnelContractUpdateDTO)
         {
             if (!await _userInfoService.IsUserExist(staffId))
@@ -152,7 +177,7 @@ namespace API.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{contractId}/staffid{staffId}")]
+        [HttpPatch("{contractId}/staffs/{staffId}")]
         public async Task<ActionResult<PersonnelContractDTO>> PartiallyPersonnelContract(
                 int staffId, 
                 int contractId, 
