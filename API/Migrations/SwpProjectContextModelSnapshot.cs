@@ -123,9 +123,10 @@ namespace API.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("gender");
 
-                    b.Property<byte[]>("ImageFile")
-                        .HasMaxLength(8000)
-                        .HasColumnType("varbinary(8000)")
+                    b.Property<string>("ImageFile")
+                        .HasMaxLength(120)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(120)")
                         .HasColumnName("imageFile");
 
                     b.Property<string>("Name")
@@ -274,7 +275,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF3CF06A31E");
+                        .HasName("PK__DateDime__AA552EF373208D78");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -340,6 +341,10 @@ namespace API.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("changeAt");
 
+                    b.Property<DateTime?>("CreateAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("createAt");
+
                     b.Property<int?>("DayLeft")
                         .HasColumnType("int")
                         .HasColumnName("dayLeft");
@@ -348,9 +353,17 @@ namespace API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("leaveTypeId");
 
+                    b.Property<int?>("ResponseId")
+                        .HasColumnType("int")
+                        .HasColumnName("responseId");
+
                     b.Property<int?>("StaffId")
                         .HasColumnType("int")
                         .HasColumnName("staffId");
+
+                    b.Property<int?>("Year")
+                        .HasColumnType("int")
+                        .HasColumnName("year");
 
                     b.HasKey("LeaveDayDetailId")
                         .HasName("PK_LeaveDayDetail_leaveDayDetailId");
@@ -404,6 +417,10 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveLogId"));
 
+                    b.Property<int?>("Amount")
+                        .HasColumnType("int")
+                        .HasColumnName("amount");
+
                     b.Property<DateTime?>("ChangeStatusTime")
                         .HasColumnType("datetime")
                         .HasColumnName("changeStatusTime");
@@ -450,6 +467,10 @@ namespace API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("respondencesId");
 
+                    b.Property<int?>("SalaryPerDay")
+                        .HasColumnType("int")
+                        .HasColumnName("salaryPerDay");
+
                     b.Property<int>("StaffId")
                         .HasColumnType("int")
                         .HasColumnName("staffId");
@@ -490,6 +511,10 @@ namespace API.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("createAt");
 
+                    b.Property<int?>("Days")
+                        .HasColumnType("int")
+                        .HasColumnName("days");
+
                     b.Property<bool?>("Enable")
                         .HasColumnType("bit")
                         .HasColumnName("enable");
@@ -523,6 +548,10 @@ namespace API.Migrations
                     b.Property<int?>("RespondencesId")
                         .HasColumnType("int")
                         .HasColumnName("respondencesId");
+
+                    b.Property<int?>("SalaryPerDay")
+                        .HasColumnType("int")
+                        .HasColumnName("salaryPerDay");
 
                     b.Property<int>("StaffId")
                         .HasColumnType("int")
@@ -576,17 +605,9 @@ namespace API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PayslipId"));
 
-                    b.Property<int?>("ActualSalary")
-                        .HasColumnType("int")
-                        .HasColumnName("actualSalary");
-
                     b.Property<double?>("ActualWorkDays")
                         .HasColumnType("float")
                         .HasColumnName("actualWorkDays");
-
-                    b.Property<int?>("BasicSalary")
-                        .HasColumnType("int")
-                        .HasColumnName("basicSalary");
 
                     b.Property<int?>("Bhtncomp")
                         .HasColumnType("int")
@@ -620,13 +641,17 @@ namespace API.Migrations
                         .HasColumnType("date")
                         .HasColumnName("createAt");
 
-                    b.Property<int?>("FamilyAllowances")
+                    b.Property<int?>("FamilyDeduction")
                         .HasColumnType("int")
-                        .HasColumnName("familyAllowances");
+                        .HasColumnName("familyDeduction");
 
-                    b.Property<int?>("GrossSalary")
+                    b.Property<int?>("GrossActualSalary")
                         .HasColumnType("int")
-                        .HasColumnName("grossSalary");
+                        .HasColumnName("grossActualSalary");
+
+                    b.Property<int?>("GrossStandardSalary")
+                        .HasColumnType("int")
+                        .HasColumnName("grossStandardSalary");
 
                     b.Property<double?>("LeaveDays")
                         .HasColumnType("float")
@@ -636,17 +661,21 @@ namespace API.Migrations
                         .HasColumnType("float")
                         .HasColumnName("leaveHours");
 
-                    b.Property<int>("NetSalary")
+                    b.Property<int?>("NetActualSalary")
                         .HasColumnType("int")
-                        .HasColumnName("netSalary");
+                        .HasColumnName("netActualSalary");
+
+                    b.Property<int?>("NetStandardSalary")
+                        .HasColumnType("int")
+                        .HasColumnName("netStandardSalary");
 
                     b.Property<int?>("OtTotal")
                         .HasColumnType("int")
                         .HasColumnName("otTotal");
 
-                    b.Property<int>("PaiByDate")
+                    b.Property<int>("PaidByDate")
                         .HasColumnType("int")
-                        .HasColumnName("paiByDate");
+                        .HasColumnName("paidByDate");
 
                     b.Property<bool?>("PayslipStatus")
                         .HasColumnType("bit")
@@ -664,13 +693,9 @@ namespace API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("salaryRecieved");
 
-                    b.Property<int?>("SalaryTaxable")
+                    b.Property<int?>("SelfDeduction")
                         .HasColumnType("int")
-                        .HasColumnName("salaryTaxable");
-
-                    b.Property<int?>("SelfAllowances")
-                        .HasColumnType("int")
-                        .HasColumnName("selfAllowances");
+                        .HasColumnName("selfDeduction");
 
                     b.Property<int>("StaffId")
                         .HasColumnType("int")
@@ -680,17 +705,21 @@ namespace API.Migrations
                         .HasColumnType("float")
                         .HasColumnName("standardWorkDays");
 
+                    b.Property<int?>("TaxableSalary")
+                        .HasColumnType("int")
+                        .HasColumnName("taxableSalary");
+
                     b.Property<int?>("TotalAllowance")
                         .HasColumnType("int")
                         .HasColumnName("totalAllowance");
 
-                    b.Property<int?>("TotalInsured")
+                    b.Property<int?>("TotalCompInsured")
                         .HasColumnType("int")
-                        .HasColumnName("totalInsured");
+                        .HasColumnName("totalCompInsured");
 
-                    b.Property<int?>("TotalPaid")
+                    b.Property<int?>("TotalCompPaid")
                         .HasColumnType("int")
-                        .HasColumnName("totalPaid");
+                        .HasColumnName("totalCompPaid");
 
                     b.HasKey("PayslipId")
                         .HasName("PK_Payslip_payslipId");
@@ -710,7 +739,6 @@ namespace API.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ContractId"));
 
                     b.Property<DateTime?>("ChangeAt")
-
                         .HasColumnType("date")
                         .HasColumnName("changeAt");
 
@@ -729,7 +757,6 @@ namespace API.Migrations
                         .HasColumnName("contractTypeId");
 
                     b.Property<DateTime?>("CreateAt")
-
                         .HasColumnType("date")
                         .HasColumnName("createAt");
 
@@ -746,19 +773,17 @@ namespace API.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("note");
 
-                    b.Property<string>("PaidDateNote")
-                        .HasMaxLength(20)
-                        .HasColumnType("nchar(20)")
-                        .HasColumnName("paidDateNote")
-                        .IsFixedLength();
+                    b.Property<int?>("ResponseId")
+                        .HasColumnType("int")
+                        .HasColumnName("responseId");
 
                     b.Property<int>("Salary")
                         .HasColumnType("int")
                         .HasColumnName("salary");
 
                     b.Property<string>("SalaryType")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("salaryType");
 
                     b.Property<int>("StaffId")
@@ -1332,19 +1357,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fb0f7d66-ae89-4801-95b1-07411b39fa5c",
+                            Id = "30fc36f0-c794-4b86-8d13-6f8da32f1095",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "6f7d2d2e-a00a-44de-84c7-b9c4114b2505",
+                            Id = "590aa968-58dd-48aa-a2af-455955228261",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "86dd7aeb-d64c-4e24-a548-b66bfb6da0c8",
+                            Id = "a48110b2-daf2-443e-8855-542e3140df70",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

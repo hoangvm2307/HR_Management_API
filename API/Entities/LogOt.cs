@@ -17,6 +17,10 @@ public partial class LogOt
 
     public double LogHours { get; set; }
 
+    public int? Days { get; set; }
+
+    public int? SalaryPerDay { get; set; }
+
     public int? Amount { get; set; }
 
     public string? Reason { get; set; }

@@ -14,6 +14,8 @@ namespace API.DTOs.DepartmentDTO
 
         public string Manager { get; set; }
 
+        public int ManagerId { get; set; }
+
         public int numberOfStaff { get; set; }
 
         public string ManagerPhone { get; set; }

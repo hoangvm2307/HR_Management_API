@@ -145,7 +145,8 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.ExpectedSalary).HasColumnName("expectedSalary");
       entity.Property(e => e.Gender).HasColumnName("gender");
       entity.Property(e => e.ImageFile)
-              .HasMaxLength(8000)
+              .HasMaxLength(120)
+              .IsUnicode(false)
               .HasColumnName("imageFile");
       entity.Property(e => e.Name)
               .HasMaxLength(30)
@@ -206,7 +207,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
     modelBuilder.Entity<DateDimension>(entity =>
     {
       entity.HasKey(e => e.UniqueId)
-              .HasName("PK__DateDime__AA552EF3CF06A31E")
+              .HasName("PK__DateDime__AA552EF373208D78")
               .IsClustered(false);
 
       entity.ToTable("DateDimension");
@@ -270,9 +271,14 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.ChangeAt)
               .HasColumnType("datetime")
               .HasColumnName("changeAt");
+      entity.Property(e => e.CreateAt)
+              .HasColumnType("datetime")
+              .HasColumnName("createAt");
       entity.Property(e => e.DayLeft).HasColumnName("dayLeft");
       entity.Property(e => e.LeaveTypeId).HasColumnName("leaveTypeId");
+      entity.Property(e => e.ResponseId).HasColumnName("responseId");
       entity.Property(e => e.StaffId).HasColumnName("staffId");
+      entity.Property(e => e.Year).HasColumnName("year");
 
       entity.HasOne(d => d.LeaveType).WithMany(p => p.LeaveDayDetails)
               .HasForeignKey(d => d.LeaveTypeId)
@@ -307,6 +313,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.ToTable("LogLeave");
 
       entity.Property(e => e.LeaveLogId).HasColumnName("leaveLogId");
+      entity.Property(e => e.Amount).HasColumnName("amount");
       entity.Property(e => e.ChangeStatusTime)
               .HasColumnType("datetime")
               .HasColumnName("changeStatusTime");
@@ -330,6 +337,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
               .HasMaxLength(120)
               .HasColumnName("processNote");
       entity.Property(e => e.RespondencesId).HasColumnName("respondencesId");
+      entity.Property(e => e.SalaryPerDay).HasColumnName("salaryPerDay");
       entity.Property(e => e.StaffId).HasColumnName("staffId");
       entity.Property(e => e.Status)
               .HasMaxLength(20)
@@ -359,6 +367,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.CreateAt)
               .HasColumnType("datetime")
               .HasColumnName("createAt");
+      entity.Property(e => e.Days).HasColumnName("days");
       entity.Property(e => e.Enable).HasColumnName("enable");
       entity.Property(e => e.LogEnd)
               .HasColumnType("datetime")
@@ -375,6 +384,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
               .HasMaxLength(25)
               .HasColumnName("reason");
       entity.Property(e => e.RespondencesId).HasColumnName("respondencesId");
+      entity.Property(e => e.SalaryPerDay).HasColumnName("salaryPerDay");
       entity.Property(e => e.StaffId).HasColumnName("staffId");
       entity.Property(e => e.Status)
               .HasMaxLength(20)
@@ -410,9 +420,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.ToTable("Payslip");
 
       entity.Property(e => e.PayslipId).HasColumnName("payslipId");
-      entity.Property(e => e.ActualSalary).HasColumnName("actualSalary");
       entity.Property(e => e.ActualWorkDays).HasColumnName("actualWorkDays");
-      entity.Property(e => e.BasicSalary).HasColumnName("basicSalary");
       entity.Property(e => e.Bhtncomp).HasColumnName("BHTNComp");
       entity.Property(e => e.Bhtnemp).HasColumnName("BHTNEmp");
       entity.Property(e => e.Bhxhcomp).HasColumnName("BHXHComp");
@@ -425,24 +433,26 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.CreateAt)
               .HasColumnType("date")
               .HasColumnName("createAt");
-      entity.Property(e => e.FamilyAllowances).HasColumnName("familyAllowances");
-      entity.Property(e => e.GrossSalary).HasColumnName("grossSalary");
+      entity.Property(e => e.FamilyDeduction).HasColumnName("familyDeduction");
+      entity.Property(e => e.GrossActualSalary).HasColumnName("grossActualSalary");
+      entity.Property(e => e.GrossStandardSalary).HasColumnName("grossStandardSalary");
       entity.Property(e => e.LeaveDays).HasColumnName("leaveDays");
       entity.Property(e => e.LeaveHours).HasColumnName("leaveHours");
-      entity.Property(e => e.NetSalary).HasColumnName("netSalary");
+      entity.Property(e => e.NetActualSalary).HasColumnName("netActualSalary");
+      entity.Property(e => e.NetStandardSalary).HasColumnName("netStandardSalary");
       entity.Property(e => e.OtTotal).HasColumnName("otTotal");
-      entity.Property(e => e.PaiByDate).HasColumnName("paiByDate");
+      entity.Property(e => e.PaidByDate).HasColumnName("paidByDate");
       entity.Property(e => e.PayslipStatus).HasColumnName("payslipStatus");
       entity.Property(e => e.PersonalIncomeTax).HasColumnName("personalIncomeTax");
       entity.Property(e => e.SalaryBeforeTax).HasColumnName("salaryBeforeTax");
       entity.Property(e => e.SalaryRecieved).HasColumnName("salaryRecieved");
-      entity.Property(e => e.SalaryTaxable).HasColumnName("salaryTaxable");
-      entity.Property(e => e.SelfAllowances).HasColumnName("selfAllowances");
+      entity.Property(e => e.SelfDeduction).HasColumnName("selfDeduction");
       entity.Property(e => e.StaffId).HasColumnName("staffId");
       entity.Property(e => e.StandardWorkDays).HasColumnName("standardWorkDays");
+      entity.Property(e => e.TaxableSalary).HasColumnName("taxableSalary");
       entity.Property(e => e.TotalAllowance).HasColumnName("totalAllowance");
-      entity.Property(e => e.TotalInsured).HasColumnName("totalInsured");
-      entity.Property(e => e.TotalPaid).HasColumnName("totalPaid");
+      entity.Property(e => e.TotalCompInsured).HasColumnName("totalCompInsured");
+      entity.Property(e => e.TotalCompPaid).HasColumnName("totalCompPaid");
 
       entity.HasOne(d => d.Staff).WithMany(p => p.Payslips)
               .HasForeignKey(d => d.StaffId)
@@ -476,13 +486,10 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.Note)
               .HasMaxLength(50)
               .HasColumnName("note");
-      entity.Property(e => e.PaidDateNote)
-              .HasMaxLength(20)
-              .IsFixedLength()
-              .HasColumnName("paidDateNote");
+      entity.Property(e => e.ResponseId).HasColumnName("responseId");
       entity.Property(e => e.Salary).HasColumnName("salary");
       entity.Property(e => e.SalaryType)
-              .HasMaxLength(10)
+              .HasMaxLength(20)
               .HasColumnName("salaryType");
       entity.Property(e => e.StaffId).HasColumnName("staffId");
       entity.Property(e => e.StartDate)
@@ -757,11 +764,10 @@ public partial class SwpProjectContext : IdentityDbContext<User>
               .HasForeignKey(d => d.DepartmentId)
               .HasConstraintName("FK_UserInfor_departmentId_departmentId");
 
-
-      entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
-              .HasForeignKey<UserInfor>(d => d.Id)
-              .OnDelete(DeleteBehavior.ClientSetNull)
-              .HasConstraintName("FK_UserInfor_userId_userId");
+     entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
+                .HasForeignKey<UserInfor>(d => d.Id)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserInfor_userId_userId");
     });
 
     OnModelCreatingPartial(modelBuilder);

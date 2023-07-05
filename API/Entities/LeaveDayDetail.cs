@@ -15,6 +15,12 @@ public partial class LeaveDayDetail
 
     public DateTime? ChangeAt { get; set; }
 
+    public int? ResponseId { get; set; }
+
+    public int? Year { get; set; }
+
+    public DateTime? CreateAt { get; set; }
+
     public virtual LeaveType? LeaveType { get; set; }
 
     public virtual UserInfor? Staff { get; set; }

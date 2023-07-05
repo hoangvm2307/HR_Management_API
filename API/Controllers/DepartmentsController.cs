@@ -39,6 +39,7 @@ namespace API.Controllers
 
         if (manager != null)
         {
+          departmentDto.ManagerId = manager.StaffId;
           departmentDto.Manager = $"{manager.FirstName} {manager.LastName}";
           departmentDto.ManagerPhone = $"{manager.Phone}";
           departmentDto.ManagerMail = GetUserEmailByIdAsync(manager.Id).Result;
@@ -69,16 +70,18 @@ namespace API.Controllers
 
       var departmentDto = _mapper.Map<DepartmentDto>(department);
 
-      foreach (var userInfor in departmentDto.UserInfors)
-      {
-        userInfor.Email = await GetUserEmailByIdAsync(userInfor.Id);
-        userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
-      }
+      departmentDto.UserInfors = departmentDto.UserInfors.Select(userInfor =>
+              {
+            userInfor.Email = GetUserEmailByIdAsync(userInfor.Id).Result;
+            userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
+            return userInfor;
+          }).ToList();
 
       var manager = departmentDto.UserInfors.FirstOrDefault(u => u.IsManager == true);
 
       if (manager != null)
       {
+        departmentDto.ManagerId = manager.StaffId;
         departmentDto.Manager = $"{manager.FirstName} {manager.LastName}";
         departmentDto.ManagerPhone = $"{manager.Phone}";
         departmentDto.ManagerMail = await GetUserEmailByIdAsync(manager.Id);
