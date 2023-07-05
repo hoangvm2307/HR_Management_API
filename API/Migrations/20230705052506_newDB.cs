@@ -72,7 +72,7 @@ namespace API.Migrations
                 {
                     candidateId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    imageFile = table.Column<byte[]>(type: "varbinary(8000)", maxLength: 8000, nullable: true),
+                    imageFile = table.Column<string>(type: "varchar(120)", unicode: false, maxLength: 120, nullable: true),
                     name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
                     email = table.Column<string>(type: "char(30)", unicode: false, fixedLength: true, maxLength: 30, nullable: true),
                     phone = table.Column<string>(type: "char(10)", unicode: false, fixedLength: true, maxLength: 10, nullable: true),
@@ -127,7 +127,7 @@ namespace API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__DateDime__AA552EF3CF06A31E", x => x.uniqueId)
+                    table.PrimaryKey("PK__DateDime__AA552EF373208D78", x => x.uniqueId)
                         .Annotation("SqlServer:Clustered", false);
                     table.UniqueConstraint("AK_DateDimension_TheDate", x => x.TheDate);
                 });
@@ -451,7 +451,10 @@ namespace API.Migrations
                     staffId = table.Column<int>(type: "int", nullable: true),
                     leaveTypeId = table.Column<int>(type: "int", nullable: true),
                     dayLeft = table.Column<int>(type: "int", nullable: true),
-                    changeAt = table.Column<DateTime>(type: "datetime", nullable: true)
+                    changeAt = table.Column<DateTime>(type: "datetime", nullable: true),
+                    responseId = table.Column<int>(type: "int", nullable: true),
+                    year = table.Column<int>(type: "int", nullable: true),
+                    createAt = table.Column<DateTime>(type: "datetime", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -480,6 +483,8 @@ namespace API.Migrations
                     leaveEnd = table.Column<DateTime>(type: "date", nullable: false),
                     leaveDays = table.Column<double>(type: "float", nullable: true),
                     leaveHours = table.Column<int>(type: "int", nullable: true),
+                    salaryPerDay = table.Column<int>(type: "int", nullable: true),
+                    amount = table.Column<int>(type: "int", nullable: true),
                     description = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: true),
                     status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     createAt = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -514,6 +519,8 @@ namespace API.Migrations
                     logStart = table.Column<DateTime>(type: "datetime", nullable: false),
                     logEnd = table.Column<DateTime>(type: "datetime", nullable: false),
                     logHours = table.Column<double>(type: "float", nullable: false),
+                    days = table.Column<int>(type: "int", nullable: true),
+                    salaryPerDay = table.Column<int>(type: "int", nullable: true),
                     amount = table.Column<int>(type: "int", nullable: true),
                     reason = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
@@ -545,31 +552,31 @@ namespace API.Migrations
                     payslipId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     staffId = table.Column<int>(type: "int", nullable: false),
-                    basicSalary = table.Column<int>(type: "int", nullable: true),
-                    actualSalary = table.Column<int>(type: "int", nullable: true),
+                    paidByDate = table.Column<int>(type: "int", nullable: false),
+                    grossStandardSalary = table.Column<int>(type: "int", nullable: true),
+                    grossActualSalary = table.Column<int>(type: "int", nullable: true),
                     standardWorkDays = table.Column<double>(type: "float", nullable: true),
                     actualWorkDays = table.Column<double>(type: "float", nullable: true),
                     leaveHours = table.Column<double>(type: "float", nullable: true),
                     leaveDays = table.Column<double>(type: "float", nullable: true),
                     otTotal = table.Column<int>(type: "int", nullable: true),
-                    grossSalary = table.Column<int>(type: "int", nullable: true),
                     BHXHEmp = table.Column<int>(type: "int", nullable: true),
                     BHYTEmp = table.Column<int>(type: "int", nullable: true),
                     BHTNEmp = table.Column<int>(type: "int", nullable: true),
                     salaryBeforeTax = table.Column<int>(type: "int", nullable: true),
-                    selfAllowances = table.Column<int>(type: "int", nullable: true),
-                    familyAllowances = table.Column<int>(type: "int", nullable: true),
-                    salaryTaxable = table.Column<int>(type: "int", nullable: true),
+                    selfDeduction = table.Column<int>(type: "int", nullable: true),
+                    familyDeduction = table.Column<int>(type: "int", nullable: true),
+                    taxableSalary = table.Column<int>(type: "int", nullable: true),
                     personalIncomeTax = table.Column<int>(type: "int", nullable: true),
-                    netSalary = table.Column<int>(type: "int", nullable: false),
                     totalAllowance = table.Column<int>(type: "int", nullable: true),
                     salaryRecieved = table.Column<int>(type: "int", nullable: true),
-                    paiByDate = table.Column<int>(type: "int", nullable: false),
+                    netStandardSalary = table.Column<int>(type: "int", nullable: true),
+                    netActualSalary = table.Column<int>(type: "int", nullable: true),
                     BHXHComp = table.Column<int>(type: "int", nullable: true),
                     BHYTComp = table.Column<int>(type: "int", nullable: true),
                     BHTNComp = table.Column<int>(type: "int", nullable: true),
-                    totalInsured = table.Column<int>(type: "int", nullable: true),
-                    totalPaid = table.Column<int>(type: "int", nullable: true),
+                    totalCompInsured = table.Column<int>(type: "int", nullable: true),
+                    totalCompPaid = table.Column<int>(type: "int", nullable: true),
                     createAt = table.Column<DateTime>(type: "date", nullable: true),
                     changeAt = table.Column<DateTime>(type: "date", nullable: true),
                     payslipStatus = table.Column<bool>(type: "bit", nullable: true)
@@ -599,10 +606,10 @@ namespace API.Migrations
                     note = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     noOfDependences = table.Column<int>(type: "int", nullable: true),
                     contractTypeId = table.Column<int>(type: "int", nullable: true),
-                    salaryType = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
-                    paidDateNote = table.Column<string>(type: "nchar(20)", fixedLength: true, maxLength: 20, nullable: true),
+                    salaryType = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     contractFile = table.Column<string>(type: "varchar(150)", unicode: false, maxLength: 150, nullable: true),
                     createAt = table.Column<DateTime>(type: "date", nullable: true),
+                    responseId = table.Column<int>(type: "int", nullable: true),
                     changeAt = table.Column<DateTime>(type: "date", nullable: true),
                     contractStatus = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -733,9 +740,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "6f7d2d2e-a00a-44de-84c7-b9c4114b2505", null, "HRStaff", "HRSTAFF" },
-                    { "86dd7aeb-d64c-4e24-a548-b66bfb6da0c8", null, "HRManager", "HRMANAGER" },
-                    { "fb0f7d66-ae89-4801-95b1-07411b39fa5c", null, "Staff", "STAFF" }
+                    { "30fc36f0-c794-4b86-8d13-6f8da32f1095", null, "Staff", "STAFF" },
+                    { "590aa968-58dd-48aa-a2af-455955228261", null, "HRStaff", "HRSTAFF" },
+                    { "a48110b2-daf2-443e-8855-542e3140df70", null, "HRManager", "HRMANAGER" }
                 });
 
             migrationBuilder.CreateIndex(

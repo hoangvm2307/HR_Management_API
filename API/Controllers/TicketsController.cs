@@ -253,7 +253,7 @@ namespace API.Controllers
 
       await _context.SaveChangesAsync();
 
-      return NoContent();
+      return CreatedAtAction(nameof(GetTicket), new { id = ticket.TicketId }, ticket);
     }
 
   }

@@ -27,11 +27,11 @@ public partial class PersonnelContract
 
     public string? SalaryType { get; set; }
 
-    public string? PaidDateNote { get; set; }
-
     public string? ContractFile { get; set; }
 
     public DateTime? CreateAt { get; set; }
+
+    public int? ResponseId { get; set; }
 
     public DateTime? ChangeAt { get; set; }
 
