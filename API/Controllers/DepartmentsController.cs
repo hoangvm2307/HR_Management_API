@@ -47,10 +47,10 @@ namespace API.Controllers
 
         departmentDto.UserInfors = departmentDto.UserInfors.Select(userInfor =>
               {
-            userInfor.Email = GetUserEmailByIdAsync(userInfor.Id).Result;
-            userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
-            return userInfor;
-          }).ToList();
+                userInfor.Email = GetUserEmailByIdAsync(userInfor.Id).Result;
+                userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
+                return userInfor;
+              }).ToList();
 
         departmentDto.numberOfStaff = departmentDto.UserInfors.Count;
 
@@ -72,10 +72,10 @@ namespace API.Controllers
 
       departmentDto.UserInfors = departmentDto.UserInfors.Select(userInfor =>
               {
-            userInfor.Email = GetUserEmailByIdAsync(userInfor.Id).Result;
-            userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
-            return userInfor;
-          }).ToList();
+                userInfor.Email = GetUserEmailByIdAsync(userInfor.Id).Result;
+                userInfor.Position = userInfor.IsManager ? "Manager" : "Staff";
+                return userInfor;
+              }).ToList();
 
       var manager = departmentDto.UserInfors.FirstOrDefault(u => u.IsManager == true);
 
@@ -152,7 +152,7 @@ namespace API.Controllers
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<Department>> UpdateDepartment(int id, [FromBody] DepartmentUpdateDto departmentDto)
+    public async Task<ActionResult<Department>> UpdateDepartment(int id, DepartmentUpdateDto departmentDto)
     {
       if (departmentDto == null)
       {
@@ -189,26 +189,30 @@ namespace API.Controllers
       }
 
       // Retrieve the new manager information
-      var newManager = await _context.UserInfors
-          .FirstOrDefaultAsync(u => u.StaffId == departmentDto.ManagerId);
-
-      if (newManager != null)
+      if (departmentDto.ManagerId != 0)
       {
-        // Remove the previous manager flag from the old manager
-        // var oldManager = existingDepartmentDto.UserInfors
-        //    .FirstOrDefault(u => u.IsManager == true);
+        var newManager = await _context.UserInfors
+            .FirstOrDefaultAsync(u => u.StaffId == departmentDto.ManagerId);
 
-        var oldManager = await _context.UserInfors
-            .FirstOrDefaultAsync(u => u.DepartmentId == id && u.IsManager == true);
+        if (newManager != null)
+        {
+          // Remove the previous manager flag from the old manager
+          // var oldManager = existingDepartmentDto.UserInfors
+          //    .FirstOrDefault(u => u.IsManager == true);
 
-        if (oldManager != null) oldManager.IsManager = false;
+          var oldManager = await _context.UserInfors
+              .FirstOrDefaultAsync(u => u.DepartmentId == id && u.IsManager == true);
+
+          if (oldManager != null) oldManager.IsManager = false;
+        }
+
+        // Set the new manager flag in the new manager's UserInfor object
+        var newManagerUserInfor = _context.UserInfors
+            .FirstOrDefault(ui => ui.StaffId == newManager.StaffId);
+
+        if (newManagerUserInfor != null) newManagerUserInfor.IsManager = true;
       }
 
-      // Set the new manager flag in the new manager's UserInfor object
-      var newManagerUserInfor = _context.UserInfors
-          .FirstOrDefault(ui => ui.StaffId == newManager.StaffId);
-
-      if (newManagerUserInfor != null) newManagerUserInfor.IsManager = true;
 
       var result = await _context.SaveChangesAsync() > 0;
 
