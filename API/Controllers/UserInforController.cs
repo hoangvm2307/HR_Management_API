@@ -76,6 +76,35 @@ namespace API.Controllers
       return BadRequest(new ProblemDetails { Title = "Problem Removing User" });
     }
 
+    [HttpPut("{id}")]
+    public async Task<ActionResult> UpdateCandidate(int id, UserInforUpdateDto userInforDto)
+    {
+      if (userInforDto == null) return BadRequest("Invalid UserInfor Data");
+
+      var userInfor = await _context.UserInfors.FindAsync(id);
+
+      if (userInfor == null) return NotFound("Candidate UserInfor Found");
+
+      userInfor.LastName = userInforDto.LastName;
+      userInfor.FirstName = userInforDto.FirstName;
+      // userInfor.DepartmentId = userInforDto.DeparatmentId; 
+      userInfor.Dob = userInforDto.Dob;
+      userInfor.Phone = userInforDto.Phone;
+      userInfor.Gender = userInforDto.Gender;
+      userInfor.Address = userInforDto.Address;
+      userInfor.Country = userInforDto.Country;
+      userInfor.CitizenId = userInforDto.CitizenId;
+      userInfor.BankAccount = userInforDto.BankAccount;
+      userInfor.BankAccountName = userInforDto.BankAccountName;
+      userInfor.Bank = userInforDto.Bank;
+      userInfor.AccountStatus = userInforDto.AccountStatus;
+
+      var result = await _context.SaveChangesAsync() > 0;
+
+      if (result) return CreatedAtAction(nameof(GetUserInforById), new { id = userInfor.StaffId }, userInfor);
+
+      return BadRequest(new ProblemDetails { Title = "Problem Updating Candidate" });
+    }
     // [HttpPost]
     // public async Task<ActionResult> CreateUserInfor([FromBody] UserInforDto userInforDto)
     // {
