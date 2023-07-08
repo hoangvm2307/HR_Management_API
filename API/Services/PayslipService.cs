@@ -4,6 +4,7 @@ using API.Entities;
 using API.Extensions;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System.Runtime.CompilerServices;
 
 namespace API.Services
@@ -20,6 +21,7 @@ namespace API.Services
         private readonly LogOtService _logOtService;
         private readonly LogLeaveService _logLeaveService;
         private readonly AllowanceService _allowanceService;
+        private readonly TheCalendarService _theCalendarService;
 
         public PayslipService(
             SwpProjectContext context, 
@@ -28,7 +30,8 @@ namespace API.Services
             PersonnelContractService personnelContractService,
             LogOtService logOtService,
             LogLeaveService logLeaveService,
-            AllowanceService allowanceService
+            AllowanceService allowanceService,
+            TheCalendarService theCalendarService
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -37,6 +40,7 @@ namespace API.Services
             _logOtService = logOtService ?? throw new ArgumentNullException(nameof(logOtService));
             _logLeaveService = logLeaveService ?? throw new ArgumentNullException(nameof(logLeaveService));
             _allowanceService = allowanceService ?? throw new ArgumentNullException(nameof(allowanceService));
+            _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
@@ -71,52 +75,44 @@ namespace API.Services
             )
         {
 
+            //Gross To Net
             var personnelContract = await _personnelContractService
                                         .GetValidPersonnelContractEntityByStaffId(staffId);
-            int taxableSalaryFromContract = (int)personnelContract.TaxableSalary;
+            int paidByDate = await _personnelContractService.BasicSalaryOneDayOfMonth(staffId, month, year);
 
-            var basicSalary = personnelContract.Salary;
+            //grossStandardSalary
+            var standardGrossSalary = personnelContract.Salary;
+            var allowancesSalary = await _allowanceService.GetAllowancesOfStaff(staffId);
+            var leavesDeductedSalary = await _logLeaveService.GetDeductedSalary(staffId, paidByDate, month, year);
+            //grossActualSalary
+            var actualGrossSalary = (standardGrossSalary + allowancesSalary) - leavesDeductedSalary;
+
+            //taxable Salary
+            var standardTaxableSalary = personnelContract.TaxableSalary;
+            var actualTaxableSalary = standardTaxableSalary + allowancesSalary;
+
+
+
+            //days Calculation: stardard works days, overtime days, leaves days (Include total type leaves days)
             int standardWorkDays = await GetStandardWorkDays(month, year);
             int actualWorkDays = await GetActualWorkDaysOfStaff(staffId, month, year);
 
-            int paidByDate = basicSalary / standardWorkDays;
+            //int leaveDays = await _logLeaveService.LeaveDays(staffId, month, year);
 
 
-            int leaveDays = await _logLeaveService.GetLeaveDays(staffId, month, year);
             int leaveHours = await _logLeaveService.GetLeavesHours(staffId, month, year);
 
-
-            int grossSalary = await _personnelContractService.BasicGrossSalary(staffId);
-
-
-            //lương nghỉ 
-
-            int salaryDeduction = leaveDays * paidByDate;
-
-
-            // tổng phúc lợi 
-            int totalAllowance = await _allowanceService.GetAllowancesOfStaff(staffId);
-
-            // tổng lương gross
-            int totalGrossSalary =
-                (grossSalary - salaryDeduction) +
-                totalAllowance; 
-
-
-            int totalTaxableSalary = taxableSalaryFromContract + totalAllowance;
-
             //Tính bảo hiểm từng phần
-            var personalInsurance = PersonalInsuranceCalculate(totalTaxableSalary);
+            var personalInsurance = PersonalInsuranceCalculate((int)actualTaxableSalary);
 
             //Thu nhập trước thuế (Tổng bảo hiểm cá nhân)
-            int salaryBeforeTax = CalculatePretaxEarning(personalInsurance, totalGrossSalary);
-
+            //Gross Actual Salary - total 
+            int salaryBeforeTax = CalculatePretaxEarning(personalInsurance, actualGrossSalary);
 
 
             // Giảm trừ gia cảnh
-            int selfAllowance = PersonalTaxDeduction;
-            int familyAllowance = await _personnelContractService.GetFamilyAllowance(staffId);
-
+            int selfDeduction = PersonalTaxDeduction;
+            int familyDeduction = await _personnelContractService.GetFamilyAllowance(staffId);
             int taxableIncome = await TaxableIncomeCalculation(salaryBeforeTax, staffId);
 
 
@@ -129,73 +125,77 @@ namespace API.Services
 
 
             //Net Salary
-            int netSalary = (salaryBeforeTax - personalIncomeTax);
+            int standardNetSalary = (salaryBeforeTax - personalIncomeTax);
 
 
             // Lương thực nhận
             int otSalary = await _logOtService.OtSalary(staffId, month, year);
-            int salaryRecevied = netSalary + otSalary;
+            int actualNetSalary = standardNetSalary + otSalary;
 
 
             //Nguoi su dung lao dong tra
-            CompanyInsuranceDTO companyInsuranceDto = CompanyInsuranceCalculate(totalGrossSalary, totalTaxableSalary);
+            CompanyInsuranceDTO companyInsuranceDto = CompanyInsuranceCalculate(actualGrossSalary, (int)actualTaxableSalary );
+            int actualCompPaid = (int)(companyInsuranceDto.NetSalary + otSalary);
 
             PayslipCreationDTO payslipDto = new PayslipCreationDTO
             {
-                BasicSalary = basicSalary,
-                ActualSalary = netSalary,
+                PaidByDate = paidByDate,
+                GrossStandardSalary = standardGrossSalary,
+                GrossActualSalary = actualGrossSalary,
                 StandardWorkDays = standardWorkDays,
                 ActualWorkDays = actualWorkDays,
                 LeaveHours = leaveHours,
-                LeaveDays = leaveDays,
+                //LeaveDays = leaveDays,
                 OtTotal = otSalary,
-                GrossSalary = totalGrossSalary,
                 Bhxhemp = (int?)personalInsurance.SocialInsurance,
                 Bhytemp = (int?)personalInsurance.HealthInsurance,
                 Bhtnemp = (int?)personalInsurance.UnemploymentInsurance,
                 SalaryBeforeTax = salaryBeforeTax,
-                SelfAllowances = selfAllowance,
-                FamilyAllowances = familyAllowance,
-                SalaryTaxable = totalTaxableSalary,
+                SelfDeduction = selfDeduction,
+                FamilyDeduction = familyDeduction,
+                TaxableSalary = actualTaxableSalary,
                 PersonalIncomeTax = personalIncomeTax,
-                NetSalary = netSalary,
-                TotalAllowance = totalAllowance,
-                SalaryRecieved = salaryRecevied,
-                PaiByDate = paidByDate,
+                TotalAllowance = allowancesSalary,
+                SalaryRecieved = actualNetSalary,
+                NetStandardSalary = standardNetSalary,
+                NetActualSalary = actualNetSalary,
                 Bhxhcomp = (int?)companyInsuranceDto.SocialInsurance,
                 Bhytcomp = (int?)companyInsuranceDto.HealthInsurance,
-                Bhtncomp = (int?)companyInsuranceDto.UnemploymentInsurance,
-                TotalInsured = (int?)companyInsuranceDto.Total,
+                Bhtncomp = (int?)companyInsuranceDto.UnemploymentInsurance, 
+                TotalCompInsured = (int?)companyInsuranceDto.TotalInsurance,
+                TotalCompPaid = actualCompPaid,
+                CreateAt = DateTime.UtcNow,
+                ChangeAt = DateTime.UtcNow,
                 PayslipStatus = true
             };
 
             return payslipDto;
         }
 
-        public async Task<int> TaxableIncomeCalculation(int PretaxEarning, int staffId)
+        public async Task<int> TaxableIncomeCalculation(int salaryBeforeTax, int staffId)
         {
 
             int noOfDependences = await _personnelContractService
                                             .GetNoDependencies(staffId);
 
-            int FamilyAllowancesDeduction = FamilyAllowances * noOfDependences;
+            int FamilyTaxDeduction = FamilyAllowances * noOfDependences;
 
-            int TotalAllowancesDeduction = (PersonalTaxDeduction + FamilyAllowancesDeduction);
+            int TotalTaxDeduction = (PersonalTaxDeduction + FamilyTaxDeduction);
 
-            int taxableIncome = PretaxEarning - TotalAllowancesDeduction;
+            int taxableIncome = salaryBeforeTax - TotalTaxDeduction;
 
             if (taxableIncome < 0) taxableIncome = 0;
 
             return taxableIncome;
         }
 
-        public static int CalculatePretaxEarning(InsuranceDTO Insurance, int taxableSalary)
+        public static int CalculatePretaxEarning(InsuranceDTO Insurance, int actualGrossSalary)
         {
             var totalInsurance = 
                 Insurance.SocialInsurance + 
                 Insurance.HealthInsurance + 
                 Insurance.UnemploymentInsurance;
-            return (int)(taxableSalary - totalInsurance);
+            return (int)(actualGrossSalary - totalInsurance);
         }
 
         (int, double)[] TaxableAmountAndTaxRate = {
@@ -311,8 +311,8 @@ namespace API.Services
                 UnemploymentInsuranceDeduction = COMPANY_MAX_UNEMPLOYEMENT_INSURANCE_FEE;
             }
 
-            int Total = grossSalary + 
-                (SocialInsuranceDeduction + HealthInsuranceDeduction + UnemploymentInsuranceDeduction);
+            int totalInsurance = (SocialInsuranceDeduction + HealthInsuranceDeduction + UnemploymentInsuranceDeduction);
+            int netSalary = grossSalary + totalInsurance;
 
             CompanyInsuranceDTO companyInsuranceDto = new CompanyInsuranceDTO
             {
@@ -320,7 +320,8 @@ namespace API.Services
                 SocialInsurance = SocialInsuranceDeduction,
                 HealthInsurance = HealthInsuranceDeduction,
                 UnemploymentInsurance = UnemploymentInsuranceDeduction,
-                Total = Total
+                TotalInsurance = totalInsurance,
+                NetSalary = netSalary
             };
 
             return companyInsuranceDto;
@@ -498,7 +499,14 @@ namespace API.Services
             var basicActualWorkDays = await GetStandardWorkDays(month, year);
 
             var otDays = await _logOtService.GetOtDays(staffId, month, year);
-            var leaveDays = await _logLeaveService.GetLeaveDays(staffId, month, year);
+
+            var logLeaves = await _logLeaveService.GetLogLeavesByStaffId(staffId);
+            var leaveDays = 0;
+
+            foreach (var logleave in logLeaves)
+            {
+                //var a = await _theCalendarService.GetWorkingDays
+            }
 
             int totalWorkingDays = basicActualWorkDays + otDays - leaveDays;
 

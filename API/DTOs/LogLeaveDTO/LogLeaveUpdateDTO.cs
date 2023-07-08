@@ -22,8 +22,12 @@ namespace API.DTOs.LogLeaveDTO
 
         public int? LeaveHours { get; set; }
 
+        public int? SalaryPerDay { get; set; }
+
+        public int? Amount { get; set; }
+
         public string? Description { get; set; }
-        [RegularExpression("pending|approved|rejected", ErrorMessage = "Status must be 'pending', 'approved', or 'rejected'")]
+        //[RegularExpression("pending|approved|rejected", ErrorMessage = "Status must be 'pending', 'approved', or 'rejected'")]
         public string Status { get; set; }
 
         public DateTime CreateAt { get; set; }

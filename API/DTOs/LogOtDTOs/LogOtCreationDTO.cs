@@ -20,23 +20,27 @@ namespace API.DTOs.LogOtDTOs
 
         public DateTime LogEnd { get; set; }
 
-        public double? LogHours { get; set; }
+        public double LogHours { get; set; }
+
+        public int? Days { get; set; }
+         
+        public int? SalaryPerDay { get; set; }
+
         public int? Amount { get; set; }
 
         public string? Reason { get; set; }
-        [Required]
-        [RegularExpression("pending|approved|rejected", ErrorMessage = "Status must be 'pending', 'approved', or 'rejected'")]
-        public string? Status { get; set; } 
+
+        public string? Status { get; set; }
 
         public string? ProcessNote { get; set; }
 
         public int? RespondencesId { get; set; }
 
-        public DateTime? CreateAt { get; set; }
+        public DateTime CreateAt { get; set; }
 
         public DateTime? ChangeStatusTime { get; set; }
 
-        public bool? Enable { get; set; } = true;
+        public bool? Enable { get; set; }
 
         //public virtual OtType? OtType { get; set; }
 

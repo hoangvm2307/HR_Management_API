@@ -1,4 +1,4 @@
-using API.DTOs.PayslipDTOs;
+﻿using API.DTOs.PayslipDTOs;
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
 using API.Extensions;
@@ -53,8 +53,8 @@ namespace API.Controllers
             return await _payslipService.GetPayslipOfStaff(staffId);
         }
 
-        [HttpGet("{payslipId}/staffs/{staffId}")]
-        public async Task<ActionResult<PayslipDTO>> GetPayslipByStaffId(int staffId, int payslipId)
+        [HttpGet("{payslipId}/staffs/{staffId}", Name = "GetPayslipByStaffIdAndPayslipId")]
+        public async Task<ActionResult<PayslipDTO>> GetPayslipByStaffIdAndPayslipId(int staffId, int payslipId)
         {
             if(!await _payslipService.IsPayslipExist(staffId, payslipId))
             {
@@ -68,8 +68,7 @@ namespace API.Controllers
         [HttpPost("staffs/{staffId}")]
         public async Task<ActionResult<PayslipDTO>> CreatePayslipByStaffIdForAMonth(
             int staffId,
-            int month,
-            int year
+            PayslipInputCreationDto payslipInputCreationDto
             )
         {
             if (!await _userInfoService.IsUserExist(staffId))
@@ -79,36 +78,19 @@ namespace API.Controllers
 
             if (!await _personnelContractService.IsValidContractExist(staffId))
             {
-                return NotFound();
+                return BadRequest(new ProblemDetails { Title= "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404});
             }
 
-            await _payslipService.AddPayslipToDatabase(staffId, month, year);
+            var returnValue = await _payslipService.AddPayslipToDatabase(
+                staffId, 
+                payslipInputCreationDto.DateTime.Month,
+                payslipInputCreationDto.DateTime.Year);
 
 
-            return NoContent();
-            ////Du lieu Fake
-
-            //var personnelContractDTO = _mapper.Map<PersonnelContractDTO>(personnelContract);
-            //var userInfo = await _userInfoService.GetUserInforEntityByStaffId(staffId);
-
-            //var PayslipExtensions = new PayslipExtensions(_context, _mapper);
-
-            //PayslipDTO payslipDTO = await PayslipExtensions.ConvertGrossToNet(personnelContractDTO, dateOnly.Month, dateOnly.Year);
-
-            //var finalPayslips = _mapper.Map<Payslip>(payslipDTO);
-
-            //var userInfoNew = await _context.UserInfors.Include(c => c.Payslips).Where(c => c.StaffId == staffId).FirstOrDefaultAsync();
-
-            //userInfoNew.Payslips.Add(finalPayslips);
-
-            //await _context.SaveChangesAsync();
-
-            //return CreatedAtRoute(
-            //    "GetPayslipListByStaffId",
-            //    finalPayslips
-            //);
-            //return NoContent();
-
+            return CreatedAtRoute(
+                "GetPayslipByStaffIdAndPayslipId",
+                new { payslipId = returnValue.PayslipId, staffId = returnValue.StaffId },
+                returnValue);
         }
 
     }

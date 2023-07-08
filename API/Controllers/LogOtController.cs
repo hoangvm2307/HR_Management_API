@@ -91,10 +91,10 @@ namespace API.Controllers
             var logOt = _mapper.Map<LogOt>(createLogOtDTO);
 
 
-            if (await _logOtService.IsDuplicateLogOt(staffId, logOt.OtLogId, createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
-            {
-                return BadRequest("You have signed up for overtime");
-            }
+            //if (await _logOtService.IsDuplicateLogOt(staffId, logOt.OtLogId, createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            //{
+            //    return BadRequest("You have signed up for overtime");
+            //}
 
             await _logOtService.CreateLogOT(staffId, createLogOtDTO);
 
@@ -140,18 +140,18 @@ namespace API.Controllers
 
         [HttpPatch("{logOtId}/staffs/{staffId}")]
         public async Task<ActionResult<LogOtDTO>> PartiallyUpdateLogOt(
-            int StaffId,
-            int LogOtId,
+            int logOtId,
+            int staffId,
             JsonPatchDocument<LogOtUpdateDTO> patchDocument
         )
         {
-            var staffInfo = await _context.UserInfors.Where(c => c.StaffId == StaffId).FirstOrDefaultAsync();
+            var staffInfo = await _context.UserInfors.Where(c => c.StaffId == staffId).FirstOrDefaultAsync();
 
             if (staffInfo == null)
             {
                 return NotFound();
             }
-            var LogOtFromStore = await _context.LogOts.Where(c => c.StaffId == StaffId && c.OtLogId == LogOtId).FirstOrDefaultAsync();
+            var LogOtFromStore = await _context.LogOts.Where(c => c.StaffId == staffId && c.OtLogId == logOtId).FirstOrDefaultAsync();
 
             if (LogOtFromStore == null)
             {

@@ -77,6 +77,7 @@ namespace API.Services
                 user.LeaveDayDetails.Add(leaveDayEntity);
 
             }
+
             await _context.SaveChangesAsync();
 
 
@@ -168,5 +169,6 @@ namespace API.Services
         {
             return message.Equals("approved");
         }
+
     }
 }

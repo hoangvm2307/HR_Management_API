@@ -160,7 +160,9 @@ namespace API.Services
             int familyAllowance = 4400000;
 
             var noOfDependencies = await _context.PersonnelContracts
-               .Where(c => c.StaffId == staffId)
+               .Where(c => 
+                c.StaffId == staffId &&
+                c.ContractStatus == true)
                .Select(c => c.NoOfDependences)
                .FirstOrDefaultAsync();
 
@@ -195,7 +197,7 @@ namespace API.Services
             int totalDays = standardWorkDays.Count;
             int salaryOneDay = 0;
 
-            if (personnelContract != null && personnelContract.SalaryType == "GrossToNet")
+            if (personnelContract != null && personnelContract.SalaryType.Contains("Gross To Net")) 
             {
                 var basicSalary = personnelContract.Salary;
                 salaryOneDay = basicSalary / totalDays;

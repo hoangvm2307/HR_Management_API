@@ -1,3 +1,4 @@
+using API.DTOs.StaffDtos;
 using API.DTOs.UserInforDTO;
 using API.Entities;
 using System;
@@ -23,6 +24,10 @@ namespace API.DTOs.LogLeaveDTO
 
         public int? LeaveHours { get; set; }
 
+        public int? SalaryPerDay { get; set; }
+
+        public int? Amount { get; set; }
+
         public string? Description { get; set; }
 
         public string? Status { get; set; }
@@ -39,7 +44,7 @@ namespace API.DTOs.LogLeaveDTO
 
         public virtual LeaveTypeDTO? LeaveType { get; set; }
 
-        public virtual UserInforDto Staff { get; set; } = null!;
+        public virtual StaffInfoDto Staff { get; set; } = null!;
 
     }
 }
