@@ -13,16 +13,16 @@ namespace API.Controllers
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
+        private readonly TheCalendarService _theCalendarService;
 
-        private static TheCalendarService TheCalendarService { get; set; }
         public TheCalendarController(
-            SwpProjectContext context, 
-            IMapper mapper)
+            SwpProjectContext context,
+            IMapper mapper,
+            TheCalendarService theCalendarService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-
-            TheCalendarService = new TheCalendarService(context, mapper);
+            _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
         }
 
 
@@ -37,14 +37,15 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<TheCalendar>>> GetHolidaysDateByStartDateAndEndDate(DateTime startDate, DateTime endDate)
         {
-            var calendar = await TheCalendarService.GetTypeDates(startDate, endDate);
+            var calendar = await _theCalendarService.GetTypeDates(startDate, endDate);
 
-            if(calendar == null)
+            if (calendar == null)
             {
                 return NotFound();
             }
 
             return calendar;
         }
+
     }
 }

@@ -1,3 +1,4 @@
+using API.DTOs.StaffDtos;
 using API.Entities;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,11 @@ namespace API.DTOs.LogOtDTOs
         public DateTime LogEnd { get; set; }
 
         public double LogHours { get; set; }
+
+        public int? Days { get; set; }
+
+        public int? SalaryPerDay { get; set; }
+
         public int? Amount { get; set; }
 
         public string? Reason { get; set; }
@@ -37,6 +43,6 @@ namespace API.DTOs.LogOtDTOs
 
         public virtual OtTypeDTO? OtType { get; set; }
 
-        public virtual UserInfoLogOt Staff { get; set; } = null!;
+        public virtual StaffInfoDto Staff { get; set; } = null!;
     }
 }

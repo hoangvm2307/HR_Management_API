@@ -1,4 +1,4 @@
-using API.DTOs.LogLeaveDTO;
+﻿using API.DTOs.LogLeaveDTO;
 using API.Entities;
 using API.Services;
 using AutoMapper;
@@ -18,9 +18,10 @@ namespace API.Controllers
         private readonly UserInfoService _userInfoService;
         private readonly LogLeaveService _logLeaveService;
         private readonly LeaveDayDetailService _leaveDayDetailService;
+        private readonly PersonnelContractService _personnelContractService;
 
         public LogLeaveController(
-            SwpProjectContext context, 
+            SwpProjectContext context,
             IMapper mapper,
             UserInfoService userInfoService,
             LogLeaveService logLeaveService,
@@ -39,7 +40,7 @@ namespace API.Controllers
             return await _logLeaveService.GetLogLeaveDTOs();
         }
 
-        
+
 
         [HttpGet("staffs/{staffId}")]
         public async Task<ActionResult<List<LogLeaveDTO>>> GetLogLeavesAsyncByStaffId(int staffId)
@@ -57,12 +58,12 @@ namespace API.Controllers
         {
             if (!await _userInfoService.IsUserExist(staffId))
             {
-                return NotFound();
+                return NotFound(new ProblemDetails { Title = ""});
             }
 
-            if (await _logLeaveService.IsLogLeaveExist(logLeaveId))
+            if (!await _logLeaveService.IsLogLeaveExist(logLeaveId))
             {
-                return NotFound();
+                return NotFound(new ProblemDetails { Title = ""});
             }
 
             var returnLogLeave = await _logLeaveService.GetLogLeaveByStaffIdAndLogLeaveId(staffId, logLeaveId);
@@ -78,22 +79,13 @@ namespace API.Controllers
                 return NotFound();
             }
 
-            if(!await _leaveDayDetailService.IsLeaveTypeDetailExist(staffId, logLeaveCreationDTO.LeaveTypeId))
-            {
-                return BadRequest("Invalid Leave Type Id Of Staff");
-            }
-
-            int leaveDays  = await _logLeaveService.LeaveDaysCalculation
+            int leaveDays = await _logLeaveService.LeaveDaysCalculation
                                                 (logLeaveCreationDTO.LeaveStart,
                                                 logLeaveCreationDTO.LeaveEnd);
 
-
-            logLeaveCreationDTO.LeaveDays = leaveDays;
-            logLeaveCreationDTO.LeaveHours = leaveDays * 8;
-
             if (!await _leaveDayDetailService.IsLeaveDayDetailValid(
-                staffId, 
-                logLeaveCreationDTO.LeaveTypeId, 
+                staffId,
+                logLeaveCreationDTO.LeaveTypeId,
                 leaveDays))
             {
                 return BadRequest("Invalid Leave Days");
@@ -120,19 +112,19 @@ namespace API.Controllers
             );
         }
 
-        
+
         [HttpPut("{logLeaveId}/staffs/{staffId}")]
         public async Task<ActionResult<LogLeaveDTO>> UpdateLogLeave(int staffId, int logLeaveId, LogLeaveUpdateDTO logLeaveUpdateDTO)
         {
 
             if (!await _userInfoService.IsUserExist(staffId))
             {
-                return NotFound();
+                return NotFound(new ProblemDetails { Title = ""});
             }
 
-            if(!await _logLeaveService.IsLogLeaveExist(logLeaveId))
+            if (!await _logLeaveService.IsLogLeaveExist(logLeaveId))
             {
-                return NotFound();
+                return NotFound(new ProblemDetails { Title = ""});
             }
 
             if (!await _leaveDayDetailService.IsLeaveTypeDetailExist(staffId, logLeaveUpdateDTO.LeaveTypeId))
@@ -143,7 +135,7 @@ namespace API.Controllers
             logLeaveUpdateDTO.LeaveDays = (logLeaveUpdateDTO.LeaveEnd - logLeaveUpdateDTO.LeaveStart).TotalDays;
             logLeaveUpdateDTO.LeaveHours = (int?)(logLeaveUpdateDTO.LeaveDays * 8);
 
-            if (!await _leaveDayDetailService.IsLeaveDayDetailValid(staffId, logLeaveUpdateDTO.LeaveTypeId ,(int)logLeaveUpdateDTO.LeaveDays))
+            if (!await _leaveDayDetailService.IsLeaveDayDetailValid(staffId, logLeaveUpdateDTO.LeaveTypeId, (int)logLeaveUpdateDTO.LeaveDays))
             {
                 return BadRequest("Invalid Leave Days");
             }
@@ -157,7 +149,7 @@ namespace API.Controllers
 
             await _context.SaveChangesAsync();
 
-            if(!await _userInfoService.IsSaveChangeAsync())
+            if (!await _userInfoService.IsSaveChangeAsync())
             {
                 return BadRequest();
 
@@ -167,21 +159,25 @@ namespace API.Controllers
 
         [HttpPatch("{logLeaveId}/staffs/{staffId}")]
         public async Task<ActionResult<LogLeaveDTO>> UpdateStatusLogLeave(
-            int staffId, 
-            int logLeaveId, 
+            int logLeaveId,
+            int staffId,
             JsonPatchDocument<LogLeaveUpdateDTO> patchDocument)
         {
             if (!await _userInfoService.IsUserExist(staffId))
             {
-                return NotFound();
+                return BadRequest(new ProblemDetails { Title = "" , Status = 404});
             }
 
             if (!await _logLeaveService.IsLogLeaveExist(logLeaveId))
             {
-                return NotFound();
+                return BadRequest(new ProblemDetails { Title = "", Status = 404 });
             }
 
-            var logLeave = await _logLeaveService.GetLogLeaveAsync(staffId, logLeaveId);
+            var logLeave = await _context.LogLeaves
+                .Where(c => 
+                c.StaffId == staffId &&
+                c.LeaveLogId == logLeaveId)
+                .FirstOrDefaultAsync();
 
             var logLeavePath = _mapper.Map<LogLeaveUpdateDTO>(logLeave);
 
@@ -189,26 +185,23 @@ namespace API.Controllers
 
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                return BadRequest(new ProblemDetails {  Title = "HEre 1"});
             }
 
             if (!TryValidateModel(logLeavePath))
             {
-                return BadRequest();
+                return BadRequest(new ProblemDetails {  Title = "Here 2"});
             }
 
             _mapper.Map(logLeavePath, logLeave);
             await _context.SaveChangesAsync();
 
-            if (!await _userInfoService.IsSaveChangeAsync())
-            {
-                return BadRequest();
-            }
-
             if (_leaveDayDetailService.IsApproved(logLeavePath.Status))
             {
                 await _leaveDayDetailService.DecreaseDayLeft(staffId, logLeavePath.LeaveTypeId, (int)logLeavePath.LeaveDays);
             }
+
+
             return NoContent();
         }
     }

@@ -149,15 +149,16 @@ namespace API.Services
 
             var staffInfo = await GetUserInforEntityByStaffId(staffId);
 
-
+            int percent = getPercent(type);
+            int days = (endDay.Day - startDay.Day) + 1;
 
             logOtCreation.LogStart = startDay;
             logOtCreation.LogEnd = endDay;
             logOtCreation.OtTypeId = type;
             logOtCreation.LogHours = list.Count() * 8;
-            //thêm field amount, check lại những field còn thiếu đổi Creation DTO Update 
-            logOtCreation.Amount = (basicSalaryOfOneDay * getPercent((int)logOtCreation.OtTypeId));
-
+            logOtCreation.SalaryPerDay = basicSalaryOfOneDay * percent;
+            logOtCreation.Days = days;
+            logOtCreation.Amount = basicSalaryOfOneDay * percent * days;
 
             logOtCreation.CreateAt = DateTime.Now; 
             logOtCreation.ChangeStatusTime = DateTime.Now;
@@ -285,7 +286,7 @@ namespace API.Services
                     c.StaffId == staffId && 
                     c.LogStart.Month == month &&
                     c.LogStart.Year == year &&
-                    c.Status == "aprroved")
+                    c.Status == "approved")
                 .ToListAsync();
 
             var logOtDays = logOts.Sum(c => c.LogHours) / 8;
@@ -299,7 +300,8 @@ namespace API.Services
                 .Where(c => 
                     c.StaffId == staffId && 
                     c.LogStart.Month == month && 
-                    c.LogStart.Year == year)
+                    c.LogStart.Year == year &&
+                    c.Status.ToLower().Equals("approved"))
                 .ToListAsync();
 
             var OtSalary = logOts.Sum(c => c.Amount);

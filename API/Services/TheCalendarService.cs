@@ -52,11 +52,10 @@ namespace API.Services
             }
 
 
-
-
             for (DateTime date = startDate; date <= endDate; date = date.AddDays(1))
             {
-                var dateType = await _context.TheCalendars.Where(c => date.Equals(c.TheDate)).FirstOrDefaultAsync();
+                var dateType = await _context.TheCalendars
+                    .Where(c => date.Equals(c.TheDate)).FirstOrDefaultAsync();
 
 
                 if (dateType != null)
@@ -67,5 +66,39 @@ namespace API.Services
 
             return holidayDimensions.ToList();
         }
+        public async Task<List<TheCalendar>> GetWorkingDays(DateTime start, DateTime end)
+        {
+            var workingdays = await _context.TheCalendars
+                .Where(c =>
+                        c.TheDate >= start &&
+                        c.TheDate <= end &&
+                        c.IsWorking == 1)
+                .ToListAsync();
+            return workingdays;
+        }
+
+        public async Task<List<TheCalendar>> GetHolidayDays(DateTime start, DateTime end)
+        {
+            var holidayDays = await _context.TheCalendars
+                .Where(c =>
+                    c.TheDate >= start &&
+                    c.TheDate <= end &&
+                    c.IsHoliday == 1)
+                .ToListAsync();
+            return holidayDays;
+        }
+
+        public async Task<List<TheCalendar>> GetWeekendDays(DateTime start, DateTime end)
+        {
+            var weekendDays = await _context.TheCalendars
+                .Where(c =>
+                    c.TheDate >= start &&
+                    c.TheDate <= end &&
+                    c.IsWeekend == 1)
+                .ToListAsync();
+            return weekendDays;
+        }
+
+
     }
 }

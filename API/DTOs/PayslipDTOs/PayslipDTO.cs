@@ -1,3 +1,4 @@
+using API.DTOs.StaffDtos;
 using API.DTOs.UserInforDTO;
 using API.Entities;
 using System;
@@ -13,9 +14,11 @@ namespace API.DTOs.PayslipDTOs
 
         public int StaffId { get; set; }
 
-        public int? BasicSalary { get; set; }
+        public int PaidByDate { get; set; }
 
-        public int? ActualSalary { get; set; }
+        public int? GrossStandardSalary { get; set; }
+
+        public int? GrossActualSalary { get; set; }
 
         public double? StandardWorkDays { get; set; }
 
@@ -27,8 +30,6 @@ namespace API.DTOs.PayslipDTOs
 
         public int? OtTotal { get; set; }
 
-        public int? GrossSalary { get; set; }
-
         public int? Bhxhemp { get; set; }
 
         public int? Bhytemp { get; set; }
@@ -37,21 +38,21 @@ namespace API.DTOs.PayslipDTOs
 
         public int? SalaryBeforeTax { get; set; }
 
-        public int? SelfAllowances { get; set; }
+        public int? SelfDeduction { get; set; }
 
-        public int? FamilyAllowances { get; set; }
+        public int? FamilyDeduction { get; set; }
 
-        public int? SalaryTaxable { get; set; }
+        public int? TaxableSalary { get; set; }
 
         public int? PersonalIncomeTax { get; set; }
-
-        public int NetSalary { get; set; }
 
         public int? TotalAllowance { get; set; }
 
         public int? SalaryRecieved { get; set; }
 
-        public int PaiByDate { get; set; }
+        public int? NetStandardSalary { get; set; }
+
+        public int? NetActualSalary { get; set; }
 
         public int? Bhxhcomp { get; set; }
 
@@ -59,9 +60,9 @@ namespace API.DTOs.PayslipDTOs
 
         public int? Bhtncomp { get; set; }
 
-        public int? TotalInsured { get; set; }
+        public int? TotalCompInsured { get; set; }
 
-        public int? TotalPaid { get; set; }
+        public int? TotalCompPaid { get; set; }
 
         public DateTime? CreateAt { get; set; }
 
@@ -69,7 +70,7 @@ namespace API.DTOs.PayslipDTOs
 
         public bool? PayslipStatus { get; set; }
 
-        public virtual UserInforDto Staff { get; set; } = null!;
+        public virtual StaffInfoDto Staff { get; set; } = null!;
 
         public virtual ICollection<TaxDetailDTO> TaxDetails { get; set; } = new List<TaxDetailDTO>();
     }
