@@ -114,7 +114,6 @@ namespace API.Services
                     c.TheDate <= end && 
                     c.IsWorking == 1).ToListAsync();
 
-            Console.Write("Here");
 
             return leaveDays.Count;
         }
@@ -122,27 +121,34 @@ namespace API.Services
         public async Task<int> GetLeaveDays(int staffId, int month, int year)
         {
             var logLeaves = await _context.LogLeaves
-                    .Where(c =>
-                        c.StaffId == staffId &&
-                        c.Status == "approved" &&
-                        month >= c.LeaveStart.Month &&
-                        month <= c.LeaveEnd.Month
-                        )
-                    .ToListAsync();
+                .Where(c => 
+                c.StaffId == staffId &&
+                c.Status.ToLower().Contains("approved") &&
+                c.LeaveStart.Month >= month &&
+                c.LeaveEnd.Month <= month)
+                .ToListAsync();
 
-            int logLeavesDays = 0;
+            int sum = 0;
 
-            foreach (var item in logLeaves)
+            foreach (var logLeave in logLeaves)
             {
-                DateTime startDay = GetStartDay(month, item.LeaveStart);
-                DateTime endDay = GetEndDay(month, item.LeaveEnd);
-                var workingDays = await _theCalendarService
-                     .GetWorkingDays(startDay, endDay);
-                logLeavesDays += workingDays.Count;
+                if(logLeave.LeaveStart.Month == month && logLeave.LeaveEnd.Month == month  && logLeave.LeaveStart.Year == year)
+                {
+                    sum += (int)logLeave.LeaveDays;
+                }
+                else
+                {
+                    var startDate = GetStartDay(month, logLeave.LeaveStart);
+                    var endDate = GetEndDay(month, logLeave.LeaveEnd);
+
+                    var days = await _theCalendarService.GetWorkingDays(startDate, endDate);
+                    
+                    sum += days.Count;
+                }
             }
 
 
-            return logLeavesDays;
+            return (int)sum;
         }
 
         public async Task<int> GetLeavesHours(int staffId, int month, int year)
