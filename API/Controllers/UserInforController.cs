@@ -24,7 +24,8 @@ namespace API.Controllers
     public async Task<ActionResult<List<UserInforDto>>> GetUserInfors()
     {
       var userInfors = await _context.UserInfors
-          .ToListAsync();
+        .Include(c => c.StaffSkills)
+        .ToListAsync();
 
       var userInforDtos = _mapper.Map<List<UserInforDto>>(userInfors);
 
@@ -32,9 +33,14 @@ namespace API.Controllers
       {
         userInforDto.Email = GetUserEmailByIdAsync(userInforDto.Id).Result;
         userInforDto.Position = userInforDto.IsManager ? "Manager" : "Staff";
-
         userInforDto.DepartmentName = GetDepartmentNameByIdAsync
                   (userInforDto.DepartmentId ?? 0).Result;
+
+        userInforDto.StaffSkills = userInforDto.StaffSkills.Select(staffSkillDto =>
+        {
+          staffSkillDto.SkillName = GetSkillNameByIdAsync(staffSkillDto.SkillId).Result;
+          return staffSkillDto;
+        }).ToList();
         return userInforDto;
       }).ToList();
 
@@ -45,6 +51,7 @@ namespace API.Controllers
     public async Task<ActionResult<UserInforDto>> GetUserInforById(int id)
     {
       var userInfor = await _context.UserInfors
+      .Include(c => c.StaffSkills)
           .FirstOrDefaultAsync(u => u.StaffId == id);
 
       if (userInfor == null) return NotFound();
@@ -53,7 +60,11 @@ namespace API.Controllers
 
       userInforDto.Email = GetUserEmailByIdAsync(userInforDto.Id).Result;
       userInforDto.Position = userInforDto.IsManager ? "Manager" : "Staff";
-
+      userInforDto.StaffSkills = userInforDto.StaffSkills.Select(staffSkillDto =>
+        {
+          staffSkillDto.SkillName = GetSkillNameByIdAsync(staffSkillDto.SkillId).Result;
+          return staffSkillDto;
+        }).ToList();
       return userInforDto;
     }
 
@@ -101,9 +112,7 @@ namespace API.Controllers
 
       var result = await _context.SaveChangesAsync() > 0;
 
-      if (result) return CreatedAtAction(nameof(GetUserInforById), new { id = userInfor.StaffId }, userInfor);
-
-      return BadRequest(new ProblemDetails { Title = "Problem Updating Candidate" });
+      return CreatedAtAction(nameof(GetUserInforById), new { id = userInfor.StaffId }, userInfor);
     }
     // [HttpPost]
     // public async Task<ActionResult> CreateUserInfor([FromBody] UserInforDto userInforDto)
@@ -172,6 +181,11 @@ namespace API.Controllers
     {
       var department = await _context.Departments.FirstOrDefaultAsync(x => x.DepartmentId == id);
       return department?.DepartmentName;
+    }
+    private async Task<string> GetSkillNameByIdAsync(int id)
+    {
+      var skill = await _context.Skills.FirstOrDefaultAsync(x => x.SkillId == id);
+      return skill?.SkillName;
     }
   }
 }

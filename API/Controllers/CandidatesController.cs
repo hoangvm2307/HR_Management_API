@@ -19,11 +19,29 @@ namespace API.Controllers
     [HttpGet]
     public async Task<ActionResult<List<CandidateDto>>> GetCandidates()
     {
-      var candidates = await _context.Candidates.ToListAsync();
+      var candidates = await _context.Candidates
+      .Include(c => c.CandidateSkills)
+      .ToListAsync();
 
       if (candidates == null) return NotFound();
 
       var candidateDtos = _mapper.Map<List<CandidateDto>>(candidates);
+
+      candidateDtos = candidateDtos.Select(candidateDto =>
+      {
+        candidateDto.DepartmentId = _context.Departments.Where
+          (d => d.DepartmentName.Trim().ToLower().Equals
+            (candidateDto.Department.Trim().ToLower())).
+            Select(d => d.DepartmentId).FirstOrDefault();
+
+        candidateDto.CandidateSkills = candidateDto.CandidateSkills.Select(candidateSkillDto =>
+        {
+          candidateSkillDto.SkillName = GetSkillNameByIdAsync(candidateSkillDto.SkillId).Result;
+          return candidateSkillDto;
+        }).ToList();
+        return candidateDto;
+      }).ToList();
+
 
       return candidateDtos;
     }
@@ -31,11 +49,19 @@ namespace API.Controllers
     [HttpGet("{id}", Name = "GetCandidateById")]
     public async Task<ActionResult<CandidateDto>> GetCandidateById(int id)
     {
-      var candidate = await _context.Candidates.FirstOrDefaultAsync(c => c.CandidateId == id);
+      var candidate = await _context.Candidates
+      .Include(c => c.CandidateSkills)
+      .FirstOrDefaultAsync(c => c.CandidateId == id);
 
       if (candidate == null) return NotFound();
 
       var candidateDto = _mapper.Map<CandidateDto>(candidate);
+
+      candidateDto.CandidateSkills = candidateDto.CandidateSkills.Select(candidateSkillDto =>
+      {
+        candidateSkillDto.SkillName = GetSkillNameByIdAsync(candidateSkillDto.SkillId).Result;
+        return candidateSkillDto;
+      }).ToList();
 
       return candidateDto;
     }
@@ -151,6 +177,11 @@ namespace API.Controllers
       if (result) return NoContent();
 
       return BadRequest("Problem Updating Candidate");
+    }
+    private async Task<string> GetSkillNameByIdAsync(int id)
+    {
+      var skill = await _context.Skills.FirstOrDefaultAsync(x => x.SkillId == id);
+      return skill?.SkillName;
     }
   }
 }
