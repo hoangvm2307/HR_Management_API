@@ -740,9 +740,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "30fc36f0-c794-4b86-8d13-6f8da32f1095", null, "Staff", "STAFF" },
-                    { "590aa968-58dd-48aa-a2af-455955228261", null, "HRStaff", "HRSTAFF" },
-                    { "a48110b2-daf2-443e-8855-542e3140df70", null, "HRManager", "HRMANAGER" }
+                    { "6c825d1c-ea5c-4b69-b445-cf7b580f1849", null, "Staff", "STAFF" },
+                    { "b24d52ae-ac1d-41c3-94f1-46add623de1f", null, "HRManager", "HRMANAGER" },
+                    { "d731d0e8-d810-4bf9-be70-affa1b6c27da", null, "HRStaff", "HRSTAFF" }
                 });
 
             migrationBuilder.CreateIndex(

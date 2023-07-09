@@ -77,6 +77,7 @@ namespace API.Services
                 user.LeaveDayDetails.Add(leaveDayEntity);
 
             }
+
             await _context.SaveChangesAsync();
 
 
@@ -133,7 +134,7 @@ namespace API.Services
             var isLeaveDayDetailValid = await _context.LeaveDayDetails
                 .AnyAsync(c => c.StaffId == staffId &&
                         c.LeaveTypeId == leaveTypeId &&    
-                        c.DayLeft >  leaveDays);
+                        c.DayLeft >=  leaveDays);
 
             return isLeaveDayDetailValid;
         }
@@ -168,5 +169,6 @@ namespace API.Services
         {
             return message.Equals("approved");
         }
+
     }
 }

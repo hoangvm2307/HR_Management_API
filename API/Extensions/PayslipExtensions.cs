@@ -45,6 +45,9 @@ namespace API.Extensions
                 int year
             )
         {
+            //Gross To Net
+
+
 
             int taxableSalary = (int)personnelContractDTO.TaxableSalary;
             int StandardWorkDays = await GetStandardWorkDays(month, year);
@@ -90,40 +93,7 @@ namespace API.Extensions
 
             PayslipDTO payslipDto = new PayslipDTO
             {
-                // Contract = 2,
-                GrossSalary = grossSalary,
-                StandardWorkDays = StandardWorkDays,
-                ActualWorkDays = ActualWorkDays,
-                //OtHours = logOtHours,
-                LeaveDays = LeaveDays,
-                Bhxhemp = (int)Insurance.SocialInsurance,
-                Bhytemp = (int)Insurance.HealthInsurance,
-                Bhtnemp = (int)Insurance.UnemploymentInsurance,
-                //can chinh sua self Allowances
-                SelfAllowances = PersonalTaxDeduction,
-                //NoOfDependences = noOfDependences,
-                FamilyAllowances = FamilyAllowances,
-                SalaryBeforeTax = ThuNhapTruocThue,
-                //TaxRate5M = result.TaxRate5M,
-                //TaxRate5Mto10M = result.TaxRate5MTo10M,
-                //TaxRate10Mto18M = result.TaxRate10MTo18M,
-                //TaxRate18Mto32M = result.TaxRate18MTo23M,
-                //TaxRate32Mto52M = result.TaxRate23MTo52M,
-                //TaxRate52Mto82M = result.TaxRate52MTo82M,
-                //TaxRateOver82M = result.TaxRateOver82M,
-                PersonalIncomeTax = ThueThuNhapCaNhan,
-                //Bonus = allowances,
-                // Deducion = 0,
-                //TaxbleIncome = ThuNhapChiuThue,
-                NetSalary = NetSalary,
-                //tính lương 1 ngày
-                PaiByDate = PaiByDate,
-                CreateAt = CreatedDate,
-                Bhxhcomp = (int)companyInsuranceDto.SocialInsurance,
-                Bhytcomp = (int)companyInsuranceDto.HealthInsurance,
-                Bhtncomp = (int)companyInsuranceDto.UnemploymentInsurance,
-                TotalInsured = (int)companyInsuranceDto.Total,
-                PayslipStatus = true
+
             };
 
             return payslipDto;
@@ -236,7 +206,8 @@ namespace API.Extensions
                 UnemploymentInsuranceDeduction = COMPANY_MAX_UNEMPLOYEMENT_INSURANCE_FEE;
             }
 
-            int Total = grossSalary + (SocialInsuranceDeduction + HealthInsuranceDeduction + UnemploymentInsuranceDeduction);
+            int totalInsurance = (SocialInsuranceDeduction + HealthInsuranceDeduction + UnemploymentInsuranceDeduction);
+            int netSalary = grossSalary + totalInsurance;
 
             CompanyInsuranceDTO companyInsuranceDto = new CompanyInsuranceDTO
             {
@@ -244,7 +215,8 @@ namespace API.Extensions
                 SocialInsurance = SocialInsuranceDeduction,
                 HealthInsurance = HealthInsuranceDeduction,
                 UnemploymentInsurance = UnemploymentInsuranceDeduction,
-                Total = Total
+                TotalInsurance = totalInsurance,
+                NetSalary = netSalary
             };
 
             return companyInsuranceDto;

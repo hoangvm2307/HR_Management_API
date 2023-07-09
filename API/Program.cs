@@ -90,6 +90,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AllowanceService>();
 builder.Services.AddScoped<AllowanceTypeService>();
 builder.Services.AddScoped<PayslipService>();
+builder.Services.AddScoped<DepartmentService>();
 
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>

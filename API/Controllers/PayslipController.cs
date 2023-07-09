@@ -1,4 +1,4 @@
-using API.DTOs.PayslipDTOs;
+﻿using API.DTOs.PayslipDTOs;
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
 using API.Extensions;
@@ -6,6 +6,7 @@ using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace API.Controllers
 {
@@ -19,6 +20,7 @@ namespace API.Controllers
         private readonly UserInfoService _userInfoService;
         private readonly PersonnelContractService _personnelContractService;
         private readonly LogLeaveService _logLeaveService;
+        private readonly DepartmentService _departmentService;
 
         public PayslipController(
             SwpProjectContext context,
@@ -26,7 +28,8 @@ namespace API.Controllers
             PayslipService payslipService,
             UserInfoService userInfoService,
             PersonnelContractService personnelContractService,
-            LogLeaveService logLeaveService
+            LogLeaveService logLeaveService,
+            DepartmentService departmentService
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -34,6 +37,7 @@ namespace API.Controllers
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
             _logLeaveService = logLeaveService ?? throw new ArgumentNullException(nameof(logLeaveService));
+            _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
@@ -53,8 +57,8 @@ namespace API.Controllers
             return await _payslipService.GetPayslipOfStaff(staffId);
         }
 
-        [HttpGet("{payslipId}/staffs/{staffId}")]
-        public async Task<ActionResult<PayslipDTO>> GetPayslipByStaffId(int staffId, int payslipId)
+        [HttpGet("{payslipId}/staffs/{staffId}", Name = "GetPayslipByStaffIdAndPayslipId")]
+        public async Task<ActionResult<PayslipDTO>> GetPayslipByStaffIdAndPayslipId(int staffId, int payslipId)
         {
             if(!await _payslipService.IsPayslipExist(staffId, payslipId))
             {
@@ -68,8 +72,7 @@ namespace API.Controllers
         [HttpPost("staffs/{staffId}")]
         public async Task<ActionResult<PayslipDTO>> CreatePayslipByStaffIdForAMonth(
             int staffId,
-            int month,
-            int year
+            PayslipInputCreationDto payslipInputCreationDto
             )
         {
             if (!await _userInfoService.IsUserExist(staffId))
@@ -79,36 +82,76 @@ namespace API.Controllers
 
             if (!await _personnelContractService.IsValidContractExist(staffId))
             {
-                return NotFound();
+                return BadRequest(new ProblemDetails { Title= "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404});
             }
 
-            await _payslipService.AddPayslipToDatabase(staffId, month, year);
+            var returnValue = await _payslipService.AddPayslipToDatabase(
+                staffId, 
+                payslipInputCreationDto.DateTime.Month,
+                payslipInputCreationDto.DateTime.Year);
 
+
+            return CreatedAtRoute(
+                "GetPayslipByStaffIdAndPayslipId",
+                new { payslipId = returnValue.PayslipId, staffId = returnValue.StaffId },
+                returnValue);
+        }
+
+        [HttpPost("staffs")]
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForAllStaff([FromBody] DateTime dateTime)
+        {
+            var staffIds = await _userInfoService.GetStaffIdsAsync();
+
+
+            if (staffIds.Count == 0)
+            {
+                return BadRequest(new ProblemDetails { Title = "Staff does not exist", Status = 404 });
+            }
+
+            foreach (var staffId in staffIds)
+            {
+                if (!await _personnelContractService.IsValidContractExist(staffId))
+                {
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404 });
+                }
+
+                await _payslipService.AddPayslipToDatabase(
+                staffId,
+                dateTime.Month,
+                dateTime.Year);
+            }
 
             return NoContent();
-            ////Du lieu Fake
+        }
 
-            //var personnelContractDTO = _mapper.Map<PersonnelContractDTO>(personnelContract);
-            //var userInfo = await _userInfoService.GetUserInforEntityByStaffId(staffId);
+        [HttpPost("staffs/departments/{departmentId}")]
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForDepartments(int departmentId, [FromBody] DateTime dateTime)
+        {
+            if (!await _departmentService.IsDepartmentExist(departmentId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Department does not exist" , Status = 404});
+            }
 
-            //var PayslipExtensions = new PayslipExtensions(_context, _mapper);
+            var staffIds = await _userInfoService.GetStaffsOfDepartment(departmentId);
 
-            //PayslipDTO payslipDTO = await PayslipExtensions.ConvertGrossToNet(personnelContractDTO, dateOnly.Month, dateOnly.Year);
+            if(staffIds.Count == 0)
+            {
+                return BadRequest(new ProblemDetails { Title = "Staff does not exist", Status = 404 });
+            }
 
-            //var finalPayslips = _mapper.Map<Payslip>(payslipDTO);
+            foreach (var staffId in staffIds)
+            {
+                if (!await _personnelContractService.IsValidContractExist(staffId))
+                {
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404 });
+                }
 
-            //var userInfoNew = await _context.UserInfors.Include(c => c.Payslips).Where(c => c.StaffId == staffId).FirstOrDefaultAsync();
-
-            //userInfoNew.Payslips.Add(finalPayslips);
-
-            //await _context.SaveChangesAsync();
-
-            //return CreatedAtRoute(
-            //    "GetPayslipListByStaffId",
-            //    finalPayslips
-            //);
-            //return NoContent();
-
+                var returnValue = await _payslipService.AddPayslipToDatabase(
+                staffId,
+                dateTime.Month,
+                dateTime.Year);
+            }
+            return NoContent();
         }
 
     }

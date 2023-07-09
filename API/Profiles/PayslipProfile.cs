@@ -34,7 +34,7 @@ namespace API.Profiles
             CreateMap<PayslipDTO, Payslip>();
 
             CreateMap<TaxDetail, TaxDetailDTO>();
-            CreateMap<TaxDetailCreationDTO, TaxDetail>();
+            CreateMap<TaxDetailCreationDTO, TaxDetail>().ReverseMap();
             CreateMap<TaxList, TaxListDTO>();
 
             CreateMap<Ticket, TicketDto>();

@@ -1,8 +1,10 @@
 ﻿using API.DTOs.LogLeaveDTO;
+using API.DTOs.LogOtDTOs;
 using API.Entities;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Xml.Schema;
 
 namespace API.Services
 {
@@ -13,13 +15,15 @@ namespace API.Services
         private readonly TheCalendarService _theCalendarService;
         private readonly UserInfoService _userInfoService;
         private readonly ILogger _logger;
+        private readonly PersonnelContractService _personnelContractService;
 
         public LogLeaveService(
             SwpProjectContext context,
             IMapper mapper,
             TheCalendarService theCalendarService,
             UserInfoService userInfoService,
-            ILogger<LogLeaveService> logger
+            ILogger<LogLeaveService> logger,
+            PersonnelContractService personnelContractService
             )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -27,6 +31,7 @@ namespace API.Services
             _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
         }
         public async Task<List<LogLeaveDTO>> GetLogLeaveDTOs()
         {
@@ -103,45 +108,47 @@ namespace API.Services
         }
         public async Task<int> LeaveDaysCalculation(DateTime start, DateTime end)
         {
-            int leaveDays = 0;
-            for(var i = start; i <= end; i = i.AddDays(1))
-            {
-                if(await _context.TheCalendars
-                    .Where(c =>
-                        c.IsWorking == 1 &&
-                        c.TheDay == i.Day &&
-                        c.TheMonth == i.Month &&
-                        c.TheYear == i.Year
-                        )
-                    .AnyAsync())
-                    leaveDays++;
-            }
+            
+            var leaveDays = await _context.TheCalendars.Where(c =>
+                    c.TheDate >= start && 
+                    c.TheDate <= end && 
+                    c.IsWorking == 1).ToListAsync();
 
-            return leaveDays;
+
+            return leaveDays.Count;
         }
 
         public async Task<int> GetLeaveDays(int staffId, int month, int year)
         {
             var logLeaves = await _context.LogLeaves
-                    .Where(c =>
-                        c.StaffId == staffId &&
-                        c.Status == "approved" &&
-                        month >= c.LeaveStart.Month &&
-                        month <= c.LeaveEnd.Month
-                        )
-                    .ToListAsync();
+                .Where(c => 
+                c.StaffId == staffId &&
+                c.Status.ToLower().Contains("approved") &&
+                c.LeaveStart.Month >= month &&
+                c.LeaveEnd.Month <= month)
+                .ToListAsync();
 
-            int logLeavesDays = 0;
+            int sum = 0;
 
-            foreach (var item in logLeaves)
+            foreach (var logLeave in logLeaves)
             {
-                int startDay = GetStartDay(month, item.LeaveStart);
-                int endDay = await GetEndDay(month, year, item.LeaveEnd);
+                if(logLeave.LeaveStart.Month == month && logLeave.LeaveEnd.Month == month  && logLeave.LeaveStart.Year == year)
+                {
+                    sum += (int)logLeave.LeaveDays;
+                }
+                else
+                {
+                    var startDate = GetStartDay(month, logLeave.LeaveStart);
+                    var endDate = GetEndDay(month, logLeave.LeaveEnd);
 
-                logLeavesDays += (endDay - startDay) + 1;
+                    var days = await _theCalendarService.GetWorkingDays(startDate, endDate);
+                    
+                    sum += days.Count;
+                }
             }
 
-            return logLeavesDays;
+
+            return (int)sum;
         }
 
         public async Task<int> GetLeavesHours(int staffId, int month, int year)
@@ -159,91 +166,97 @@ namespace API.Services
 
             foreach (var item in logLeaves)
             {
-                int startDay = GetStartDay(month, item.LeaveStart);
-                int endDay = await GetEndDay(month, year, item.LeaveEnd);
+                DateTime startDay = GetStartDay(month, item.LeaveStart);
+                DateTime endDay = GetEndDay(month,  item.LeaveEnd);
 
-                leaveHours += (endDay - startDay) + 1;
+                leaveHours += (endDay.Day - startDay.Day) + 1;
             }
 
             return leaveHours * 8;
         }
 
-        public int GetStartDay(int month, DateTime start)
+        public DateTime GetStartDay(int month, DateTime start)
         {
             if (month < 1 || month > 12)
             {
                 _logger.LogCritical("error at month");
-                return 0;
+                throw new ArgumentException("Invalid Month");
             }
-            if(month < start.Month)
+            if (month < start.Month)
             {
                 _logger.LogCritical("error at month");
-                return 0;
+                throw new ArgumentException("Invalid Month");
+
             }
 
             if (month == start.Month)
             {
                 _logger.LogCritical(start.Day.ToString());
-                return start.Day;
+                return start;
             }
             else
             {
-                _logger.LogCritical(1.ToString());
-
-                return 1;
+                _logger.LogCritical("1");
+                DateTime firstDateOfMonth = new DateTime(start.Year, start.Month, 1);
+                return firstDateOfMonth;
             }
         }
 
-        public async Task<int> GetEndDay(int month, int year, DateTime end)
+        public DateTime GetEndDay(int month, DateTime end)
         {
             if (month < 1 || month > 12)
             {
                 _logger.LogCritical("error at month");
-                return 0;
+                throw new ArgumentException("Invalid Month");
             }
 
             if (month > end.Month)
             {
                 _logger.LogCritical("error at month");
-                return 0;
+                throw new ArgumentException("Invalid Month");
             }
 
             if (month == end.Month)
             {
                 _logger.LogCritical(end.Day.ToString());
-                return end.Day;
+                return end;
             }
             else
             {
-                var lastDayOfMonth = await _context.TheCalendars
-                                     .Where(c =>
-                                        c.TheMonth == month &&
-                                        c.TheYear == year)
-                                    .OrderByDescending(c => c.TheDay)
-                                    .FirstOrDefaultAsync();
+                int daysInMonth = DateTime.DaysInMonth(end.Year, month);
 
-                var lastDay = lastDayOfMonth.TheDay;
+                DateTime lastDayOfMonth = new DateTime(end.Year, month, daysInMonth);
 
-                _logger.LogCritical("End Day: " + lastDay.ToString());
-
-                return (int)lastDay;
+                return lastDayOfMonth;
             }
         }
 
-        public async Task DemoDate(int month, DateTime start, DateTime end)
-        {
-            var year = 2023;
-
-
-            GetStartDay(month, start);
-
-            await GetEndDay(month, year, end);
-        }
 
         public async Task<LogLeaveDTO> CreateLogLeave(int staffId, LogLeaveCreationDTO logLeaveCreationDTO)
         {
 
             var user = await GetUserLogLeave(staffId);
+
+            var salaryPerDay = await _personnelContractService.BasicSalaryOneDayOfMonth(
+                staffId,
+                logLeaveCreationDTO.LeaveStart.Month,
+                logLeaveCreationDTO.LeaveStart.Year);
+
+            var days = await LeaveDaysCalculation(logLeaveCreationDTO.LeaveStart, logLeaveCreationDTO.LeaveEnd);
+            logLeaveCreationDTO.LeaveDays = days;
+            logLeaveCreationDTO.LeaveHours = days * 8;
+            if (logLeaveCreationDTO.LeaveTypeId == 3)
+            {
+
+                logLeaveCreationDTO.Amount = salaryPerDay * days;
+            }
+            else
+            {
+                logLeaveCreationDTO.Amount = 0;
+
+            }
+            logLeaveCreationDTO.SalaryPerDay = salaryPerDay;
+
 
             var logLeave = _mapper.Map<LogLeave>(logLeaveCreationDTO);
 
@@ -256,5 +269,39 @@ namespace API.Services
 
             return returnLogLeave;
         }
+        public async Task<int> GetDeductedSalary(int staffId, int paidByDate, int month, int year)
+        {
+            var logLeaves = await _context.LogLeaves
+                .Where(c =>
+                c.StaffId == staffId &&
+                c.Status.Contains("approved") &&
+                c.LeaveTypeId == 3 &&
+                c.LeaveStart.Month <= month &&
+                c.LeaveEnd.Month >= month &&
+                c.LeaveStart.Year == year)
+                .ToListAsync();
+
+            var leaveDays = 0;
+
+            foreach (var item in logLeaves)
+            {
+                DateTime startDay = GetStartDay(month, item.LeaveStart);
+                DateTime endDay =  GetEndDay(month,  item.LeaveEnd);
+
+
+                var workingDays = await _theCalendarService
+                     .GetWorkingDays(startDay, endDay);
+
+                leaveDays = workingDays.Count;
+            }
+
+            int totalDeductedSalary = leaveDays * paidByDate;
+
+            return totalDeductedSalary;
+        }
+
+        
+
+
     }
 }

@@ -8,6 +8,7 @@ namespace API.DTOs.PayslipDTOs
     public class CompanyInsuranceDTO : InsuranceDTO
     {
         public decimal GrossSalary { get; set; }
-        public decimal Total { get; set; }
+        public decimal TotalInsurance { get; set; }
+        public decimal NetSalary { get; set;}
     }
 }
