@@ -6,6 +6,7 @@ using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace API.Controllers
 {
@@ -19,6 +20,7 @@ namespace API.Controllers
         private readonly UserInfoService _userInfoService;
         private readonly PersonnelContractService _personnelContractService;
         private readonly LogLeaveService _logLeaveService;
+        private readonly DepartmentService _departmentService;
 
         public PayslipController(
             SwpProjectContext context,
@@ -26,7 +28,8 @@ namespace API.Controllers
             PayslipService payslipService,
             UserInfoService userInfoService,
             PersonnelContractService personnelContractService,
-            LogLeaveService logLeaveService
+            LogLeaveService logLeaveService,
+            DepartmentService departmentService
             )
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -34,6 +37,7 @@ namespace API.Controllers
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
             _logLeaveService = logLeaveService ?? throw new ArgumentNullException(nameof(logLeaveService));
+            _departmentService = departmentService ?? throw new ArgumentNullException(nameof(departmentService));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
         }
@@ -91,6 +95,63 @@ namespace API.Controllers
                 "GetPayslipByStaffIdAndPayslipId",
                 new { payslipId = returnValue.PayslipId, staffId = returnValue.StaffId },
                 returnValue);
+        }
+
+        [HttpPost("staffs")]
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForAllStaff([FromBody] DateTime dateTime)
+        {
+            var staffIds = await _userInfoService.GetStaffIdsAsync();
+
+
+            if (staffIds.Count == 0)
+            {
+                return BadRequest(new ProblemDetails { Title = "Staff does not exist", Status = 404 });
+            }
+
+            foreach (var staffId in staffIds)
+            {
+                if (!await _personnelContractService.IsValidContractExist(staffId))
+                {
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404 });
+                }
+
+                await _payslipService.AddPayslipToDatabase(
+                staffId,
+                dateTime.Month,
+                dateTime.Year);
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost("staffs/departments/{departmentId}")]
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForDepartments(int departmentId, [FromBody] DateTime dateTime)
+        {
+            if (!await _departmentService.IsDepartmentExist(departmentId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Department does not exist" , Status = 404});
+            }
+
+            var staffIds = await _userInfoService.GetStaffsOfDepartment(departmentId);
+
+            if(staffIds.Count == 0)
+            {
+                return BadRequest(new ProblemDetails { Title = "Staff does not exist", Status = 404 });
+            }
+
+            foreach (var staffId in staffIds)
+            {
+                if (!await _personnelContractService.IsValidContractExist(staffId))
+                {
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404 });
+                }
+
+                var returnValue = await _payslipService.AddPayslipToDatabase(
+                staffId,
+                dateTime.Month,
+                dateTime.Year);
+            }
+            return NoContent();
         }
 
     }

@@ -134,7 +134,7 @@ namespace API.Services
             var isLeaveDayDetailValid = await _context.LeaveDayDetails
                 .AnyAsync(c => c.StaffId == staffId &&
                         c.LeaveTypeId == leaveTypeId &&    
-                        c.DayLeft >  leaveDays);
+                        c.DayLeft >=  leaveDays);
 
             return isLeaveDayDetailValid;
         }
