@@ -127,8 +127,28 @@ namespace API.Controllers
     public async Task<ActionResult<TicketDto>> GetTicket(int id)
     {
       var ticket = await _context.Tickets
-          .ProjectTicketToTicketDto()
-          .FirstOrDefaultAsync(d => d.StaffId == id);
+        .Include(t => t.TicketType)
+        .Select(t => new TicketDto
+        {
+          TicketId = t.TicketId,
+          StaffId = t.StaffId,
+          StaffName = t.Staff.LastName + " " + t.Staff.FirstName,
+          TicketTypeId = t.TicketTypeId,
+          TicketName = t.TicketType.TicketName,
+          TicketReason = t.TicketReason,
+          TicketFile = t.TicketFile,
+          TicketStatus = t.TicketStatus,
+          Enable = t.Enable,
+          ProcessNote = t.ProcessNote,
+          RespondencesId = t.RespondencesId,
+          ResponsdenceName = _context.UserInfors
+            .Where(c => c.StaffId == t.RespondencesId)
+            .Select(s => s.LastName + " " + s.FirstName)
+            .FirstOrDefault(),
+          CreateAt = t.CreateAt,
+          ChangeStatusTime = t.ChangeStatusTime
+        })
+          .FirstOrDefaultAsync(d => d.TicketId == id);
       return ticket;
     }
 

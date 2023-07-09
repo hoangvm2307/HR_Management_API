@@ -27,7 +27,8 @@ namespace API.Controllers
       var staffSkills = await _context.StaffSkills
           .Include(s => s.Skill)
           .Include(s => s.Staff)
-          .Select(s => new StaffSkillDto{
+          .Select(s => new StaffSkillDto
+          {
             UniqueId = s.UniqueId,
             StaffId = s.StaffId,
             DepartmentName = s.Staff.Department.DepartmentName,
@@ -57,7 +58,7 @@ namespace API.Controllers
       return returnStaffSkill;
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> RemoveStaffSkill(int id)
     {
       var staffSkill = await _context.StaffSkills
@@ -74,7 +75,7 @@ namespace API.Controllers
       return BadRequest(new ProblemDetails { Title = "Problem removing Staff Skill" });
     }
 
-    [HttpGet("candidate/{id}")]
+    [HttpGet("staffskill/{id}")]
     public async Task<ActionResult<List<StaffSkillDto>>> GetStaffSkillsByCandidateId(int id)
     {
       var staffSkills = await _context.StaffSkills
@@ -163,7 +164,7 @@ namespace API.Controllers
         };
 
         _context.Skills.Add(existingSkill);
-        
+
         await _context.SaveChangesAsync();
       }
 
@@ -212,14 +213,14 @@ namespace API.Controllers
 
     //     return BadRequest(new ProblemDetails {Title = "Problem Update Staff Skill"});
     // }
-    [HttpPost("Update")]
+    [HttpPut]
     public async Task<IActionResult> UpdateStaffSkillAndSkill(StaffSkillUpdateDto staffSkillUpdateDto)
     {
       // Retrieve the staff skill record to update based on the provided data
       var staffSkill = await _context.StaffSkills
           .FirstOrDefaultAsync(s => s.UniqueId == staffSkillUpdateDto.UniqueId);
 
-      if (staffSkill != null) return NotFound("Staff Skill Not Found");
+      if (staffSkill == null) return NotFound("Staff Skill Not Found");
 
       // Update the Level property
       if (!string.IsNullOrWhiteSpace(staffSkillUpdateDto.Level))
@@ -247,12 +248,8 @@ namespace API.Controllers
         }
       }
 
-      var result = await _context.SaveChangesAsync() > 0;
-
-      // Return successful save changes
-      if (result) return Ok();
-
-      return BadRequest("Problem updating");
+      await _context.SaveChangesAsync();
+      return Ok();
     }
 
   }

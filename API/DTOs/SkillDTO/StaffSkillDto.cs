@@ -15,7 +15,5 @@ namespace API.DTOs.SkillDTO
     public string SkillName { get; set; }
     public string? Level { get; set; }
 
-
-
   }
 }

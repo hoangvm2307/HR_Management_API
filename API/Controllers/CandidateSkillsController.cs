@@ -73,7 +73,7 @@ namespace API.Controllers
       return returnStaffSkill;
     }
 
-    [HttpDelete]
+    [HttpDelete("{id}")]
     public async Task<ActionResult> RemoveCandidateSkill(int id)
     {
       var candidateSkill = await _context.CandidateSkills
