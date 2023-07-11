@@ -52,6 +52,9 @@ namespace API.Services
                                     .ToListAsync();
 
             var returnLogLeaves = _mapper.Map<List<LogLeaveDTO>>(logLeaves);
+            // returnLogLeaves = returnLogLeaves.Select(returnLogLeave => {
+            //     returnLogLeave.R
+            // })
             return returnLogLeaves;
         }
 
@@ -256,7 +259,7 @@ namespace API.Services
 
             }
             logLeaveCreationDTO.SalaryPerDay = salaryPerDay;
-
+            logLeaveCreationDTO.Status = "pending";
 
             var logLeave = _mapper.Map<LogLeave>(logLeaveCreationDTO);
 
