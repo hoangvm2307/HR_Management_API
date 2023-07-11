@@ -20,6 +20,8 @@ namespace API.DTOs.UserInforDTO
 
         public DateTime? CreateDate { get; set; }
 
+        public string ResponsdenceName { get; set; }
+
         public virtual LeaveTypeDto? LeaveType { get; set; }
     }
 }
