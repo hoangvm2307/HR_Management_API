@@ -185,6 +185,7 @@ namespace API.Services
         {
             var personnelContract = await _context.PersonnelContracts
                 .Where(c => c.StaffId == staffId && c.ContractStatus == true)
+
                 .FirstOrDefaultAsync();
 
             var standardWorkDays = await _context.TheCalendars
@@ -202,7 +203,7 @@ namespace API.Services
                 var basicSalary = personnelContract.Salary;
                 salaryOneDay = basicSalary / totalDays;
             }
-
+            Console.WriteLine("Here");
             return salaryOneDay;
         }
     }

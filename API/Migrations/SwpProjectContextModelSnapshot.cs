@@ -1357,19 +1357,31 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
+<<<<<<< HEAD
                             Id = "2010fdb6-a21e-4b61-a191-c6437ef93d5c",
+=======
+                            Id = "8a909f36-bd23-40d6-ab91-fdb12a951ffd",
+>>>>>>> Linh09
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
+<<<<<<< HEAD
                             Id = "c6110b7f-5f25-4aa5-867f-b05715e9d121",
+=======
+                            Id = "5f096456-655e-4868-ab18-20ed0172bada",
+>>>>>>> Linh09
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
+<<<<<<< HEAD
                             Id = "5917e8eb-5897-433c-89cc-efd0b257cfea",
+=======
+                            Id = "e9c76fbf-6097-41f7-b914-9724b4be220f",
+>>>>>>> Linh09
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

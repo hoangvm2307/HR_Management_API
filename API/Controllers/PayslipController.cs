@@ -87,8 +87,8 @@ namespace API.Controllers
 
             var returnValue = await _payslipService.AddPayslipToDatabase(
                 staffId, 
-                payslipInputCreationDto.DateTime.Month,
-                payslipInputCreationDto.DateTime.Year);
+                payslipInputCreationDto.Month,
+                payslipInputCreationDto.Year);
 
 
             return CreatedAtRoute(
@@ -98,7 +98,7 @@ namespace API.Controllers
         }
 
         [HttpPost("staffs")]
-        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForAllStaff([FromBody] DateTime dateTime)
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForAllStaff(PayslipInputCreationDto payslipInputCreationDto)
         {
             var staffIds = await _userInfoService.GetStaffIdsAsync();
 
@@ -117,15 +117,15 @@ namespace API.Controllers
 
                 await _payslipService.AddPayslipToDatabase(
                 staffId,
-                dateTime.Month,
-                dateTime.Year);
+                payslipInputCreationDto.Month,
+                payslipInputCreationDto.Year);
             }
 
             return NoContent();
         }
 
-        [HttpPost("staffs/departments/{departmentId}")]
-        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForDepartments(int departmentId, [FromBody] DateTime dateTime)
+        [HttpPost("departments/{departmentId}")]
+        public async Task<ActionResult<List<PayslipCreationDTO>>> CreatePayslipForDepartments(int departmentId, PayslipInputCreationDto  payslipInputCreationDto)
         {
             if (!await _departmentService.IsDepartmentExist(departmentId))
             {
@@ -148,8 +148,8 @@ namespace API.Controllers
 
                 var returnValue = await _payslipService.AddPayslipToDatabase(
                 staffId,
-                dateTime.Month,
-                dateTime.Year);
+                payslipInputCreationDto.Month,
+                payslipInputCreationDto.Year);
             }
             return NoContent();
         }
