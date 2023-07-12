@@ -1,6 +1,6 @@
-﻿namespace API.Services
+﻿namespace API.DTOs.PayslipDTOs
 {
-    public class PayslipInputCreationDto
+    public class PayslipCreationObject
     {
         public int Month { get; set; }
         public int Year { get; set; }

@@ -14,6 +14,6 @@ namespace API.DTOs.PayslipDTOs
 
         //public virtual Payslip? Payslip { get; set; }
 
-        //public virtual TaxList? TaxLevelNavigation { get; set; }
+        public virtual TaxListDTO? TaxLevelNavigation { get; set; }
     }
 }

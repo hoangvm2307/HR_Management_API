@@ -107,12 +107,12 @@ namespace API.Controllers
                 return BadRequest("Invalid ContractTypeId");
             }
 
-            if (!await _personnelContractService.IsContractTimeValid(
-                personnelContractCreationDTO.StartDate, 
-                personnelContractCreationDTO.EndDate))
-            {
-                return BadRequest("InValid DateTime");
-            }
+            //if (!await _personnelContractService.IsContractTimeValid(
+            //    personnelContractCreationDTO.StartDate, 
+            //    personnelContractCreationDTO.EndDate))
+            //{
+            //    return BadRequest("InValid DateTime");
+            //}
 
             if (await _personnelContractService.IsValidContractExist(staffId))
             {

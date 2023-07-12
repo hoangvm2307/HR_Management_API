@@ -199,9 +199,9 @@ namespace API.Data
             if (!context.OtTypes.Any())
             {
                 var otTypes = new List<OtType>() {
-                    new OtType{TypeName = "Làm thêm ngày trong tuần", TypePercentage = 2},
-                    new OtType{TypeName = "Làm thêm ngày cuối tuần", TypePercentage = 3},
-                    new OtType{TypeName = "Làm thêm ngày lễ", TypePercentage = 4}
+                    new OtType{TypeName = "Làm thêm ngày cuối tuần", TypePercentage = 2},
+                    new OtType{TypeName = "Làm thêm ngày lễ", TypePercentage = 3},
+                    new OtType{TypeName = "Làm thêm ngày tết        ", TypePercentage = 4}
                };
 
 
