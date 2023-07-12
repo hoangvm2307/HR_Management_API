@@ -1,5 +1,6 @@
 ﻿using API.DTOs.PayslipDTOs;
 using API.DTOs.PersonnelContractDTO;
+using API.DTOs.UserInforDTO;
 using API.Entities;
 using API.Extensions;
 using AutoMapper;
@@ -25,7 +26,7 @@ namespace API.Services
         private readonly TheCalendarService _theCalendarService;
 
         public PayslipService(
-            SwpProjectContext context, 
+            SwpProjectContext context,
             IMapper mapper,
             ILogger<PayslipService> logger,
             PersonnelContractService personnelContractService,
@@ -53,39 +54,33 @@ namespace API.Services
                 .Where(c => c.StaffId == staffId && c.AccountStatus == true)
                 .FirstOrDefaultAsync();
 
-            if (userInfo == null) 
+            if (userInfo == null)
             {
                 return null;
             }
 
-            var (payslipCreationDTO, result) = await GetPayslipCreationDtoOfStaff(staffId, month, year);
-
-            var payslipEntity = _mapper.Map<Payslip>(payslipCreationDTO);
-            //userInfo.Payslips.Add(payslipEntity);
+            var (payslipDTO, result) = await GetPayslipCreationDtoOfStaff(staffId, month, year);
 
 
             var payslipInfor = await _context.Payslips
-                //.Include(c => c.TaxDetails)
-                .Where(c => c.StaffId == staffId)
+                .Include(c => c.TaxDetails)
+                .Where(c => c.StaffId == staffId && c.PayslipId == payslipDTO.PayslipId)
                 .FirstOrDefaultAsync();
 
             foreach (var taxDetail in result)
             {
                 var taxDetailEntity = _mapper.Map<TaxDetail>(taxDetail);
 
-                Console.WriteLine(taxDetailEntity.ToString());
 
                 payslipInfor.TaxDetails.Add(taxDetailEntity);
             }
 
-
             await _context.SaveChangesAsync();
 
-            var returnPayslip = _mapper.Map<PayslipDTO>(payslipEntity);
 
-            return returnPayslip;
+            return payslipDTO;
         }
-        public async Task<(PayslipCreationDTO, List<TaxDetailCreationDTO> taxDetailDTOs)> GetPayslipCreationDtoOfStaff(
+        public async Task<(PayslipDTO, List<TaxDetailCreationDTO> taxDetailDTOs)> GetPayslipCreationDtoOfStaff(
                 int staffId,
                 int month,
                 int year
@@ -106,7 +101,7 @@ namespace API.Services
 
             //taxable Salary
             var standardTaxableSalary = personnelContract.TaxableSalary;
-            var actualTaxableSalary = standardTaxableSalary + allowancesSalary;
+            var actualTaxableSalary = standardTaxableSalary + allowancesSalary - leavesDeductedSalary;
 
 
 
@@ -154,7 +149,7 @@ namespace API.Services
 
 
             //Nguoi su dung lao dong tra
-            CompanyInsuranceDTO companyInsuranceDto = CompanyInsuranceCalculate(actualGrossSalary, (int)actualTaxableSalary );
+            CompanyInsuranceDTO companyInsuranceDto = CompanyInsuranceCalculate(actualGrossSalary, (int)actualTaxableSalary);
             int actualCompPaid = (int)(companyInsuranceDto.NetSalary + otSalary);
 
             PayslipCreationDTO payslipDto = new PayslipCreationDTO
@@ -181,7 +176,7 @@ namespace API.Services
                 NetActualSalary = actualNetSalary,
                 Bhxhcomp = (int?)companyInsuranceDto.SocialInsurance,
                 Bhytcomp = (int?)companyInsuranceDto.HealthInsurance,
-                Bhtncomp = (int?)companyInsuranceDto.UnemploymentInsurance, 
+                Bhtncomp = (int?)companyInsuranceDto.UnemploymentInsurance,
                 TotalCompInsured = (int?)companyInsuranceDto.TotalInsurance,
                 TotalCompPaid = actualCompPaid,
                 CreateAt = DateTime.UtcNow,
@@ -198,9 +193,9 @@ namespace API.Services
             userInfo.Payslips.Add(payslipEntity);
 
             await _context.SaveChangesAsync();
+            var returnPayslip = _mapper.Map<PayslipDTO>(payslipEntity);
 
-
-            return (payslipDto, result);
+            return (returnPayslip, result);
         }
 
         public async Task<int> TaxableIncomeCalculation(int salaryBeforeTax, int staffId)
@@ -222,9 +217,9 @@ namespace API.Services
 
         public static int CalculatePretaxEarning(InsuranceDTO Insurance, int actualGrossSalary)
         {
-            var totalInsurance = 
-                Insurance.SocialInsurance + 
-                Insurance.HealthInsurance + 
+            var totalInsurance =
+                Insurance.SocialInsurance +
+                Insurance.HealthInsurance +
                 Insurance.UnemploymentInsurance;
             return (int)(actualGrossSalary - totalInsurance);
         }
@@ -314,6 +309,7 @@ namespace API.Services
                 HealthInsurance = HealthInsuranceDeduction,
             };
 
+            Console.WriteLine("here");
             return InsuranceDeduction;
         }
 
@@ -365,9 +361,9 @@ namespace API.Services
         public async Task<int> GetNumberWeekDaysInMonth(int month, int year)
         {
             var weekDays = await _context.DateDimensions
-                .Where(c => 
-                    c.IsWeekend == 0 && 
-                    c.TheMonth == month && 
+                .Where(c =>
+                    c.IsWeekend == 0 &&
+                    c.TheMonth == month &&
                     c.TheYear == year)
                 .CountAsync();
 
@@ -377,8 +373,8 @@ namespace API.Services
         public async Task<int> GetNumberHolidaysInMonth(int month, int year)
         {
             var holidays = await _context.HolidayDimensions
-                .Where(c => 
-                c.TheDate.Month == month && 
+                .Where(c =>
+                c.TheDate.Month == month &&
                 c.TheDate.Year == year)
                 .CountAsync();
 
@@ -389,9 +385,9 @@ namespace API.Services
         public async Task<int> GetPaidByDate(int month, int year, int salary)
         {
             var StandardWorkDays = await _context.TheCalendars
-               .Where(c => 
-                    c.IsWeekend == 0 && 
-                    c.TheMonth == month && 
+               .Where(c =>
+                    c.IsWeekend == 0 &&
+                    c.TheMonth == month &&
                     c.TheYear == year)
                .CountAsync();
 
@@ -405,7 +401,7 @@ namespace API.Services
         {
             var logOtHours = await _context.LogOts
                 .Where(c =>
-                    c.StaffId == StaffId && 
+                    c.StaffId == StaffId &&
                     c.Status.ToLower().Equals("approved"))
                 .ToListAsync();
 
@@ -419,8 +415,8 @@ namespace API.Services
         public async Task<int> GetLogOtDays(int StaffId)
         {
             var logOtStaff = await _context.LogOts
-                .Where(c => 
-                    c.StaffId == StaffId && 
+                .Where(c =>
+                    c.StaffId == StaffId &&
                     c.Status.ToLower().Equals("approved"))
                 .ToListAsync();
 
@@ -468,7 +464,10 @@ namespace API.Services
         {
             var payslips = await _context.Payslips
                 .Include(c => c.Staff)
+                    //.ThenInclude(c => c.Department)
                 .Include(c => c.TaxDetails)
+                    .ThenInclude(c => c.TaxLevelNavigation)
+                .OrderByDescending(c => c.PayslipId) 
                 .ToListAsync();
 
             var payslipsDTO = _mapper.Map<List<PayslipDTO>>(payslips);
@@ -479,7 +478,9 @@ namespace API.Services
         {
             var payslips = await _context.Payslips
                 .Include(c => c.Staff)
+                    //.ThenInclude(c => c.Department)
                 .Include(c => c.TaxDetails)
+                    .ThenInclude(c => c.TaxLevelNavigation)
                 .Where(c => c.StaffId == staffId)
                 .ToListAsync();
 
@@ -487,17 +488,19 @@ namespace API.Services
             return finalPayslips;
         }
 
-        public async Task<bool> IsPayslipExist(int staffId,int payslipId)
+        public async Task<bool> IsPayslipExist(int staffId, int payslipId)
         {
             return await _context.Payslips
                 .AnyAsync(c => c.StaffId == staffId && c.PayslipId == payslipId);
         }
 
-        public async  Task<PayslipDTO> GetPayslipOfStaffByPayslipId(int staffId, int payslipId)
+        public async Task<PayslipDTO> GetPayslipOfStaffByPayslipId(int staffId, int payslipId)
         {
             var payslip = await _context.Payslips
                 .Include(c => c.Staff)
+    
                 .Include(c => c.TaxDetails)
+                .ThenInclude(c => c.TaxLevelNavigation)
                 .Where(c => c.StaffId == staffId && c.PayslipId == payslipId)
                 .FirstOrDefaultAsync();
 
@@ -540,13 +543,13 @@ namespace API.Services
             var otDays = await _logOtService.GetOtDays(staffId, month, year);
 
             var leaveDays = await _logLeaveService.GetLeaveDays(staffId, month, year);
-        
 
-            
+
+
 
             int totalWorkingDays = basicActualWorkDays + otDays - leaveDays;
 
-            if(totalWorkingDays < 0)
+            if (totalWorkingDays < 0)
             {
                 return 0;
             }
@@ -556,8 +559,8 @@ namespace API.Services
             }
         }
 
-        
-        
+
+
 
     }
 }

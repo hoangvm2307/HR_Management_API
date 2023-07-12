@@ -31,7 +31,7 @@ namespace API.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        [HttpGet]
+        [HttpGet("{staffId}")]
         public async Task<ActionResult<List<LeaveDayDetailDTO>>> GetDetailDTOsAsync(int staffId)
         {
             if (!await _userInfoService.IsUserExist(staffId))

@@ -31,9 +31,13 @@ namespace API.DTOs.PersonnelContractDTO
 
         public string? SalaryType { get; set; }
 
-        public string? PaidDateNote { get; set; }
-
         public string? ContractFile { get; set; }
+
+        public DateTime? CreateAt { get; set; }
+
+        public int? ResponseId { get; set; }
+
+        public DateTime? ChangeAt { get; set; }
 
         public bool ContractStatus { get; set; }
 

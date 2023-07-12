@@ -1,4 +1,5 @@
-﻿using API.Entities;
+﻿using API.DTOs.DepartmentDTO;
+using API.Entities;
 
 namespace API.DTOs.StaffDtos
 {
@@ -41,5 +42,7 @@ namespace API.DTOs.StaffDtos
         public bool? IsManager { get; set; }
 
         public bool? AccountStatus { get; set; }
+        public virtual DepartmentUserDto? Department { get; set; }
+
     }
 }

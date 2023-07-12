@@ -1357,19 +1357,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "6c825d1c-ea5c-4b69-b445-cf7b580f1849",
+                            Id = "8a909f36-bd23-40d6-ab91-fdb12a951ffd",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "d731d0e8-d810-4bf9-be70-affa1b6c27da",
+                            Id = "5f096456-655e-4868-ab18-20ed0172bada",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "b24d52ae-ac1d-41c3-94f1-46add623de1f",
+                            Id = "e9c76fbf-6097-41f7-b914-9724b4be220f",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
