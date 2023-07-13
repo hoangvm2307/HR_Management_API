@@ -275,7 +275,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF307E7A3C6");
+                        .HasName("PK__DateDime__AA552EF3C9ED2A4B");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -649,6 +649,10 @@ namespace API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("creatorId");
 
+                    b.Property<bool?>("Enable")
+                        .HasColumnType("bit")
+                        .HasColumnName("enable");
+
                     b.Property<int?>("FamilyDeduction")
                         .HasColumnType("int")
                         .HasColumnName("familyDeduction");
@@ -685,9 +689,9 @@ namespace API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("paidByDate");
 
-                    b.Property<bool?>("PayslipStatus")
-                        .HasColumnType("bit")
-                        .HasColumnName("payslipStatus");
+                    b.Property<DateTime?>("Payday")
+                        .HasColumnType("datetime")
+                        .HasColumnName("payday");
 
                     b.Property<int?>("PersonalIncomeTax")
                         .HasColumnType("int")
@@ -1370,43 +1374,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-<<<<<<< HEAD
-                            Id = "04d09505-1443-4c79-aa09-064fc8cad229",
-=======
-<<<<<<< HEAD
-                            Id = "2010fdb6-a21e-4b61-a191-c6437ef93d5c",
-=======
-                            Id = "8a909f36-bd23-40d6-ab91-fdb12a951ffd",
->>>>>>> Linh09
->>>>>>> master
+                            Id = "33cfa02d-ad6a-4ca0-a84a-86abaf291106",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-<<<<<<< HEAD
-                            Id = "fcd3e6cc-43f8-4997-a55c-e954a49f4f4d",
-=======
-<<<<<<< HEAD
-                            Id = "c6110b7f-5f25-4aa5-867f-b05715e9d121",
-=======
-                            Id = "5f096456-655e-4868-ab18-20ed0172bada",
->>>>>>> Linh09
->>>>>>> master
+                            Id = "070b1f9f-e915-4f94-805d-ac9255ec8734",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-<<<<<<< HEAD
-                            Id = "00b0d61b-54c4-4fc6-b1ee-38decadd1765",
-=======
-<<<<<<< HEAD
-                            Id = "5917e8eb-5897-433c-89cc-efd0b257cfea",
-=======
-                            Id = "e9c76fbf-6097-41f7-b914-9724b4be220f",
->>>>>>> Linh09
->>>>>>> master
+                            Id = "843f98dd-48eb-45f2-b847-233280096257",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
