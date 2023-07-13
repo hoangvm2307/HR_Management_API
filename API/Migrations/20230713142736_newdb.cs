@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class newDB : Migration
+    public partial class newdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -127,7 +127,7 @@ namespace API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__DateDime__AA552EF373208D78", x => x.uniqueId)
+                    table.PrimaryKey("PK__DateDime__AA552EF307E7A3C6", x => x.uniqueId)
                         .Annotation("SqlServer:Clustered", false);
                     table.UniqueConstraint("AK_DateDimension_TheDate", x => x.TheDate);
                 });
@@ -579,7 +579,10 @@ namespace API.Migrations
                     totalCompPaid = table.Column<int>(type: "int", nullable: true),
                     createAt = table.Column<DateTime>(type: "date", nullable: true),
                     changeAt = table.Column<DateTime>(type: "date", nullable: true),
-                    payslipStatus = table.Column<bool>(type: "bit", nullable: true)
+                    creatorId = table.Column<int>(type: "int", nullable: true),
+                    changerId = table.Column<int>(type: "int", nullable: true),
+                    payslipStatus = table.Column<bool>(type: "bit", nullable: true),
+                    status = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -740,9 +743,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "2010fdb6-a21e-4b61-a191-c6437ef93d5c", null, "Staff", "STAFF" },
-                    { "5917e8eb-5897-433c-89cc-efd0b257cfea", null, "HRManager", "HRMANAGER" },
-                    { "c6110b7f-5f25-4aa5-867f-b05715e9d121", null, "HRStaff", "HRSTAFF" }
+                    { "00b0d61b-54c4-4fc6-b1ee-38decadd1765", null, "HRManager", "HRMANAGER" },
+                    { "04d09505-1443-4c79-aa09-064fc8cad229", null, "Staff", "STAFF" },
+                    { "fcd3e6cc-43f8-4997-a55c-e954a49f4f4d", null, "HRStaff", "HRSTAFF" }
                 });
 
             migrationBuilder.CreateIndex(

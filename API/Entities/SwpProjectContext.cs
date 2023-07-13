@@ -207,7 +207,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
     modelBuilder.Entity<DateDimension>(entity =>
     {
       entity.HasKey(e => e.UniqueId)
-              .HasName("PK__DateDime__AA552EF373208D78")
+              .HasName("PK__DateDime__AA552EF307E7A3C6")
               .IsClustered(false);
 
       entity.ToTable("DateDimension");
@@ -430,9 +430,11 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.ChangeAt)
               .HasColumnType("date")
               .HasColumnName("changeAt");
+      entity.Property(e => e.ChangerId).HasColumnName("changerId");
       entity.Property(e => e.CreateAt)
               .HasColumnType("date")
               .HasColumnName("createAt");
+      entity.Property(e => e.CreatorId).HasColumnName("creatorId");
       entity.Property(e => e.FamilyDeduction).HasColumnName("familyDeduction");
       entity.Property(e => e.GrossActualSalary).HasColumnName("grossActualSalary");
       entity.Property(e => e.GrossStandardSalary).HasColumnName("grossStandardSalary");
@@ -449,6 +451,9 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.SelfDeduction).HasColumnName("selfDeduction");
       entity.Property(e => e.StaffId).HasColumnName("staffId");
       entity.Property(e => e.StandardWorkDays).HasColumnName("standardWorkDays");
+      entity.Property(e => e.Status)
+              .HasMaxLength(25)
+              .HasColumnName("status");
       entity.Property(e => e.TaxableSalary).HasColumnName("taxableSalary");
       entity.Property(e => e.TotalAllowance).HasColumnName("totalAllowance");
       entity.Property(e => e.TotalCompInsured).HasColumnName("totalCompInsured");
@@ -764,7 +769,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
               .HasForeignKey(d => d.DepartmentId)
               .HasConstraintName("FK_UserInfor_departmentId_departmentId");
 
-     entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
+      entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
                 .HasForeignKey<UserInfor>(d => d.Id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserInfor_userId_userId");

@@ -63,7 +63,13 @@ public partial class Payslip
 
     public DateTime? ChangeAt { get; set; }
 
+    public int? CreatorId { get; set; }
+
+    public int? ChangerId { get; set; }
+
     public bool? PayslipStatus { get; set; }
+
+    public string? Status { get; set; }
 
     public virtual UserInfor Staff { get; set; } = null!;
 
