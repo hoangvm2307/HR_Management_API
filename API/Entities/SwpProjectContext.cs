@@ -207,7 +207,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
     modelBuilder.Entity<DateDimension>(entity =>
     {
       entity.HasKey(e => e.UniqueId)
-              .HasName("PK__DateDime__AA552EF307E7A3C6")
+              .HasName("PK__DateDime__AA552EF3C9ED2A4B")
               .IsClustered(false);
 
       entity.ToTable("DateDimension");
@@ -435,6 +435,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
               .HasColumnType("date")
               .HasColumnName("createAt");
       entity.Property(e => e.CreatorId).HasColumnName("creatorId");
+      entity.Property(e => e.Enable).HasColumnName("enable");
       entity.Property(e => e.FamilyDeduction).HasColumnName("familyDeduction");
       entity.Property(e => e.GrossActualSalary).HasColumnName("grossActualSalary");
       entity.Property(e => e.GrossStandardSalary).HasColumnName("grossStandardSalary");
@@ -444,7 +445,9 @@ public partial class SwpProjectContext : IdentityDbContext<User>
       entity.Property(e => e.NetStandardSalary).HasColumnName("netStandardSalary");
       entity.Property(e => e.OtTotal).HasColumnName("otTotal");
       entity.Property(e => e.PaidByDate).HasColumnName("paidByDate");
-      entity.Property(e => e.PayslipStatus).HasColumnName("payslipStatus");
+      entity.Property(e => e.Payday)
+              .HasColumnType("datetime")
+              .HasColumnName("payday");
       entity.Property(e => e.PersonalIncomeTax).HasColumnName("personalIncomeTax");
       entity.Property(e => e.SalaryBeforeTax).HasColumnName("salaryBeforeTax");
       entity.Property(e => e.SalaryRecieved).HasColumnName("salaryRecieved");
