@@ -100,7 +100,7 @@ namespace API.Controllers
       {
         return NotFound();
       }
-
+ 
       if (await _leaveDayDetailService.IsLeaveDayDetailExist(staffId))
       {
         return BadRequest("Exist ");
