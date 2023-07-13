@@ -9,8 +9,6 @@ public partial class Payslip
 
     public int StaffId { get; set; }
 
-    public int PaidByDate { get; set; }
-
     public int? GrossStandardSalary { get; set; }
 
     public int? GrossActualSalary { get; set; }
