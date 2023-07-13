@@ -38,6 +38,7 @@ namespace API.Services
             var logOtList = await _context.LogOts
                     .Include(c => c.Staff)
                     .Include(c => c.OtType)
+                    .OrderByDescending(c => c.OtLogId)  
                     .ToListAsync();
             var returnLogOtList = _mapper.Map<List<LogOtDTO>>(logOtList);
             return returnLogOtList;

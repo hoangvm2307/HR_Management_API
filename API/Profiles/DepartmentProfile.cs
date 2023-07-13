@@ -13,6 +13,7 @@ namespace API.Profiles
         public DepartmentProfile()
         {
             CreateMap<DepartmentCreateDto, Department>().ReverseMap();
+            CreateMap<Department, DepartmentUserDto>().ReverseMap();
         }
     }
 }

@@ -58,34 +58,28 @@ namespace API.Services
         return null;
       }
 
-      var (payslipCreationDTO, result) = await GetPayslipCreationDtoOfStaff(staffId, month, year);
-
-      var payslipEntity = _mapper.Map<Payslip>(payslipCreationDTO);
-      //userInfo.Payslips.Add(payslipEntity);
+      var (payslipDTO, result) = await GetPayslipCreationDtoOfStaff(staffId, month, year);
 
 
       var payslipInfor = await _context.Payslips
-          //.Include(c => c.TaxDetails)
-          .Where(c => c.StaffId == staffId)
+          .Include(c => c.TaxDetails)
+          .Where(c => c.StaffId == staffId && c.PayslipId == payslipDTO.PayslipId)
           .FirstOrDefaultAsync();
 
       foreach (var taxDetail in result)
       {
         var taxDetailEntity = _mapper.Map<TaxDetail>(taxDetail);
 
-        Console.WriteLine(taxDetailEntity.ToString());
 
         payslipInfor.TaxDetails.Add(taxDetailEntity);
       }
 
-
       await _context.SaveChangesAsync();
 
-      var returnPayslip = _mapper.Map<PayslipDTO>(payslipEntity);
 
-      return returnPayslip;
+      return payslipDTO;
     }
-    public async Task<(PayslipCreationDTO, List<TaxDetailCreationDTO> taxDetailDTOs)> GetPayslipCreationDtoOfStaff(
+    public async Task<(PayslipDTO, List<TaxDetailCreationDTO> taxDetailDTOs)> GetPayslipCreationDtoOfStaff(
             int staffId,
             int month,
             int year
@@ -106,7 +100,7 @@ namespace API.Services
 
       //taxable Salary
       var standardTaxableSalary = personnelContract.TaxableSalary;
-      var actualTaxableSalary = standardTaxableSalary + allowancesSalary;
+      var actualTaxableSalary = standardTaxableSalary + allowancesSalary - leavesDeductedSalary;
 
 
 
@@ -198,9 +192,9 @@ namespace API.Services
       userInfo.Payslips.Add(payslipEntity);
 
       await _context.SaveChangesAsync();
+      var returnPayslip = _mapper.Map<PayslipDTO>(payslipEntity);
 
-
-      return (payslipDto, result);
+      return (returnPayslip, result);
     }
 
     public async Task<int> TaxableIncomeCalculation(int salaryBeforeTax, int staffId)
@@ -314,6 +308,7 @@ namespace API.Services
         HealthInsurance = HealthInsuranceDeduction,
       };
 
+      Console.WriteLine("here");
       return InsuranceDeduction;
     }
 
@@ -479,7 +474,9 @@ namespace API.Services
     {
       var payslips = await _context.Payslips
           .Include(c => c.Staff)
+          //.ThenInclude(c => c.Department)
           .Include(c => c.TaxDetails)
+              .ThenInclude(c => c.TaxLevelNavigation)
           .Where(c => c.StaffId == staffId)
           .ToListAsync();
 
@@ -497,7 +494,9 @@ namespace API.Services
     {
       var payslip = await _context.Payslips
           .Include(c => c.Staff)
+
           .Include(c => c.TaxDetails)
+          .ThenInclude(c => c.TaxLevelNavigation)
           .Where(c => c.StaffId == staffId && c.PayslipId == payslipId)
           .FirstOrDefaultAsync();
 

@@ -4,6 +4,7 @@ using API.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    partial class SwpProjectContextModelSnapshot : ModelSnapshot
+<<<<<<<< HEAD:API/Migrations/20230709131257_newDB.Designer.cs
+    [Migration("20230709131257_newDB")]
+========
+    [Migration("20230711221838_newDB")]
+>>>>>>>> Linh09:API/Migrations/20230711221838_newDB.Designer.cs
+    partial class newDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -275,7 +282,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF307E7A3C6");
+                        .HasName("PK__DateDime__AA552EF373208D78");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -637,17 +644,9 @@ namespace API.Migrations
                         .HasColumnType("date")
                         .HasColumnName("changeAt");
 
-                    b.Property<int?>("ChangerId")
-                        .HasColumnType("int")
-                        .HasColumnName("changerId");
-
                     b.Property<DateTime?>("CreateAt")
                         .HasColumnType("date")
                         .HasColumnName("createAt");
-
-                    b.Property<int?>("CreatorId")
-                        .HasColumnType("int")
-                        .HasColumnName("creatorId");
 
                     b.Property<int?>("FamilyDeduction")
                         .HasColumnType("int")
@@ -712,11 +711,6 @@ namespace API.Migrations
                     b.Property<double?>("StandardWorkDays")
                         .HasColumnType("float")
                         .HasColumnName("standardWorkDays");
-
-                    b.Property<string>("Status")
-                        .HasMaxLength(25)
-                        .HasColumnType("nvarchar(25)")
-                        .HasColumnName("status");
 
                     b.Property<int?>("TaxableSalary")
                         .HasColumnType("int")
@@ -1370,43 +1364,31 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-<<<<<<< HEAD
-                            Id = "04d09505-1443-4c79-aa09-064fc8cad229",
-=======
-<<<<<<< HEAD
+<<<<<<<< HEAD:API/Migrations/20230709131257_newDB.Designer.cs
                             Id = "2010fdb6-a21e-4b61-a191-c6437ef93d5c",
-=======
+========
                             Id = "8a909f36-bd23-40d6-ab91-fdb12a951ffd",
->>>>>>> Linh09
->>>>>>> master
+>>>>>>>> Linh09:API/Migrations/20230711221838_newDB.Designer.cs
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-<<<<<<< HEAD
-                            Id = "fcd3e6cc-43f8-4997-a55c-e954a49f4f4d",
-=======
-<<<<<<< HEAD
+<<<<<<<< HEAD:API/Migrations/20230709131257_newDB.Designer.cs
                             Id = "c6110b7f-5f25-4aa5-867f-b05715e9d121",
-=======
+========
                             Id = "5f096456-655e-4868-ab18-20ed0172bada",
->>>>>>> Linh09
->>>>>>> master
+>>>>>>>> Linh09:API/Migrations/20230711221838_newDB.Designer.cs
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-<<<<<<< HEAD
-                            Id = "00b0d61b-54c4-4fc6-b1ee-38decadd1765",
-=======
-<<<<<<< HEAD
+<<<<<<<< HEAD:API/Migrations/20230709131257_newDB.Designer.cs
                             Id = "5917e8eb-5897-433c-89cc-efd0b257cfea",
-=======
+========
                             Id = "e9c76fbf-6097-41f7-b914-9724b4be220f",
->>>>>>> Linh09
->>>>>>> master
+>>>>>>>> Linh09:API/Migrations/20230711221838_newDB.Designer.cs
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
