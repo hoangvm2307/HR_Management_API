@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class newdb : Migration
+    public partial class newDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -743,21 +743,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-<<<<<<< HEAD:API/Migrations/20230713142736_newdb.cs
-                    { "00b0d61b-54c4-4fc6-b1ee-38decadd1765", null, "HRManager", "HRMANAGER" },
-                    { "04d09505-1443-4c79-aa09-064fc8cad229", null, "Staff", "STAFF" },
-                    { "fcd3e6cc-43f8-4997-a55c-e954a49f4f4d", null, "HRStaff", "HRSTAFF" }
-=======
-<<<<<<<< HEAD:API/Migrations/20230709131257_newDB.cs
-                    { "2010fdb6-a21e-4b61-a191-c6437ef93d5c", null, "Staff", "STAFF" },
-                    { "5917e8eb-5897-433c-89cc-efd0b257cfea", null, "HRManager", "HRMANAGER" },
-                    { "c6110b7f-5f25-4aa5-867f-b05715e9d121", null, "HRStaff", "HRSTAFF" }
-========
-                    { "5f096456-655e-4868-ab18-20ed0172bada", null, "HRStaff", "HRSTAFF" },
-                    { "8a909f36-bd23-40d6-ab91-fdb12a951ffd", null, "Staff", "STAFF" },
-                    { "e9c76fbf-6097-41f7-b914-9724b4be220f", null, "HRManager", "HRMANAGER" }
->>>>>>>> Linh09:API/Migrations/20230711221838_newDB.cs
->>>>>>> master:API/Migrations/20230709131257_newDB.cs
+                    { "1f7ba9cb-2f13-4b2e-93ff-4448c9b6b64d", null, "HRStaff", "HRSTAFF" },
+                    { "bdfba82a-7bae-44e5-a29b-bc95d04913eb", null, "Staff", "STAFF" },
+                    { "e35988f0-f345-41c1-b301-294121aad817", null, "HRManager", "HRMANAGER" }
                 });
 
             migrationBuilder.CreateIndex(
