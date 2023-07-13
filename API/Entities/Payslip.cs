@@ -9,8 +9,6 @@ public partial class Payslip
 
     public int StaffId { get; set; }
 
-    public int PaidByDate { get; set; }
-
     public int? GrossStandardSalary { get; set; }
 
     public int? GrossActualSalary { get; set; }
@@ -67,7 +65,9 @@ public partial class Payslip
 
     public int? ChangerId { get; set; }
 
-    public bool? PayslipStatus { get; set; }
+    public DateTime? Payday { get; set; }
+
+    public bool? Enable { get; set; }
 
     public string? Status { get; set; }
 

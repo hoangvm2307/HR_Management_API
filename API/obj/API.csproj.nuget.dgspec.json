@@ -1,6 +1,7 @@
 {
   "format": 1,
   "restore": {
+<<<<<<< HEAD
     "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP\\HR_Management_API\\API\\API.csproj": {}
   },
   "projects": {
@@ -12,6 +13,19 @@
         "projectPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP\\HR_Management_API\\API\\API.csproj",
         "packagesPath": "C:\\Users\\Nguyen Huy Linh\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\Nguyen Huy Linh\\Desktop\\BE_SWP\\HR_Management_API\\API\\obj\\",
+=======
+    "D:\\HR_Management_API\\API\\API.csproj": {}
+  },
+  "projects": {
+    "D:\\HR_Management_API\\API\\API.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\HR_Management_API\\API\\API.csproj",
+        "projectName": "API",
+        "projectPath": "D:\\HR_Management_API\\API\\API.csproj",
+        "packagesPath": "C:\\Users\\hoangvmdeptrai\\.nuget\\packages\\",
+        "outputPath": "D:\\HR_Management_API\\API\\obj\\",
+>>>>>>> 4f8d1477c1b8d8264cace48886136e7fd5372ba7
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Nguyen Huy Linh\\AppData\\Roaming\\NuGet\\NuGet.Config",
