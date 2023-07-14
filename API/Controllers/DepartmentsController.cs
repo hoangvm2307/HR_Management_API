@@ -133,22 +133,24 @@ namespace API.Controllers
 
       await _context.SaveChangesAsync();
 
-      var userInfors = await _context.UserInfors
-          .Where(u => departmentDto.UserInfors.Select(d => d.StaffId).Contains(u.StaffId))
-          .ToListAsync();
-
-      userInfors = userInfors.Select(userInfor =>
+      if (departmentDto.UserInfors.Any())
       {
-        userInfor.DepartmentId = department.DepartmentId;
+        var userInfors = await _context.UserInfors
+            .Where(u => departmentDto.UserInfors.Select(d => d.StaffId).Contains(u.StaffId))
+            .ToListAsync();
 
-        return userInfor;
-      }).ToList();
+        userInfors = userInfors.Select(userInfor =>
+        {
+          userInfor.DepartmentId = department.DepartmentId;
+
+          return userInfor;
+        }).ToList();
+      }
 
       var result = await _context.SaveChangesAsync() > 0;
 
-      if (result) return CreatedAtAction(nameof(GetDepartment), new { id = department.DepartmentId }, department);
+      return CreatedAtAction(nameof(GetDepartment), new { id = department.DepartmentId }, department);
 
-      return BadRequest(new ProblemDetails { Title = "Problem adding item" });
     }
 
     [HttpPut("{id}")]
@@ -181,7 +183,7 @@ namespace API.Controllers
         userInfors = userInfors.Select(userInfor =>
         {
           userInfor.DepartmentId = id;
-
+          userInfor.IsManager = false;
           return userInfor;
         }).ToList();
 
