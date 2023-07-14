@@ -1,4 +1,4 @@
-using API.DTOs.LogOtDTOs;
+﻿using API.DTOs.LogOtDTOs;
 using API.DTOs.UserInforDTO;
 using API.Entities;
 using API.Services;
@@ -79,14 +79,14 @@ namespace API.Controllers
             }
 
             //Here 
-            //if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
-            //{
-            //    return BadRequest("Invalid DateTime");
-            //}
+            if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            {
+                return BadRequest(new ProblemDetails { Title = "Thời gian không hợp lệ"});
+            }
 
             if (!await _logOtService.IsContainHoliday(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
             {
-                return BadRequest("Not contain holiday");
+                return BadRequest(new ProblemDetails { Title= "Không tồn tại ngày nghỉ"});
             }
             var logOt = _mapper.Map<LogOt>(createLogOtDTO);
 

@@ -14,8 +14,6 @@ namespace API.DTOs.PayslipDTOs
 
         public int StaffId { get; set; }
 
-        public int PaidByDate { get; set; }
-
         public int? GrossStandardSalary { get; set; }
 
         public int? GrossActualSalary { get; set; }
@@ -68,7 +66,15 @@ namespace API.DTOs.PayslipDTOs
 
         public DateTime? ChangeAt { get; set; }
 
-        public bool? PayslipStatus { get; set; }
+        public int? CreatorId { get; set; }
+
+        public int? ChangerId { get; set; }
+
+        public DateTime? Payday { get; set; }
+
+        public bool? Enable { get; set; }
+
+        public string? Status { get; set; }
 
         public virtual StaffInfoDto Staff { get; set; } = null!;
 
