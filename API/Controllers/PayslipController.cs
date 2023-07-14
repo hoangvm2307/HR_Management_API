@@ -87,8 +87,7 @@ namespace API.Controllers
 
             var returnValue = await _payslipService.AddPayslipToDatabase(
                 staffId, 
-                payslipInputCreationDto.Month,
-                payslipInputCreationDto.Year);
+                payslipInputCreationDto);
 
 
             return CreatedAtRoute(
@@ -117,8 +116,7 @@ namespace API.Controllers
 
                 await _payslipService.AddPayslipToDatabase(
                 staffId,
-                payslipInputCreationDto.Month,
-                payslipInputCreationDto.Year);
+                payslipInputCreationDto);
             }
 
             return NoContent();
@@ -148,8 +146,7 @@ namespace API.Controllers
 
                 var returnValue = await _payslipService.AddPayslipToDatabase(
                 staffId,
-                payslipInputCreationDto.Month,
-                payslipInputCreationDto.Year);
+                payslipInputCreationDto);
             }
             return NoContent();
         }

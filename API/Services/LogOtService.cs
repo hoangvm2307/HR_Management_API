@@ -161,8 +161,8 @@ namespace API.Services
             logOtCreation.Days = days;
             logOtCreation.Amount = basicSalaryOfOneDay * percent * days;
 
-            logOtCreation.CreateAt = DateTime.Now; 
-            logOtCreation.ChangeStatusTime = DateTime.Now;
+            logOtCreation.CreateAt = DateTime.UtcNow.AddDays(7); 
+            logOtCreation.ChangeStatusTime = DateTime.UtcNow.AddDays(7); 
 
             var WeekendsEntity = _mapper.Map<LogOt>(logOtCreation);
 
