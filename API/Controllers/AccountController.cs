@@ -166,12 +166,13 @@ namespace API.Controllers
 
           var returnUnserInforsDto = _mapper.Map<UserInforDto>(userInfor);
 
-          Console.WriteLine("Hi There");
-          await _leaveDayDetailService.CreateLeaveDayDetail(returnUnserInforsDto.StaffId);
+          
+                    transaction.Commit();
+                    await _leaveDayDetailService.CreateLeaveDayDetail(returnUnserInforsDto.StaffId);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("Hi There");
 
-          transaction.Commit();
-
-          return StatusCode(201);
+                    return StatusCode(201);
         }
         catch (Exception)
         {
@@ -179,6 +180,7 @@ namespace API.Controllers
           _userManager.DeleteAsync(user);
           return BadRequest();
         }
+
       }
     }
 

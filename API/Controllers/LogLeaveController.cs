@@ -178,8 +178,8 @@ namespace API.Controllers
           c.StaffId == staffId &&
           c.LeaveLogId == logLeaveId)
           .FirstOrDefaultAsync();
-      logLeave.ChangeStatusTime = DateTime.Now;
-      var logLeavePath = _mapper.Map<LogLeaveUpdateDTO>(logLeave);
+      logLeave.ChangeStatusTime = DateTime.UtcNow.AddDays(7);
+      var logLeavePath = _mapper.Map<LogLeaveUpdateDTO>(logLeave);      
 
       patchDocument.ApplyTo(logLeavePath, ModelState);
 

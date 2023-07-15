@@ -210,6 +210,7 @@ namespace API.Services
                 ChangeAt = DateTime.UtcNow.AddHours(7),
                 CreatorId = payslipInputCreationDto.CreatorId,
                 ChangerId = payslipInputCreationDto.ChangerId,
+                Status = "pending",
                 Payday = payDay,
                 Enable = true
             };
