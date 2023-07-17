@@ -158,13 +158,13 @@ namespace API.Controllers
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> PatchCandidate(int id, [FromBody] JsonPatchDocument<CandidateUpdateDto> patchDocument)
+    public async Task<IActionResult> PatchCandidate(int id, [FromBody] JsonPatchDocument<CandidateDto> patchDocument)
     {
       var candidate = await _context.Candidates.FindAsync(id);
 
       if (candidate == null) return NotFound();
 
-      var candidateDto = _mapper.Map<CandidateUpdateDto>(candidate);
+      var candidateDto = _mapper.Map<CandidateDto>(candidate);
 
       patchDocument.ApplyTo(candidateDto, ModelState);
 
@@ -174,9 +174,8 @@ namespace API.Controllers
 
       var result = await _context.SaveChangesAsync() > 0;
 
-      if (result) return NoContent();
+      return NoContent();
 
-      return BadRequest("Problem Updating Candidate");
     }
     private async Task<string> GetSkillNameByIdAsync(int id)
     {

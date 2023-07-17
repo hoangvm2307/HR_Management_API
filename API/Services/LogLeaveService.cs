@@ -41,6 +41,14 @@ namespace API.Services
                               .ToListAsync();
 
       var returnLogLeaves = _mapper.Map<List<LogLeaveDTO>>(logleaves);
+      returnLogLeaves = returnLogLeaves.Select(returnLogLeave =>
+     {
+       returnLogLeave.ResponsdenceName = _context.UserInfors
+   .Where(c => c.StaffId == returnLogLeave.RespondencesId)
+   .Select(s => s.LastName + " " + s.FirstName)
+   .FirstOrDefault();
+       return returnLogLeave;
+     }).ToList();
       return returnLogLeaves;
     }
     public async Task<List<LogLeaveDTO>> GetLogLeavesByStaffId(int staffId)
@@ -85,6 +93,10 @@ namespace API.Services
                                   .Where(c => c.StaffId == staffId && c.LeaveLogId == logLeaveId)
                                   .FirstOrDefaultAsync();
       var returnLogLeave = _mapper.Map<LogLeaveDTO>(logLeave);
+      returnLogLeave.ResponsdenceName = _context.UserInfors
+   .Where(c => c.StaffId == returnLogLeave.RespondencesId)
+   .Select(s => s.LastName + " " + s.FirstName)
+   .FirstOrDefault();
       return returnLogLeave;
     }
     public async Task UpdateLogLeave(int staffId, int logLeaveId, LogLeaveUpdateDTO logLeaveUpdateDTO)
