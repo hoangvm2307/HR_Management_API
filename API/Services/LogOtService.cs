@@ -10,6 +10,7 @@ namespace API.Services
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<LogOtService> _logger;
         private readonly TheCalendarService _theCalendarService;
         private readonly UserInfoService _userInfoService;
         private readonly PayslipService _payslipService;
@@ -18,6 +19,7 @@ namespace API.Services
         public LogOtService(
             SwpProjectContext context,
             IMapper mapper,
+            ILogger<LogOtService> logger,
             TheCalendarService theCalendarService,
             UserInfoService userInfoService,
             //PayslipService payslipService,
@@ -27,6 +29,7 @@ namespace API.Services
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             //_payslipService = payslipService ?? throw new ArgumentNullException(nameof(payslipService));

@@ -79,7 +79,7 @@ namespace API.Controllers
             }
 
             //Here 
-            if (await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
             {
                 return BadRequest(new ProblemDetails { Title = "Thời gian không hợp lệ"});
             }
