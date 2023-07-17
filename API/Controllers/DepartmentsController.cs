@@ -242,13 +242,12 @@ namespace API.Controllers
         return BadRequest(ModelState);
       }
 
+
       _mapper.Map(departmentDto, department);
 
       var result = await _context.SaveChangesAsync() > 0;
 
-      if (result) return NoContent();
-
-      return BadRequest("Problem Updateing Department");
+      return NoContent();
     }
     private async Task<string> GetUserEmailByIdAsync(string userId)
     {

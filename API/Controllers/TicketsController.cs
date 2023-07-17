@@ -37,6 +37,7 @@ namespace API.Controllers
     {
       var ticketDtos = await _context.Tickets
           .Include(t => t.TicketType)
+          .Include(t => t.Staff)
           .Select(t => new TicketDto
           {
             TicketId = t.TicketId,
@@ -50,8 +51,13 @@ namespace API.Controllers
             ProcessNote = t.ProcessNote,
             RespondencesId = t.RespondencesId,
             Enable = t.Enable,
+            ResponsdenceName = _context.UserInfors
+              .Where(c => c.StaffId == t.RespondencesId)
+              .Select(s => s.LastName + " " + s.FirstName)
+              .FirstOrDefault(),
             CreateAt = t.CreateAt,
-            ChangeStatusTime = t.ChangeStatusTime
+            ChangeStatusTime = t.ChangeStatusTime,
+            UserInfor = t.Staff,
           })
           .ToListAsync();
 
