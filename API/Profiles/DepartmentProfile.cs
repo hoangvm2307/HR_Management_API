@@ -14,6 +14,7 @@ namespace API.Profiles
         {
             CreateMap<DepartmentCreateDto, Department>().ReverseMap();
             CreateMap<Department, DepartmentUserDto>().ReverseMap();
+            CreateMap<Department, DepartmentUpdateDto>().ReverseMap();
         }
     }
 }

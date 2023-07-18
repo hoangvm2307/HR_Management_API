@@ -35,12 +35,13 @@ namespace API.Controllers
         userInforDto.Position = userInforDto.IsManager ? "Manager" : "Staff";
         userInforDto.DepartmentName = GetDepartmentNameByIdAsync
                   (userInforDto.DepartmentId ?? 0).Result;
-
+        userInforDto.PersonnelContract = GetPersonnelContractById(userInforDto.StaffId).Result;
         userInforDto.StaffSkills = userInforDto.StaffSkills.Select(staffSkillDto =>
         {
           staffSkillDto.SkillName = GetSkillNameByIdAsync(staffSkillDto.SkillId).Result;
           return staffSkillDto;
         }).ToList();
+
         return userInforDto;
       }).ToList();
 
@@ -60,6 +61,7 @@ namespace API.Controllers
 
       userInforDto.Email = GetUserEmailByIdAsync(userInforDto.Id).Result;
       userInforDto.Position = userInforDto.IsManager ? "Manager" : "Staff";
+      userInforDto.PersonnelContract = GetPersonnelContractById(userInforDto.StaffId).Result;
       userInforDto.StaffSkills = userInforDto.StaffSkills.Select(staffSkillDto =>
         {
           staffSkillDto.SkillName = GetSkillNameByIdAsync(staffSkillDto.SkillId).Result;
@@ -186,6 +188,12 @@ namespace API.Controllers
     {
       var skill = await _context.Skills.FirstOrDefaultAsync(x => x.SkillId == id);
       return skill?.SkillName;
+    }
+
+    private async Task<PersonnelContract> GetPersonnelContractById(int id)
+    {
+      var personnelContract = await _context.PersonnelContracts.FirstOrDefaultAsync(x => x.StaffId == id);
+      return personnelContract;
     }
   }
 }
