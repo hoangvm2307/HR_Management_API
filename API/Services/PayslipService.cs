@@ -496,6 +496,7 @@ namespace API.Services
                 .ThenInclude(c => c.Department)
                 .Include(c => c.TaxDetails)
                 .ThenInclude(c => c.TaxLevelNavigation)
+                .OrderByDescending(c => c.PayslipId)
                 .ToListAsync();
 
             var payslipsDTO = _mapper.Map<List<PayslipDTO>>(payslips);
@@ -510,6 +511,7 @@ namespace API.Services
                 .Include(c => c.TaxDetails)
                     .ThenInclude(c => c.TaxLevelNavigation)
                 .Where(c => c.StaffId == staffId)
+                .OrderByDescending(c => c.PayslipId)
                 .ToListAsync();
 
             var finalPayslips = _mapper.Map<List<PayslipDTO>>(payslips);

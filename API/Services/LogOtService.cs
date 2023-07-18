@@ -10,6 +10,7 @@ namespace API.Services
     {
         private readonly SwpProjectContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<LogOtService> _logger;
         private readonly TheCalendarService _theCalendarService;
         private readonly UserInfoService _userInfoService;
         private readonly PayslipService _payslipService;
@@ -18,6 +19,7 @@ namespace API.Services
         public LogOtService(
             SwpProjectContext context,
             IMapper mapper,
+            ILogger<LogOtService> logger,
             TheCalendarService theCalendarService,
             UserInfoService userInfoService,
             //PayslipService payslipService,
@@ -27,6 +29,7 @@ namespace API.Services
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _theCalendarService = theCalendarService ?? throw new ArgumentNullException(nameof(theCalendarService));
             _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
             //_payslipService = payslipService ?? throw new ArgumentNullException(nameof(payslipService));
@@ -50,6 +53,7 @@ namespace API.Services
                 .Include(c => c.Staff)
                 .Include(c => c.OtType)
                 .Where(c => c.StaffId == StaffId)
+                    .OrderByDescending(c => c.OtLogId)  
                 .ToListAsync();
             var returnLogOtList = _mapper.Map<List<LogOtDTO>>(logOtList);
 
@@ -61,7 +65,9 @@ namespace API.Services
             var logOt = await _context.LogOts
                     .Include(c => c.Staff)
                     .Include(c => c.OtType)
-                    .Where(c => c.OtLogId == logOtId).FirstOrDefaultAsync();
+                    .OrderByDescending(c => c.OtLogId)  
+                    .Where(c => c.OtLogId == logOtId)
+                    .FirstOrDefaultAsync();
 
             var returnLogOt = _mapper.Map<LogOtDTO>(logOt);
 
@@ -161,8 +167,8 @@ namespace API.Services
             logOtCreation.Days = days;
             logOtCreation.Amount = basicSalaryOfOneDay * percent * days;
 
-            logOtCreation.CreateAt = DateTime.UtcNow.AddDays(7); 
-            logOtCreation.ChangeStatusTime = DateTime.UtcNow.AddDays(7); 
+            logOtCreation.CreateAt = DateTime.UtcNow.AddHours(7); 
+            logOtCreation.ChangeStatusTime = DateTime.UtcNow.AddHours(7); 
 
             var WeekendsEntity = _mapper.Map<LogOt>(logOtCreation);
 
@@ -207,7 +213,7 @@ namespace API.Services
 
         public async Task<bool> IsDateTimeValid(DateTime startDate, DateTime endDate)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow.AddHours(7);
 
             if (startDate < now || now > endDate)
             {

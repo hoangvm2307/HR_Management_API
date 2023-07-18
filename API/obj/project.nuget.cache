@@ -1,6 +1,8 @@
 {
   "version": 2,
+ 
   "dgSpecHash": "yDJt6FGDQO64xvGXjWEIean+6uTqdcQ89rDkRatE2g+XKQ/fhDLCaxlVS8cNktWJSgou5suYnyrrfdMlW/sRdg==",
+ 
   "success": true,
   "projectFilePath": "D:\\HR_Management_API\\API\\API.csproj",
   "expectedPackageFiles": [

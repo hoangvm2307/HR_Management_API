@@ -62,9 +62,9 @@ namespace API.Controllers
         {
             if(!await _payslipService.IsPayslipExist(staffId, payslipId))
             {
-                return NotFound();
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại"});
             }
-
+           
             return await _payslipService.GetPayslipOfStaffByPayslipId(staffId, payslipId);
 
         }
@@ -82,7 +82,7 @@ namespace API.Controllers
 
             if (!await _personnelContractService.IsValidContractExist(staffId))
             {
-                return BadRequest(new ProblemDetails { Title= "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404});
+                return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng" });
             }
 
             var returnValue = await _payslipService.AddPayslipToDatabase(
@@ -104,14 +104,14 @@ namespace API.Controllers
 
             if (staffIds.Count == 0)
             {
-                return BadRequest(new ProblemDetails { Title = "Staff does not exist", Status = 404 });
+                return BadRequest(new ProblemDetails { Title = "Nhân viên không tồn tại"});
             }
 
             foreach (var staffId in staffIds)
             {
                 if (!await _personnelContractService.IsValidContractExist(staffId))
                 {
-                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404 });
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống"});
                 }
 
                 await _payslipService.AddPayslipToDatabase(
@@ -127,7 +127,7 @@ namespace API.Controllers
         {
             if (!await _departmentService.IsDepartmentExist(departmentId))
             {
-                return BadRequest(new ProblemDetails { Title = "Department does not exist" , Status = 404});
+                return BadRequest(new ProblemDetails { Title = "Phòng ban không tồn tại" });
             }
 
             var staffIds = await _userInfoService.GetStaffsOfDepartment(departmentId);
@@ -141,7 +141,7 @@ namespace API.Controllers
             {
                 if (!await _personnelContractService.IsValidContractExist(staffId))
                 {
-                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống, vui lòng kiểm tra lại thông tin hợp đồng", Status = 404 });
+                    return BadRequest(new ProblemDetails { Title = "Người dùng không có hợp đồng hợp lệ trong hệ thống"});
                 }
 
                 var returnValue = await _payslipService.AddPayslipToDatabase(

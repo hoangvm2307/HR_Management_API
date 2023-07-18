@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(SwpProjectContext))]
-    [Migration("20230713162810_newDB")]
+    [Migration("20230716140945_newDB")]
     partial class newDB
     {
         /// <inheritdoc />
@@ -1373,19 +1373,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b6b8648f-402d-4226-b45d-67009f75a02b",
+                            Id = "007fc2b3-41d3-4413-90da-d0c2db5b8316",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "f95d3158-8d21-43f7-848a-b5ad66eae251",
+                            Id = "3db6c461-14fc-4ec2-a534-f99b83d35ad3",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "581ad94a-a753-422c-8a9e-2eca98c3dba7",
+                            Id = "83fb1399-671a-4f2b-85ab-23d0bdc23da6",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });
