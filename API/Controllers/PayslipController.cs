@@ -6,6 +6,7 @@ using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System;
 
 namespace API.Controllers
@@ -134,7 +135,7 @@ namespace API.Controllers
 
             if(staffIds.Count == 0)
             {
-                return BadRequest(new ProblemDetails { Title = "Staff does not exist", Status = 404 });
+                return BadRequest(new ProblemDetails { Title = "Nhân viên không tồn tại"});
             }
 
             foreach (var staffId in staffIds)
@@ -148,6 +149,33 @@ namespace API.Controllers
                 staffId,
                 payslipInputCreationDto);
             }
+            return NoContent();
+        }
+
+        [HttpPut("{payslipId}/staffs/{staffId}")]
+        public async Task<ActionResult<PayslipDTO>> UpdatePayslip(
+            int payslipId, 
+            int staffId,
+            PayslipUpdateDTO payslipUpdateDTO)
+        {
+            if (!await _userInfoService.IsUserExist(staffId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Người dùng không tồn tại" });
+            }
+            if(!await _payslipService.IsPayslipExist(staffId, payslipId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại"});
+            }
+
+            var payslip = await _context.Payslips
+                .Where(c => c.StaffId == staffId && c.PayslipId == payslipId)
+                .FirstOrDefaultAsync();
+
+            _mapper.Map(payslipUpdateDTO, payslip);
+
+            await _context.SaveChangesAsync();
+            
+
             return NoContent();
         }
 

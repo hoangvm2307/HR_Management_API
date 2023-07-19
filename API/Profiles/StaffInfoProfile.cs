@@ -9,7 +9,7 @@ namespace API.Profiles
     {
         public StaffInfoProfile()
         {
-            CreateMap<UserInfor, StaffInfoDto>();
+            CreateMap<UserInfor, StaffInfoDto>().ReverseMap();
         }
     }
 }
