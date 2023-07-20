@@ -1,4 +1,4 @@
-using API.DTOs.AllowanceDTO;
+﻿using API.DTOs.AllowanceDTO;
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
 using API.Services;
@@ -130,6 +130,27 @@ namespace API.Controllers
             }
 
             return NoContent();
+        }
+        [HttpDelete("{allowanceId}")]
+        public async Task<ActionResult<AllowanceDTO>> DeleteAllowance(int allowanceId)
+        {
+            var allowance = await _context.Allowances.Where(c => c.AllowanceId ==  allowanceId).FirstOrDefaultAsync();
+            if( allowance == null )
+            {
+                return BadRequest(new ProblemDetails { Title = "Không tồn tại phúc lợi" });
+            }
+
+
+
+            _context.Allowances.Remove(allowance);
+            await _context.SaveChangesAsync();
+
+            var deletedAllowanceDto = new AllowanceDTO
+            {
+                AllowanceId = allowance.AllowanceId,
+            };
+
+            return Ok(deletedAllowanceDto);
         }
 
         
