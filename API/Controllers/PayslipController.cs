@@ -4,8 +4,11 @@ using API.Entities;
 using API.Extensions;
 using API.Services;
 using AutoMapper;
+using Azure;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System;
 
 namespace API.Controllers
@@ -134,7 +137,7 @@ namespace API.Controllers
 
             if(staffIds.Count == 0)
             {
-                return BadRequest(new ProblemDetails { Title = "Staff does not exist", Status = 404 });
+                return BadRequest(new ProblemDetails { Title = "Nhân viên không tồn tại"});
             }
 
             foreach (var staffId in staffIds)
@@ -148,6 +151,71 @@ namespace API.Controllers
                 staffId,
                 payslipInputCreationDto);
             }
+            return NoContent();
+        }
+
+        [HttpPut("{payslipId}")]
+        public async Task<ActionResult<PayslipDTO>> UpdatePayslip(
+            int payslipId, 
+            PayslipUpdateDTO payslipUpdateDTO)
+        {
+            if(!await _payslipService.IsPayslipExist(payslipId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại"});
+            }
+
+            var payslip = await _context.Payslips
+                .Where(c => c.PayslipId == payslipId)
+                .FirstOrDefaultAsync();
+            payslipUpdateDTO.ChangeAt = DateTime.UtcNow.AddHours(7);
+            _mapper.Map(payslipUpdateDTO, payslip);
+
+            await _context.SaveChangesAsync();
+            
+
+            return NoContent();
+        }
+
+        [HttpPatch("{payslipId}")]
+        public async Task<ActionResult<PayslipDTO>> PartialUpdatePayslip(
+            int payslipId,
+            JsonPatchDocument<PayslipUpdateDTO> jsonPatchDocument)
+        {
+            if (!await _payslipService.IsPayslipExist(payslipId))
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+            }
+
+            var payslip = await _context.Payslips
+                .Where(c => c.PayslipId == payslipId)
+                .FirstOrDefaultAsync();
+            
+            if(payslip == null)
+            {
+                return BadRequest(new ProblemDetails { Title = "Bảng lương không tồn tại" });
+
+            }
+
+            payslip.ChangeAt = DateTime.UtcNow.AddHours(7);
+
+            var payslipPatch = _mapper.Map<PayslipUpdateDTO>(payslip);
+
+            jsonPatchDocument.ApplyTo(payslipPatch, ModelState);
+
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+
+            }
+            if (!TryValidateModel(payslipPatch))
+            {
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(payslipPatch, payslip);
+
+            await _context.SaveChangesAsync();
+
             return NoContent();
         }
 
