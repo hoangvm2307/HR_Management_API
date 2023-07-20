@@ -11,10 +11,10 @@ namespace API.DTOs.PayslipDTOs
 
 
         public DateTime? ChangeAt { get; set; }
-        public int? ChangerId { get; set; }
+        public int ChangerId { get; set; }
         public bool? Enable { get; set; }
 
-        public string? Status { get; set; }
+        public string Status { get; set; }
 
         //public virtual UserInfor Staff { get; set; } = null!;
 

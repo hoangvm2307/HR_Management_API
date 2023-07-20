@@ -524,6 +524,12 @@ namespace API.Services
                 .AnyAsync(c => c.StaffId == staffId && c.PayslipId == payslipId);
         }
 
+        public async Task<bool> IsPayslipExist( int payslipId)
+        {
+            return await _context.Payslips
+                .AnyAsync(c =>  c.PayslipId == payslipId);
+        }
+
         public async Task<PayslipDTO> GetPayslipOfStaffByPayslipId(int staffId, int payslipId)
         {
             var payslip = await _context.Payslips
