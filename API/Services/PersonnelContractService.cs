@@ -125,7 +125,7 @@ namespace API.Services
     {
       if (start >= end)
       {
-        return false;
+        return false;   
       }
 
       if ((end - start).TotalDays < 30)
@@ -133,10 +133,10 @@ namespace API.Services
         return false;
       }
 
-      if (start < DateTime.Today)
-      {
-        return false;
-      }
+      //if (start < DateTime.Today)
+      //{
+      //  return false;
+      //}
       return true;
     }
 
