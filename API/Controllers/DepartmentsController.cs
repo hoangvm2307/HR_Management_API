@@ -136,7 +136,7 @@ namespace API.Controllers
       if (departmentDto.UserInfors.Any())
       {
         var userInfors = await _context.UserInfors
-            .Where(u => departmentDto.UserInfors.Select(d => d.StaffId).Contains(u.StaffId))
+            .Where(u => departmentDto.UserInfors.Select(d => d).Contains(u.StaffId))
             .ToListAsync();
 
         userInfors = userInfors.Select(userInfor =>
