@@ -6,10 +6,10 @@ using API.DTOs.UserInforDTO;
 
 namespace API.DTOs.DepartmentDTO
 {
-    public class DepartmentCreateDto
-    {
-        public string DepartmentName { get; set; }
-        public int? ManagerId { get; set; }
-        public List<UserInforDto>? UserInfors { get; set; }
-    }
+  public class DepartmentCreateDto
+  {
+    public string DepartmentName { get; set; }
+    public int? ManagerId { get; set; }
+    public int[] UserInfors { get; set; }
+  }
 }
