@@ -27,6 +27,8 @@ public partial class LogLeave
 
     public string? Status { get; set; }
 
+    public int? CreatorId { get; set; }
+
     public DateTime CreateAt { get; set; }
 
     public string? ProcessNote { get; set; }

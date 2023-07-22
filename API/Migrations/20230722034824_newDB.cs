@@ -127,7 +127,7 @@ namespace API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__DateDime__AA552EF34479B76F", x => x.uniqueId)
+                    table.PrimaryKey("PK__DateDime__AA552EF34AE22363", x => x.uniqueId)
                         .Annotation("SqlServer:Clustered", false);
                     table.UniqueConstraint("AK_DateDimension_TheDate", x => x.TheDate);
                 });
@@ -404,19 +404,19 @@ namespace API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     imageFile = table.Column<string>(type: "varchar(120)", unicode: false, maxLength: 120, nullable: true),
-                    lastName = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    firstName = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    lastName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
+                    firstName = table.Column<string>(type: "nvarchar(25)", maxLength: 25, nullable: true),
                     dob = table.Column<DateTime>(type: "date", nullable: true),
                     phone = table.Column<string>(type: "char(10)", unicode: false, fixedLength: true, maxLength: 10, nullable: true),
                     gender = table.Column<bool>(type: "bit", nullable: true),
                     address = table.Column<string>(type: "nvarchar(80)", maxLength: 80, nullable: true),
-                    country = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: true),
+                    country = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     citizenId = table.Column<string>(type: "char(12)", unicode: false, fixedLength: true, maxLength: 12, nullable: true),
                     departmentId = table.Column<int>(type: "int", nullable: true),
                     hireDate = table.Column<DateTime>(type: "date", nullable: true),
-                    bankAccount = table.Column<string>(type: "char(12)", unicode: false, fixedLength: true, maxLength: 12, nullable: true),
-                    bankAccountName = table.Column<string>(type: "char(30)", unicode: false, fixedLength: true, maxLength: 30, nullable: true),
-                    bank = table.Column<string>(type: "char(15)", unicode: false, fixedLength: true, maxLength: 15, nullable: true),
+                    bankAccount = table.Column<string>(type: "char(50)", unicode: false, fixedLength: true, maxLength: 50, nullable: true),
+                    bankAccountName = table.Column<string>(type: "char(50)", unicode: false, fixedLength: true, maxLength: 50, nullable: true),
+                    bank = table.Column<string>(type: "char(35)", unicode: false, fixedLength: true, maxLength: 35, nullable: true),
                     workTimeByYear = table.Column<int>(type: "int", nullable: true),
                     isManager = table.Column<bool>(type: "bit", nullable: true),
                     accountStatus = table.Column<bool>(type: "bit", nullable: true),
@@ -487,6 +487,7 @@ namespace API.Migrations
                     amount = table.Column<int>(type: "int", nullable: true),
                     description = table.Column<string>(type: "nvarchar(70)", maxLength: 70, nullable: true),
                     status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    creatorId = table.Column<int>(type: "int", nullable: true),
                     createAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     processNote = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
                     respondencesId = table.Column<int>(type: "int", nullable: true),
@@ -526,6 +527,7 @@ namespace API.Migrations
                     status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     processNote = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: true),
                     respondencesId = table.Column<int>(type: "int", nullable: true),
+                    creatorId = table.Column<int>(type: "int", nullable: true),
                     createAt = table.Column<DateTime>(type: "datetime", nullable: false),
                     changeStatusTime = table.Column<DateTime>(type: "datetime", nullable: true),
                     enable = table.Column<bool>(type: "bit", nullable: true)
@@ -743,9 +745,9 @@ namespace API.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "09501809-954c-4ab6-b58a-2a135466bd29", null, "HRManager", "HRMANAGER" },
-                    { "ac5fb1c5-d9b2-4170-93f2-c951d088f246", null, "HRStaff", "HRSTAFF" },
-                    { "fee6b590-1b48-4546-9dc7-95ba315c104e", null, "Staff", "STAFF" }
+                    { "39b98bae-e56a-47c7-83bf-08f1b78fa1c8", null, "HRManager", "HRMANAGER" },
+                    { "476d3c75-eaf6-4cc4-a31b-987f74eef8c7", null, "HRStaff", "HRSTAFF" },
+                    { "56f15470-e38c-4301-ad2c-1376653126b2", null, "Staff", "STAFF" }
                 });
 
             migrationBuilder.CreateIndex(

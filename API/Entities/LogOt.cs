@@ -31,6 +31,8 @@ public partial class LogOt
 
     public int? RespondencesId { get; set; }
 
+    public int? CreatorId { get; set; }
+
     public DateTime CreateAt { get; set; }
 
     public DateTime? ChangeStatusTime { get; set; }
