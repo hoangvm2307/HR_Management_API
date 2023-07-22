@@ -275,7 +275,7 @@ namespace API.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UniqueId")
-                        .HasName("PK__DateDime__AA552EF34479B76F");
+                        .HasName("PK__DateDime__AA552EF34AE22363");
 
                     SqlServerKeyBuilderExtensions.IsClustered(b.HasKey("UniqueId"), false);
 
@@ -429,6 +429,10 @@ namespace API.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("createAt");
 
+                    b.Property<int?>("CreatorId")
+                        .HasColumnType("int")
+                        .HasColumnName("creatorId");
+
                     b.Property<string>("Description")
                         .HasMaxLength(70)
                         .HasColumnType("nvarchar(70)")
@@ -510,6 +514,10 @@ namespace API.Migrations
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("datetime")
                         .HasColumnName("createAt");
+
+                    b.Property<int?>("CreatorId")
+                        .HasColumnType("int")
+                        .HasColumnName("creatorId");
 
                     b.Property<int?>("Days")
                         .HasColumnType("int")
@@ -1237,23 +1245,23 @@ namespace API.Migrations
                         .HasColumnName("address");
 
                     b.Property<string>("Bank")
-                        .HasMaxLength(15)
+                        .HasMaxLength(35)
                         .IsUnicode(false)
-                        .HasColumnType("char(15)")
+                        .HasColumnType("char(35)")
                         .HasColumnName("bank")
                         .IsFixedLength();
 
                     b.Property<string>("BankAccount")
-                        .HasMaxLength(12)
+                        .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("char(12)")
+                        .HasColumnType("char(50)")
                         .HasColumnName("bankAccount")
                         .IsFixedLength();
 
                     b.Property<string>("BankAccountName")
-                        .HasMaxLength(30)
+                        .HasMaxLength(50)
                         .IsUnicode(false)
-                        .HasColumnType("char(30)")
+                        .HasColumnType("char(50)")
                         .HasColumnName("bankAccountName")
                         .IsFixedLength();
 
@@ -1265,8 +1273,8 @@ namespace API.Migrations
                         .IsFixedLength();
 
                     b.Property<string>("Country")
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
                         .HasColumnName("country");
 
                     b.Property<int?>("DepartmentId")
@@ -1278,8 +1286,8 @@ namespace API.Migrations
                         .HasColumnName("dob");
 
                     b.Property<string>("FirstName")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)")
                         .HasColumnName("firstName");
 
                     b.Property<bool?>("Gender")
@@ -1305,8 +1313,8 @@ namespace API.Migrations
                         .HasColumnName("isManager");
 
                     b.Property<string>("LastName")
-                        .HasMaxLength(15)
-                        .HasColumnType("nvarchar(15)")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)")
                         .HasColumnName("lastName");
 
                     b.Property<string>("Phone")
@@ -1370,19 +1378,19 @@ namespace API.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fee6b590-1b48-4546-9dc7-95ba315c104e",
+                            Id = "56f15470-e38c-4301-ad2c-1376653126b2",
                             Name = "Staff",
                             NormalizedName = "STAFF"
                         },
                         new
                         {
-                            Id = "ac5fb1c5-d9b2-4170-93f2-c951d088f246",
+                            Id = "476d3c75-eaf6-4cc4-a31b-987f74eef8c7",
                             Name = "HRStaff",
                             NormalizedName = "HRSTAFF"
                         },
                         new
                         {
-                            Id = "09501809-954c-4ab6-b58a-2a135466bd29",
+                            Id = "39b98bae-e56a-47c7-83bf-08f1b78fa1c8",
                             Name = "HRManager",
                             NormalizedName = "HRMANAGER"
                         });

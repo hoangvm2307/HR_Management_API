@@ -73,7 +73,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-         base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<IdentityRole>()
             .HasData(
@@ -207,7 +207,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
         modelBuilder.Entity<DateDimension>(entity =>
         {
             entity.HasKey(e => e.UniqueId)
-                .HasName("PK__DateDime__AA552EF34479B76F")
+                .HasName("PK__DateDime__AA552EF34AE22363")
                 .IsClustered(false);
 
             entity.ToTable("DateDimension");
@@ -320,6 +320,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
             entity.Property(e => e.CreateAt)
                 .HasColumnType("datetime")
                 .HasColumnName("createAt");
+            entity.Property(e => e.CreatorId).HasColumnName("creatorId");
             entity.Property(e => e.Description)
                 .HasMaxLength(70)
                 .HasColumnName("description");
@@ -367,6 +368,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
             entity.Property(e => e.CreateAt)
                 .HasColumnType("datetime")
                 .HasColumnName("createAt");
+            entity.Property(e => e.CreatorId).HasColumnName("creatorId");
             entity.Property(e => e.Days).HasColumnName("days");
             entity.Property(e => e.Enable).HasColumnName("enable");
             entity.Property(e => e.LogEnd)
@@ -718,17 +720,17 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 .HasMaxLength(80)
                 .HasColumnName("address");
             entity.Property(e => e.Bank)
-                .HasMaxLength(15)
+                .HasMaxLength(35)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("bank");
             entity.Property(e => e.BankAccount)
-                .HasMaxLength(12)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("bankAccount");
             entity.Property(e => e.BankAccountName)
-                .HasMaxLength(30)
+                .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsFixedLength()
                 .HasColumnName("bankAccountName");
@@ -738,14 +740,14 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 .IsFixedLength()
                 .HasColumnName("citizenId");
             entity.Property(e => e.Country)
-                .HasMaxLength(12)
+                .HasMaxLength(20)
                 .HasColumnName("country");
             entity.Property(e => e.DepartmentId).HasColumnName("departmentId");
             entity.Property(e => e.Dob)
                 .HasColumnType("date")
                 .HasColumnName("dob");
             entity.Property(e => e.FirstName)
-                .HasMaxLength(15)
+                .HasMaxLength(25)
                 .HasColumnName("firstName");
             entity.Property(e => e.Gender).HasColumnName("gender");
             entity.Property(e => e.HireDate)
@@ -757,7 +759,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 .HasColumnName("imageFile");
             entity.Property(e => e.IsManager).HasColumnName("isManager");
             entity.Property(e => e.LastName)
-                .HasMaxLength(15)
+                .HasMaxLength(25)
                 .HasColumnName("lastName");
             entity.Property(e => e.Phone)
                 .HasMaxLength(10)
@@ -771,8 +773,7 @@ public partial class SwpProjectContext : IdentityDbContext<User>
                 .HasForeignKey(d => d.DepartmentId)
                 .HasConstraintName("FK_UserInfor_departmentId_departmentId");
 
-          
-            entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
+           entity.HasOne(d => d.User).WithOne(p => p.UserInfor)
                 .HasForeignKey<UserInfor>(d => d.Id)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserInfor_userId_userId");
