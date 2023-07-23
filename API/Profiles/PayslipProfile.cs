@@ -1,54 +1,55 @@
-using API.DTOs.DepartmentDTO;
-using API.DTOs.LeaveTypeDTO;
-using API.DTOs.LogOtDTOs;
-using API.DTOs.PayslipDTOs;
-using API.DTOs.PersonnelContractDTO;
-using API.DTOs.TicketDTO;
+    using API.DTOs.DepartmentDTO;
+    using API.DTOs.LeaveTypeDTO;
+    using API.DTOs.LogOtDTOs;
+    using API.DTOs.PayslipDTOs;
+    using API.DTOs.PersonnelContractDTO;
+    using API.DTOs.TicketDTO;
 
-using API.Entities;
-using AutoMapper;
+    using API.Entities;
+    using API.RequestHelpers;
+    using AutoMapper;
 
-namespace API.Profiles
-{
-    public class PayslipProfile : Profile
+    namespace API.Profiles
     {
-        public PayslipProfile()
+        public class PayslipProfile : Profile
         {
-            CreateMap<Payslip, PayslipDTO>().ReverseMap();
-            CreateMap<Ticket, TicketDto>().ReverseMap();
+            public PayslipProfile()
+            {
+                CreateMap<Payslip, PayslipDTO>();
+                CreateMap<PayslipDTO, Payslip>();
+
+                CreateMap<Ticket, TicketDto>().ReverseMap();
             
-            CreateMap<PersonnelContract, PersonnelContractDTO>().ReverseMap();
-            CreateMap<ContractType, ContractTypeDTO>();
-            CreateMap<Allowance, AllowanceDTO>();
-            CreateMap<AllowanceType, AllowanceTypeDTO>().ReverseMap();
+                CreateMap<PersonnelContract, PersonnelContractDTO>().ReverseMap();
+                CreateMap<ContractType, ContractTypeDTO>();
+                CreateMap<Allowance, AllowanceDTO>();
+                CreateMap<AllowanceType, AllowanceTypeDTO>().ReverseMap();
 
-            CreateMap<SalaryType, SalaryTypeDTO>();
+                CreateMap<SalaryType, SalaryTypeDTO>();
 
-            CreateMap<LogOt, LogOtDTO>();
-            CreateMap<LogOtCreationDTO, LogOt>();
-            CreateMap<LogOtUpdateDTO, LogOt>();
-            CreateMap<LogOt, LogOtUpdateDTO>();
+                CreateMap<LogOt, LogOtDTO>();
+                CreateMap<LogOtCreationDTO, LogOt>();
+                CreateMap<LogOtUpdateDTO, LogOt>();
+                CreateMap<LogOt, LogOtUpdateDTO>();
             
-            CreateMap<Payslip, PayslipDTO>();
-            CreateMap<PayslipCreationDTO, Payslip>();
-            CreateMap<PayslipDTO, Payslip>();
+                CreateMap<PayslipCreationDTO, Payslip>();
 
-            CreateMap<PayslipUpdateDTO, Payslip>().ReverseMap();
+                CreateMap<PayslipUpdateDTO, Payslip>().ReverseMap();
 
-            CreateMap<TaxDetail, TaxDetailDTO>().ReverseMap();
-            CreateMap<TaxDetailCreationDTO, TaxDetail>().ReverseMap();
-            CreateMap<TaxList, TaxListDTO>();
+                CreateMap<TaxDetail, TaxDetailDTO>().ReverseMap();
+                CreateMap<TaxDetailCreationDTO, TaxDetail>().ReverseMap();
+                CreateMap<TaxList, TaxListDTO>();
 
-            CreateMap<Ticket, TicketDto>();
-            CreateMap<TicketDto, Ticket>();
+                CreateMap<Ticket, TicketDto>();
+                CreateMap<TicketDto, Ticket>();
 
-            // CreateMap<Department, DepartmentDto>();
-            // CreateMap<DepartmentDto, Department>();
+                // CreateMap<Department, DepartmentDto>();
+                // CreateMap<DepartmentDto, Department>();
 
-            //CreateMap<UserInfor, DepartmentUserInforDto>();
-            CreateMap<UserInfor, DepartmentUserInforDto>().ReverseMap();
-            CreateMap<Department, DepartmentDto>();
+                //CreateMap<UserInfor, DepartmentUserInforDto>();
+                CreateMap<UserInfor, DepartmentUserInforDto>().ReverseMap();
+                CreateMap<Department, DepartmentDto>();
             
+            }
         }
     }
-}

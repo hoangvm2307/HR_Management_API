@@ -2,6 +2,7 @@
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
 using API.Extensions;
+using API.RequestHelpers;
 using API.Services;
 using AutoMapper;
 using Azure;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using System;
+using System.Text.Json;
 
 namespace API.Controllers
 {
@@ -47,9 +49,16 @@ namespace API.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<PayslipDTO>>> GetPayslips()
+        public async Task<ActionResult<PagedList<PayslipDTO>>> GetPayslips(
+            [FromQuery]PayslipParams payslipParams
+            )
         {
-            return await _payslipService.GetPayslipAsync();
+            var payslips = await _payslipService.GetPayslipAsync(payslipParams);
+
+            Response.AddPaginationHeader(payslips.MetaData);
+
+            return payslips;
+
         }
 
         
@@ -219,5 +228,16 @@ namespace API.Controllers
             return NoContent();
         }
 
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilter()
+        {
+            var departments = await _context.Payslips
+                .Include(c => c.Staff)
+                .ThenInclude(c => c.Department)
+                .Select(c => c.Staff.Department.DepartmentName)
+                .Distinct()
+                .ToListAsync();
+            return Ok(departments);
+        }
     }
 }

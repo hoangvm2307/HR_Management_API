@@ -3,7 +3,9 @@ using API.DTOs.PayslipDTOs;
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
 using API.Extensions;
+using API.RequestHelpers;
 using AutoMapper;
+using Azure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Logging;
@@ -489,18 +491,28 @@ namespace API.Services
                 .AnyAsync(c => c.StaffId == staffId && c.ContractId == contractId && c.ContractStatus == true);
         }
 
-        public async Task<List<PayslipDTO>> GetPayslipAsync()
+        public async Task<PagedList<PayslipDTO>> GetPayslipAsync(
+            PayslipParams payslipParams
+            )
         {
-            var payslips = await _context.Payslips
+            var payslips = _context.Payslips
                 .Include(c => c.Staff)
                 .ThenInclude(c => c.Department)
                 .Include(c => c.TaxDetails)
                 .ThenInclude(c => c.TaxLevelNavigation)
-                .OrderByDescending(c => c.PayslipId)
-                .ToListAsync();
+                .Sort(payslipParams.OrderBy)
+                .Search(payslipParams.SearchTerm)
+                .Filter(payslipParams.Departments)
+                .AsQueryable();
 
-            var payslipsDTO = _mapper.Map<List<PayslipDTO>>(payslips);
-            return payslipsDTO;
+            var returnPayslips = await PagedList<Payslip>.ToPagedList(
+                payslips,
+                payslipParams.PageNumber, payslipParams.PageSize);
+
+            var mappedPayslips = returnPayslips.Select(p => _mapper.Map<PayslipDTO>(p)).ToList();
+            var finalPayslips = new PagedList<PayslipDTO>(mappedPayslips, returnPayslips.MetaData.TotalCount, payslipParams.PageNumber, payslipParams.PageSize);
+
+            return finalPayslips;
         }
 
         public async Task<List<PayslipDTO>> GetPayslipOfStaff(int staffId)
