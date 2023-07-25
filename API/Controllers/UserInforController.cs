@@ -60,6 +60,8 @@ namespace API.Controllers
       var userInforDto = _mapper.Map<UserInforDto>(userInfor);
 
       userInforDto.Email = GetUserEmailByIdAsync(userInforDto.Id).Result;
+      userInforDto.DepartmentName = GetDepartmentNameByIdAsync
+                 (userInforDto.DepartmentId ?? 0).Result;
       userInforDto.Position = userInforDto.IsManager ? "Manager" : "Staff";
       userInforDto.PersonnelContract = GetPersonnelContractById(userInforDto.StaffId).Result;
       userInforDto.StaffSkills = userInforDto.StaffSkills.Select(staffSkillDto =>
@@ -116,38 +118,7 @@ namespace API.Controllers
 
       return CreatedAtAction(nameof(GetUserInforById), new { id = userInfor.StaffId }, userInfor);
     }
-    // [HttpPost]
-    // public async Task<ActionResult> CreateUserInfor([FromBody] UserInforDto userInforDto)
-    // {
-    //     var userInfor = new UserInfor
-    //     {
-    //         Id = user.Id,
-    //         LastName = userInforDto.LastName,
-    //         FirstName = userInforDto.FirstName,
-    //         Dob = userInforDto.Dob,
-    //         Gender = userInforDto.Gender,
-    //         Address = userInforDto.Address,
-    //         Country = userInforDto.Country,
-    //         CitizenId = userInforDto.CitizenId,
-    //         DepartmentId = userInforDto.DepartmentId,
-    //         Position = userInforDto.Position,
-    //         HireDate = userInforDto.HireDate,
-    //         BankAccount = userInforDto.BankAccount,
-    //         BankAccountName = userInforDto.BankAccountName,
-    //         Bank = userInforDto.Bank,
-    //         WorkTimeByYear = userInforDto.WorkTimeByYear,
-    //         AccountStatus = userInforDto.AccountStatus
-    //     };
-    //     _context.UserInfors.Add(userInfor);
-    //     if(await _context.SaveChangesAsync() > 0)
-    //     {
-    //         return StatusCode(201);
-    //     }
 
-    //     if(result) return CreatedAtAction(nameof(GetUserInforById), new {id = userInforDto.StaffId}, userInforDto);
-
-    //     return BadRequest(new ProblemDetails {Title = "Problem adding user"});
-    // }
 
     [HttpPatch("{id}")]
     public async Task<IActionResult> PatchUserInfor(int id, [FromBody] JsonPatchDocument<UserInforDto> patchDocument)
