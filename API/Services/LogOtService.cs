@@ -48,8 +48,8 @@ namespace API.Services
                     .Include(c => c.OtType)
                     .OrderByDescending(c => c.OtLogId)
                     .Search(logOtParams.SearchTerm)
-                .Filter(logOtParams.Departments)
-                .AsQueryable();
+                    .Filter(logOtParams.Departments)
+                    .AsQueryable();
 
             var returnLogOts = await PagedList<LogOt>.ToPagedList(
                 logOtList,
