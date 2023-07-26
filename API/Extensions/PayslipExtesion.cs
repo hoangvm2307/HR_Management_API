@@ -33,7 +33,7 @@ namespace API.Extensions
             return  query.Where(
                 c => c.Staff.FirstName.ToLower().Contains(lowerCaseSearchItem) ||
                 c.Staff.LastName.ToLower().Contains(lowerCaseSearchItem) ||
-                (c.Staff.FirstName + " " + c.Staff.LastName).ToLower().Contains(lowerCaseSearchItem));
+                (c.Staff.LastName + " " + c.Staff.FirstName).ToLower().Contains(lowerCaseSearchItem));
         }
 
         public static IQueryable<Payslip> Filter(this IQueryable<Payslip> query, string departments)

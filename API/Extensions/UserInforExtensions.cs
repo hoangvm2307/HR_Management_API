@@ -34,5 +34,35 @@ namespace API.Extensions
                 AccountStatus = userInfor.AccountStatus
             }).AsNoTracking();
         }
+
+        public static IQueryable<UserInfor> Search(
+            this IQueryable<UserInfor> query,
+            string searchTerm
+            )
+        {
+            if (string.IsNullOrEmpty(searchTerm)) { return query; }
+
+            var lowCaseSearchItem = searchTerm.Trim().ToLower();
+            return query.Where(
+                c => c.FirstName.ToLower().Contains(lowCaseSearchItem) ||
+                c.LastName.ToLower().Contains(lowCaseSearchItem) ||
+                (c.LastName + " " + c.FirstName.ToLower()).Contains(lowCaseSearchItem));
+        }
+
+        public static IQueryable<UserInfor> Filter(
+            this IQueryable<UserInfor> query,
+            string departments)
+        {
+            var departmentsList = new List<string>();
+
+            if (!string.IsNullOrEmpty(departments))
+            {
+                departmentsList.AddRange(departments.ToLower().Split(",").ToList());
+            }
+
+            query = query.Where(c => departmentsList.Count == 0 ||
+            departmentsList.Contains(c.Department.DepartmentName.ToLower()));
+            return query;
+        }
     }
 }

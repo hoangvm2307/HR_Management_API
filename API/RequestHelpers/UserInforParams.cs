@@ -1,11 +1,8 @@
 ﻿namespace API.RequestHelpers
 {
-    public class PayslipParams : PaginationPrams
+    public class UserInforParams : PaginationPrams
     {
-        public string? OrderBy { get; set; }
         public string? SearchTerm { get; set; }
-
         public string? Departments { get; set; }
-
     }
 }

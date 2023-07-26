@@ -1,6 +1,6 @@
 ﻿namespace API.RequestHelpers
 {
-    public class PaginationParms
+    public class PaginationPrams
     {
         private const int MaxPageSize = 50;
 
