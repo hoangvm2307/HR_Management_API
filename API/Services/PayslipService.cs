@@ -510,7 +510,12 @@ namespace API.Services
                 payslipParams.PageNumber, payslipParams.PageSize);
 
             var mappedPayslips = returnPayslips.Select(p => _mapper.Map<PayslipDTO>(p)).ToList();
-            var finalPayslips = new PagedList<PayslipDTO>(mappedPayslips, returnPayslips.MetaData.TotalCount, payslipParams.PageNumber, payslipParams.PageSize);
+
+            var finalPayslips = new PagedList<PayslipDTO>(
+                mappedPayslips, 
+                returnPayslips.MetaData.TotalCount, 
+                payslipParams.PageNumber, 
+                payslipParams.PageSize);
 
             return finalPayslips;
         }
