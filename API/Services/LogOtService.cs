@@ -1,5 +1,7 @@
 ﻿using API.DTOs.LogOtDTOs;
 using API.Entities;
+using API.Extensions;
+using API.RequestHelpers;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,15 +38,38 @@ namespace API.Services
             _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
         }
 
-        public async Task<List<LogOtDTO>> GetLogOts()
+        public async Task<PagedList<LogOtDTO>> GetLogOts(
+            LogOtParams logOtParams
+            )
         {
-            var logOtList = await _context.LogOts
+            var logOtList = _context.LogOts
                     .Include(c => c.Staff)
+                    .ThenInclude(c => c.Department)
                     .Include(c => c.OtType)
-                    .OrderByDescending(c => c.OtLogId)  
-                    .ToListAsync();
-            var returnLogOtList = _mapper.Map<List<LogOtDTO>>(logOtList);
-            return returnLogOtList;
+                    .OrderByDescending(c => c.OtLogId)
+                    .Search(logOtParams.SearchTerm)
+                .Filter(logOtParams.Departments)
+                .AsQueryable();
+
+            var returnLogOts = await PagedList<LogOt>.ToPagedList(
+                logOtList,
+                logOtParams.PageNumber,
+                logOtParams.PageSize
+                );
+            var mappedLogOts = returnLogOts.Select(p => _mapper.Map<LogOtDTO>(p)).ToList();
+
+            var finalLogOts = new PagedList<LogOtDTO>(
+                mappedLogOts,
+                returnLogOts.MetaData.TotalCount,
+                logOtParams.PageNumber,
+                logOtParams.PageSize);
+
+
+            //var mappedLogOts =  _mapper.Map<List<LogOtDTO>>(logOtList);
+
+
+
+            return finalLogOts;
         }
 
         public async Task<List<LogOtDTO>> GetLogOtByStaffIdAsync(int StaffId)
@@ -53,7 +78,7 @@ namespace API.Services
                 .Include(c => c.Staff)
                 .Include(c => c.OtType)
                 .Where(c => c.StaffId == StaffId)
-                    .OrderByDescending(c => c.OtLogId)  
+                    .OrderByDescending(c => c.OtLogId)
                 .ToListAsync();
             var returnLogOtList = _mapper.Map<List<LogOtDTO>>(logOtList);
 
@@ -65,7 +90,7 @@ namespace API.Services
             var logOt = await _context.LogOts
                     .Include(c => c.Staff)
                     .Include(c => c.OtType)
-                    .OrderByDescending(c => c.OtLogId)  
+                    .OrderByDescending(c => c.OtLogId)
                     .Where(c => c.OtLogId == logOtId)
                     .FirstOrDefaultAsync();
 
@@ -86,7 +111,7 @@ namespace API.Services
             await AddLogOt(staffId, logOtCreationDTO, WeekendDays);
             await AddLogOt(staffId, logOtCreationDTO, Holidays);
             await AddLogOt(staffId, logOtCreationDTO, HolidaysAndWeekends);
-          
+
             return;
         }
 
@@ -104,7 +129,7 @@ namespace API.Services
                 return;
             }
 
-            if(!await _userInfoService.IsUserExist(staffId))
+            if (!await _userInfoService.IsUserExist(staffId))
             {
                 return;
             }
@@ -143,9 +168,9 @@ namespace API.Services
         }
 
         private async Task AddToDatabase(
-            int staffId, 
-            LogOtCreationDTO logOtCreation, 
-            int type, 
+            int staffId,
+            LogOtCreationDTO logOtCreation,
+            int type,
             List<TheCalendar> list)
         {
             DateTime startDay = (DateTime)list.First().TheDate;
@@ -167,8 +192,8 @@ namespace API.Services
             logOtCreation.Days = days;
             logOtCreation.Amount = basicSalaryOfOneDay * percent * days;
 
-            logOtCreation.CreateAt = DateTime.UtcNow.AddHours(7); 
-            logOtCreation.ChangeStatusTime = DateTime.UtcNow.AddHours(7); 
+            logOtCreation.CreateAt = DateTime.UtcNow.AddHours(7);
+            logOtCreation.ChangeStatusTime = DateTime.UtcNow.AddHours(7);
 
             var WeekendsEntity = _mapper.Map<LogOt>(logOtCreation);
 
@@ -195,7 +220,7 @@ namespace API.Services
                 return 0;
             }
 
-            if (theCalendar.Percent ==  (decimal)2.0)
+            if (theCalendar.Percent == (decimal)2.0)
             {
                 return 1;
             }
@@ -203,7 +228,7 @@ namespace API.Services
             {
                 return 2;
             }
-            else if(theCalendar.Percent == (decimal)4.0)
+            else if (theCalendar.Percent == (decimal)4.0)
             {
                 return 3;
             }
@@ -229,15 +254,15 @@ namespace API.Services
             }
         }
 
-       
+
 
         public async Task<bool> IsContainHoliday(DateTime start, DateTime end)
         {
             var IsContainHoliday = false;
-            for(DateTime i = start; i <= end; i = i.AddDays(1))
+            for (DateTime i = start; i <= end; i = i.AddDays(1))
             {
                 IsContainHoliday = await _context.TheCalendars.AnyAsync(c => c.TheDate == i && c.Percent != 1);
-                if(IsContainHoliday)
+                if (IsContainHoliday)
                 {
                     break;
                 }
@@ -263,7 +288,7 @@ namespace API.Services
                 c.LogStart < endDate && c.LogEnd > startDate
                 );
             }
-            else if(logOtId == null)
+            else if (logOtId == null)
             {
                 isDuplicate = await _context.LogOts.AnyAsync(c =>
                 c.StaffId == staffId &&
@@ -275,7 +300,7 @@ namespace API.Services
         }
         public async Task UpdateLogOt(int staffId, int logOtId, LogOtUpdateDTO logOtUpdateDTO)
         {
-            var logOt =  await _context.LogOts
+            var logOt = await _context.LogOts
                                         .Where(c => c.StaffId == staffId && c.OtLogId == logOtId)
                                         .FirstOrDefaultAsync();
 
@@ -289,8 +314,8 @@ namespace API.Services
         public async Task<int> GetOtDays(int staffId, int month, int year)
         {
             var logOts = await _context.LogOts
-                .Where(c => 
-                    c.StaffId == staffId && 
+                .Where(c =>
+                    c.StaffId == staffId &&
                     c.LogStart.Month == month &&
                     c.LogStart.Year == year &&
                     c.Status == "approved")
@@ -304,16 +329,16 @@ namespace API.Services
         public async Task<int> OtSalary(int staffId, int month, int year)
         {
             var logOts = await _context.LogOts
-                .Where(c => 
-                    c.StaffId == staffId && 
-                    c.LogStart.Month == month && 
+                .Where(c =>
+                    c.StaffId == staffId &&
+                    c.LogStart.Month == month &&
                     c.LogStart.Year == year &&
                     c.Status.ToLower().Equals("approved"))
                 .ToListAsync();
 
             var OtSalary = logOts.Sum(c => c.Amount);
 
-            if(OtSalary != null)
+            if (OtSalary != null)
             {
                 return (int)OtSalary;
             }

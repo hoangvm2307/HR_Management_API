@@ -1,6 +1,8 @@
 using System.IO;
 using API.DTOs.CandidateDTO;
 using API.Entities;
+using API.Extensions;
+using API.RequestHelpers;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -16,37 +18,54 @@ namespace API.Controllers
       _mapper = mapper;
       _context = context;
     }
-    [HttpGet]
-    public async Task<ActionResult<List<CandidateDto>>> GetCandidates()
-    {
-      var candidates = await _context.Candidates
-      .Include(c => c.CandidateSkills)
-      .ToListAsync();
-
-      if (candidates == null) return NotFound();
-
-      var candidateDtos = _mapper.Map<List<CandidateDto>>(candidates);
-
-      candidateDtos = candidateDtos.Select(candidateDto =>
-      {
-        candidateDto.DepartmentId = _context.Departments.Where
-          (d => d.DepartmentName.Trim().ToLower().Equals
-            (candidateDto.Department.Trim().ToLower())).
-            Select(d => d.DepartmentId).FirstOrDefault();
-
-        candidateDto.CandidateSkills = candidateDto.CandidateSkills.Select(candidateSkillDto =>
+        [HttpGet]
+        public async Task<ActionResult<PagedList<CandidateDto>>> GetCandidates(
+        [FromQuery] CandidateParams candidateParams
+        )
         {
-          candidateSkillDto.SkillName = GetSkillNameByIdAsync(candidateSkillDto.SkillId).Result;
-          return candidateSkillDto;
-        }).ToList();
-        return candidateDto;
-      }).ToList();
+            var candidates = _context.Candidates
+            .Include(c => c.CandidateSkills)
+            .OrderByDescending(c => c.CandidateId)
+            .Search(candidateParams.SearchTerm)
+            .Filter(candidateParams.Departments)
+            .AsQueryable();
+
+            var returnCandidates = await PagedList<Candidate>.ToPagedList(
+                candidates,
+                candidateParams.PageNumber,
+                candidateParams.PageSize
+                );
+
+            var mappedCandidates = returnCandidates.Select(p => _mapper.Map<CandidateDto>(p)).ToList();
 
 
-      return candidateDtos;
-    }
+            //var candidateDtos = _mapper.Map<List<CandidateDto>>(candidates);
 
-    [HttpGet("{id}", Name = "GetCandidateById")]
+            mappedCandidates = mappedCandidates.Select(candidateDto =>
+              {
+                  candidateDto.DepartmentId = _context.Departments.Where
+                    (d => d.DepartmentName.Trim().ToLower().Equals
+                      (candidateDto.Department.Trim().ToLower())).
+                      Select(d => d.DepartmentId).FirstOrDefault();
+
+                  candidateDto.CandidateSkills = candidateDto.CandidateSkills.Select(candidateSkillDto =>
+                  {
+                      candidateSkillDto.SkillName = GetSkillNameByIdAsync(candidateSkillDto.SkillId).Result;
+                      return candidateSkillDto;
+                  }).ToList();
+                  return candidateDto;
+              }).ToList();
+
+            var finalCandidates = new PagedList<CandidateDto>(
+                mappedCandidates,
+                returnCandidates.MetaData.TotalCount,
+                candidateParams.PageNumber,
+                candidateParams.PageSize);
+
+            return finalCandidates;
+        }
+
+        [HttpGet("{id}", Name = "GetCandidateById")]
     public async Task<ActionResult<CandidateDto>> GetCandidateById(int id)
     {
       var candidate = await _context.Candidates
@@ -182,5 +201,15 @@ namespace API.Controllers
       var skill = await _context.Skills.FirstOrDefaultAsync(x => x.SkillId == id);
       return skill?.SkillName;
     }
-  }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> Filter()
+        {
+            var departments = await _context.Candidates
+                .Select(c => c.Department)
+                .Distinct()
+                .ToListAsync();
+            return Ok(departments);
+        }
+    }
 }

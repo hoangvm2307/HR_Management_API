@@ -1,5 +1,6 @@
 using API.DTOs.PersonnelContractDTO;
 using API.Entities;
+using API.RequestHelpers;
 using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
@@ -31,14 +32,16 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<PersonnelContractDTO>>> GetPersonnelContracts()
+        public async Task<ActionResult<List<PersonnelContractDTO>>> GetPersonnelContracts(
+            [FromQuery]ContractParams contractParams
+            )
         {
-            var personnelContracts = await _personnelContractService.GetPersonnelContractsAsync();
+            var personnelContracts = await _personnelContractService.GetPersonnelContractsAsync(contractParams);
+
+            Response.AddPaginationHeader(personnelContracts.MetaData);
 
             return personnelContracts;
         }
-
-
 
         [HttpGet("{staffId}", Name = "GetPersonnelContractByStaffId")]
         public async Task<ActionResult<List<PersonnelContractDTO>>> GetPersonnelContractByStaffId(int staffId)
@@ -239,5 +242,16 @@ namespace API.Controllers
             return await _context.SaveChangesAsync() >= 0;
         }
 
+        [HttpGet("filters")]
+        public async Task<IActionResult> Filter()
+        {
+            var departments = await _context.PersonnelContracts
+                .Include(c => c.Staff)
+                .ThenInclude(c => c.Department)
+                .Select(c => c.Staff.Department.DepartmentName)
+                .Distinct()
+                .ToListAsync();
+            return Ok(departments);
+        }
     }
 }

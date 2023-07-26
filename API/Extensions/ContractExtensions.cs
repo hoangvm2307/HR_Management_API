@@ -1,17 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using API.Entities;
+﻿using API.Entities;
 
 namespace API.Extensions
 {
-    public static class LogOtExtensions
+    public static class ContractExtensions
     {
-        public static IQueryable<LogOt> Search(
-            this IQueryable<LogOt> query,
+        public static IQueryable<PersonnelContract> Search(
+            this IQueryable<PersonnelContract> query,
             string searchTerm)
         {
             if (string.IsNullOrEmpty(searchTerm)) return query;
@@ -26,8 +20,8 @@ namespace API.Extensions
 
         }
 
-        public static IQueryable<LogOt> Filter(
-            this IQueryable<LogOt> query,
+        public static IQueryable<PersonnelContract> Filter(
+            this IQueryable<PersonnelContract> query,
             string departments)
         {
             var departmentList = new List<string>();
@@ -41,7 +35,6 @@ namespace API.Extensions
 
             return query;
         }
-
 
     }
 }
