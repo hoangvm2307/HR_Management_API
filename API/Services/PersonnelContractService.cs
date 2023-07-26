@@ -1,5 +1,7 @@
 ﻿using API.DTOs.PersonnelContractDTO;
 using API.Entities;
+using API.Extensions;
+using API.RequestHelpers;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,18 +27,33 @@ namespace API.Services
       _userInfoService = userInfoService ?? throw new ArgumentNullException(nameof(userInfoService));
     }
 
-    public async Task<List<PersonnelContractDTO>> GetPersonnelContractsAsync()
+    public async Task<PagedList<PersonnelContractDTO>> GetPersonnelContractsAsync(
+        ContractParams contractParams)
     {
-      var personnelContracts = await _context.PersonnelContracts
+      var personnelContracts =  _context.PersonnelContracts
                                       .Include(c => c.ContractType)
                                       .Include(c => c.Allowances)
                                       .ThenInclude(c => c.AllowanceType)
                                       .Include(c => c.Staff)
-                                      .ToListAsync();
+                                      .Search(contractParams.SearchTerm)
+                                      .Filter(contractParams.Departments)
+                                      .OrderByDescending(c => c.ContractId)
+                                      .AsQueryable();
 
-      var finalPersonnelContracts = _mapper.Map<List<PersonnelContractDTO>>(personnelContracts);
+            var returnContracts = await PagedList<PersonnelContract>.ToPagedList(
+                personnelContracts,
+                contractParams.PageNumber,
+                contractParams.PageSize);
 
-      return finalPersonnelContracts;
+            var mappedContracts = returnContracts.Select(p => _mapper.Map<PersonnelContractDTO>(p)).ToList();
+
+            var finalContracts = new PagedList<PersonnelContractDTO>(
+                mappedContracts,
+                returnContracts.MetaData.TotalCount,
+                contractParams.PageNumber,
+                contractParams.PageSize);
+
+            return finalContracts;
     }
     public async Task<PersonnelContractDTO> CreatePersonnelContract(int staffId, PersonnelContractCreationDTO personnelContractCreationDTO)
     {

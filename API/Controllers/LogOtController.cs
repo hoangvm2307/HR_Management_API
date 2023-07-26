@@ -1,6 +1,7 @@
 ﻿using API.DTOs.LogOtDTOs;
 using API.DTOs.UserInforDTO;
 using API.Entities;
+using API.RequestHelpers;
 using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
@@ -36,11 +37,26 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<LogOtDTO>>> GetLogOtList()
+        public async Task<ActionResult<PagedList<LogOtDTO>>> GetLogOtList(
+            [FromQuery] LogOtParams logOtParams)
         {
-            var returnLogOtList = await _logOtService.GetLogOts();
+            var returnLogOtList = await _logOtService.GetLogOts(logOtParams);
+
+            Response.AddPaginationHeader(returnLogOtList.MetaData);
 
             return returnLogOtList;
+        }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> Filter()
+        {
+            var departments = await _context.Payslips
+                .Include(c => c.Staff)
+                .ThenInclude(c => c.Department)
+                .Select(c => c.Staff.Department.DepartmentName)
+                .Distinct()
+                .ToListAsync();
+            return Ok(departments);
         }
 
         [HttpGet("staffs/{staffId}", Name = "GetLogOtOfStaff")]
@@ -79,10 +95,10 @@ namespace API.Controllers
             }
 
             //Here 
-            if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
-            {
-                return BadRequest(new ProblemDetails { Title = "Thời gian không hợp lệ"});
-            }
+            //if (!await _logOtService.IsDateTimeValid(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
+            //{
+            //    return BadRequest(new ProblemDetails { Title = "Thời gian không hợp lệ"});
+            //}
 
             if (!await _logOtService.IsContainHoliday(createLogOtDTO.LogStart, createLogOtDTO.LogEnd))
             {

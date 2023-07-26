@@ -1,5 +1,6 @@
 ﻿using API.DTOs.LogLeaveDTO;
 using API.Entities;
+using API.RequestHelpers;
 using API.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
@@ -35,10 +36,18 @@ namespace API.Controllers
 
     }
     [HttpGet]
-    public async Task<ActionResult<List<LogLeaveDTO>>> GetLogLeavesAsync()
+    public async Task<ActionResult<List<LogLeaveDTO>>> GetLogLeavesAsync(
+            [FromQuery] LogLeaveParams logLeaveParams
+        
+        )
     {
-      return await _logLeaveService.GetLogLeaveDTOs();
-    }
+      var logleaves =  await _logLeaveService.GetLogLeaveDTOs(logLeaveParams);
+
+            Response.AddPaginationHeader(logleaves.MetaData);
+
+            return logleaves;
+
+        }
 
 
 

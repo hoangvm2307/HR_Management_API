@@ -1,18 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using API.Entities;
+﻿using API.Entities;
 
 namespace API.Extensions
 {
-    public static class LogOtExtensions
+    public static class LogLeaveExtensions
     {
-        public static IQueryable<LogOt> Search(
-            this IQueryable<LogOt> query,
-            string searchTerm)
+        public static IQueryable<LogLeave> Search(
+           this IQueryable<LogLeave> query,
+           string searchTerm)
         {
             if (string.IsNullOrEmpty(searchTerm)) return query;
             var lowerCaseSearchItem = searchTerm
@@ -26,8 +20,8 @@ namespace API.Extensions
 
         }
 
-        public static IQueryable<LogOt> Filter(
-            this IQueryable<LogOt> query,
+        public static IQueryable<LogLeave> Filter(
+            this IQueryable<LogLeave> query,
             string departments)
         {
             var departmentList = new List<string>();
@@ -41,7 +35,6 @@ namespace API.Extensions
 
             return query;
         }
-
 
     }
 }

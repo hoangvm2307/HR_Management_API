@@ -3,6 +3,8 @@ using System.Xml.Schema;
 using API.DTOs.LogLeaveDTO;
 using API.DTOs.LogOtDTOs;
 using API.Entities;
+using API.Extensions;
+using API.RequestHelpers;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,25 +35,55 @@ namespace API.Services
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
       _personnelContractService = personnelContractService ?? throw new ArgumentNullException(nameof(personnelContractService));
     }
-    public async Task<List<LogLeaveDTO>> GetLogLeaveDTOs()
-    {
-      var logleaves = await _context.LogLeaves
-                              .Include(c => c.LeaveType)
-                              .Include(c => c.Staff)
-                              .ToListAsync();
+        public async Task<PagedList<LogLeaveDTO>> GetLogLeaveDTOs(LogLeaveParams logLeaveParams)
+        {
+            var logleaves =  _context.LogLeaves
+                                    .Include(c => c.LeaveType)
+                                    .Include(c => c.Staff)
+                                    .ThenInclude(c => c.Department)
+                                    .OrderByDescending(c => c.LeaveLogId)
+                                    .Search(logLeaveParams.SearchTerm)
+                                    .Filter(logLeaveParams.Departments)
+                                    .AsQueryable();
 
-      var returnLogLeaves = _mapper.Map<List<LogLeaveDTO>>(logleaves);
-      returnLogLeaves = returnLogLeaves.Select(returnLogLeave =>
-     {
-       returnLogLeave.ResponsdenceName = _context.UserInfors
-   .Where(c => c.StaffId == returnLogLeave.RespondencesId)
-   .Select(s => s.LastName + " " + s.FirstName)
-   .FirstOrDefault();
-       return returnLogLeave;
-     }).ToList();
-      return returnLogLeaves;
-    }
-    public async Task<List<LogLeaveDTO>> GetLogLeavesByStaffId(int staffId)
+
+            var returnLogLeaves = await PagedList<LogLeave>.ToPagedList(
+                logleaves,
+                logLeaveParams.PageNumber,
+                logLeaveParams.PageSize);
+
+
+            var mappedLogLeaves = returnLogLeaves.Select(p => _mapper.Map<LogLeaveDTO>(p)).ToList();
+
+            mappedLogLeaves = mappedLogLeaves.Select(returnLogLeave =>
+            {
+                returnLogLeave.ResponsdenceName = _context.UserInfors
+                  .Where(c => c.StaffId == returnLogLeave.RespondencesId)
+                  .Select(s => s.LastName + " " + s.FirstName)
+                  .FirstOrDefault();
+                return returnLogLeave;
+            }).ToList();
+
+            var finalLogLeaves = new PagedList<LogLeaveDTO>(
+                mappedLogLeaves,
+                returnLogLeaves.MetaData.TotalCount,
+                logLeaveParams.PageNumber,
+                logLeaveParams.PageSize
+                );
+            //var returnLogLeaves = _mapper.Map<List<LogLeaveDTO>>(logleaves);
+
+           // returnLogLeaves = returnLogLeaves.Select(returnLogLeave =>
+           //{
+           //    returnLogLeave.ResponsdenceName = _context.UserInfors
+           //      .Where(c => c.StaffId == returnLogLeave.RespondencesId)
+           //      .Select(s => s.LastName + " " + s.FirstName)
+           //      .FirstOrDefault();
+           //    return returnLogLeave;
+           //}).ToList();
+            // return returnLogLeaves;
+            return finalLogLeaves;
+        }
+        public async Task<List<LogLeaveDTO>> GetLogLeavesByStaffId(int staffId)
     {
       var logLeaves = await _context.LogLeaves
                               .Include(c => c.LeaveType)

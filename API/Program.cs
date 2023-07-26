@@ -113,6 +113,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors(opt =>
 {
     opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:3000");
+    opt.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("https://hrm.huylinhit.live");
 });
 
 app.UseHttpsRedirection();
