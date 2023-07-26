@@ -49,9 +49,20 @@ namespace API.Controllers
 
         }
 
+        [HttpGet("filters")]
+        public async Task<IActionResult> Filter()
+        {
+            var departments = await _context.LogLeaves
+                .Include(c => c.Staff)
+                .ThenInclude(c => c.Department)
+                .Select(c => c.Staff.Department.DepartmentName)
+                .Distinct()
+                .ToListAsync();
+            return Ok(departments);
+        }
 
 
-    [HttpGet("staffs/{staffId}")]
+        [HttpGet("staffs/{staffId}")]
     public async Task<ActionResult<List<LogLeaveDTO>>> GetLogLeavesAsyncByStaffId(int staffId)
     {
       if (!await _userInfoService.IsUserExist(staffId))
